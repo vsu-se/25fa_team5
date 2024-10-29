@@ -71,9 +71,21 @@ public class Item {
     	}
     }
     
+    public void setName (String name) {
+    	this.name = name;
+    }
+    
+    public void setID (int ID) {
+    	this.id = ID;
+    }
+          
     public void addBid(int userID, double bid) {
     	if(this.getCurrentBid() < bid) {
     		bids.put(userID, bid);
+//    		if(bid == this.getbIN()) {
+//    			System.out.println("Buy it Now Price Reached");
+//    			endAuction();
+//    		}
     		System.out.println("Bid Accepted");
     	} else {
     		System.out.println("Bid Denied");
@@ -93,4 +105,9 @@ public class Item {
     	 }
     	return line1+line2+line3+line4+line5;
     }
+
+	public void setStartDate(Date date) { // Concept is to end auctions by moving the start date to the end date, probably gonna need some rewrites eventually
+		this.startDate = date;
+		
+	}
 }
