@@ -22,6 +22,7 @@ public class Main extends Application {
 	private ObservableList<String> categories;
 	private CategoryController categoryController;
 	private CommissionController commissionController;
+	private PremiumController premiumController;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -51,6 +52,7 @@ public class Main extends Application {
 			CategoryManager categoryManager = new CategoryManager();
 			categoryController = new CategoryController(categoryManager);
 			commissionController = new CommissionController();
+			premiumController = new PremiumController();
 			// US-1
 			TextField categoryField = new TextField("Enter category name");
 	        Button addButton = new Button("Add Category");
@@ -101,6 +103,20 @@ public class Main extends Application {
 			Button setPremiumButton = new Button("Set Buyer Premium ");
 			Label currentPremiumLbl = new Label("Current Premium: 0%");
 			
+			setPremiumButton.setOnAction(e -> {
+				String premiumText = premiumField.getText().trim();
+				try {
+					double premiumValue = Double.parseDouble(premiumText);
+					premiumController.setBuyerPremium(premiumValue);
+					currentPremiumLbl.setText("Current Premium: " + premiumController.getBuyerPremium() + "%");
+					premiumField.clear();
+				} catch (NumberFormatException ex) {
+					showAlert("Invalid Input", "Please enter a valid number for premium percentage.");
+				} catch (IllegalArgumentException ex) {
+					showAlert("Invalid Input", ex.getMessage());
+				}
+			});
+			
 			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
 			
@@ -136,17 +152,17 @@ public class Main extends Application {
 			HBox nameBox = new HBox(nameLbl, nameField);
 			nameBox.setSpacing(10);
 			
-			Label startTimeLbl = new Label("Enter Start Time: ");
-			TextField startTimeField = new TextField();
-			HBox startTimeBox = new HBox(startTimeLbl, startTimeField);
-			startTimeBox.setSpacing(10);
+			Label startDateLbl = new Label("Enter Start Date: ");
+			TextField startDateField = new TextField();
+			HBox startDateBox = new HBox(startDateLbl, startDateField);
+			startDateBox.setSpacing(10);
 			
-			Label endDateLbl = new Label("Enter End Time: ");
+			Label endDateLbl = new Label("Enter End Date: ");
 			TextField endDateField = new TextField();
 			HBox endDateBox = new HBox(endDateLbl, endDateField);
 			endDateBox.setSpacing(10);
 			
-			Label binLbl = new Label("Enter Buy-It-Now Price: ");
+			Label binLbl = new Label("Enter BIN (Buy-It-Now) Price: ");
 			TextField binField = new TextField();
 			HBox binBox = new HBox(binLbl, binField);
 			
@@ -155,16 +171,26 @@ public class Main extends Application {
 			
 			TextArea itemListArea = new TextArea();
 			addItemButton.setOnAction(e -> {
-				// add toString() method from Item class to print the details of the item
-
+				String id = idField.getText();
+	            String name = nameField.getText();
+	            String startDate = startDateField.getText();
+	            String endDate = endDateField.getText();
+	            String bin = binField.getText();
+	            
+	            String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s\n", id, name, startDate, endDate, bin);
+	            itemListArea.appendText(itemDetails);
+	            
 		        idField.clear();
 		        nameField.clear();
-		        startTimeField.clear();
+		        startDateField.clear();
 		        endDateField.clear();
 		        binField.clear();
 			});
 			
-			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startTimeBox, endDateBox, binBox, addItemBox, itemListArea);
+			Button showMyAuctionsBtn = new Button("Show My Auctions");
+			
+			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, itemListArea, myAuctionsBox);
 			itemBox.setSpacing(10);
 			Scene scene = new Scene(itemBox,600,400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
