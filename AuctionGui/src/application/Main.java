@@ -33,6 +33,7 @@ public class Main extends Application {
 		    RadioButton UserCheckBox = new RadioButton("User");
 		    RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
 		    SystemAdminCheckBox.setOnAction(e -> systemAdminUser(primaryStage));
+		    UserCheckBox.setOnAction(e -> User(primaryStage));
 		    RegisteredUserCheckBox.setOnAction(e -> sellerListItem(primaryStage));
 		    
 		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox);
@@ -54,8 +55,11 @@ public class Main extends Application {
 			commissionController = new CommissionController();
 			premiumController = new PremiumController();
 			// US-1
+			Button returnButton = new Button("<-- User Selection");
 			TextField categoryField = new TextField("Enter category name");
 	        Button addButton = new Button("Add Category");
+	        
+	        returnButton.setOnAction(e -> start(primaryStage));
 	        
 	        ListView<String> categoryListView = new ListView<>();
             categories = FXCollections.observableArrayList();
@@ -117,7 +121,7 @@ public class Main extends Application {
 				}
 			});
 			
-			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
+			VBox systemBox1 = new VBox(returnButton, categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
 			
 			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl);
@@ -134,13 +138,56 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
+	
+	public void User(Stage primaryStage) {
+		try {
+			primaryStage.setTitle("User");
+			Button returnButton = new Button("<-- User Selection");
+			returnButton.setOnAction(e -> start(primaryStage));
+			HBox returnBox = new HBox(returnButton);
+			returnBox.setSpacing(10);
+
+			Label searchLbl = new Label("Search for Item: ");
+			TextField searchField = new TextField();
+			HBox searchBox = new HBox(searchLbl, searchField);
+			searchBox.setSpacing(10);
+
+			Button searchButton = new Button("Search");
+			HBox searchButtonBox = new HBox(searchButton);
+			searchButtonBox.setSpacing(10);
+
+			TextArea searchResultsArea = new TextArea();
+			searchResultsArea.setEditable(false);
+
+			searchButton.setOnAction(e -> {
+				String search = searchField.getText();
+				searchResultsArea.clear();
+				searchResultsArea.appendText("Search results for: " + search + "\n");
+				searchField.clear();
+			});
+
+			VBox userBox = new VBox(returnButton, searchBox, searchButtonBox, searchResultsArea);
+			userBox.setSpacing(10);
+			Scene scene = new Scene(userBox, 600, 400);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	        
 	public void sellerListItem(Stage primaryStage) {
 		try {
 			primaryStage.setTitle("Seller");
+			Button returnButton = new Button("<-- User Selection");
 			Label ListItemLbl = new Label("List Item to Auction: ");
 			HBox listItemBox = new HBox(ListItemLbl);
 			listItemBox.setSpacing(10);
+			
+			returnButton.setOnAction(e -> start(primaryStage));
+			HBox returnBox = new HBox(returnButton);
+			returnBox.setSpacing(10);
 			
 			Label idLbl = new Label("Enter Item ID: ");
 			TextField idField = new TextField();
@@ -190,7 +237,7 @@ public class Main extends Application {
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 			
 			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
-			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, itemListArea, myAuctionsBox);
+			VBox itemBox = new VBox(returnButton, listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, itemListArea, myAuctionsBox);
 			itemBox.setSpacing(10);
 			Scene scene = new Scene(itemBox,600,400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
