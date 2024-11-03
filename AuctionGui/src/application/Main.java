@@ -1,5 +1,7 @@
 package application;
 	
+import java.io.*;
+import java.nio.Buffer;
 import java.util.List;
 
 import javafx.application.Application;
@@ -53,6 +55,11 @@ public class Main extends Application {
 			categoryController = new CategoryController(categoryManager);
 			commissionController = new CommissionController();
 			premiumController = new PremiumController();
+
+//			categories = FXCollections.observableArrayList();
+//			ListView<String> categoryListView = new ListView<>(categories);
+//			loadData();
+
 			// US-1
 			TextField categoryField = new TextField("Enter category name");
 	        Button addButton = new Button("Add Category");
@@ -60,6 +67,8 @@ public class Main extends Application {
 	        ListView<String> categoryListView = new ListView<>();
             categories = FXCollections.observableArrayList();
             categoryListView.setItems(categories);
+
+			loadData();
 
 			addButton.setOnAction(e -> {
 				String categoryName = categoryField.getText().trim();
@@ -80,7 +89,7 @@ public class Main extends Application {
 			// US-2
 			TextField commissionField = new TextField("Enter commission");
 			Button setCommissionButton = new Button("Set Seller Commission");
-			Label currentCommissionLbl = new Label("Current Commission: 0%");
+			Label currentCommissionLbl = new Label("Current Commission: " + commissionController.getSellerCommission() + "%");
 						
 			setCommissionButton.setOnAction(e -> {
 				String commissionText = commissionField.getText().trim();
@@ -101,7 +110,7 @@ public class Main extends Application {
 			// US-3
 			TextField premiumField = new TextField("Enter premium");
 			Button setPremiumButton = new Button("Set Buyer Premium ");
-			Label currentPremiumLbl = new Label("Current Premium: 0%");
+			Label currentPremiumLbl = new Label("Current Premium: " + premiumController.getBuyerPremium() + "%");
 			
 			setPremiumButton.setOnAction(e -> {
 				String premiumText = premiumField.getText().trim();
@@ -116,11 +125,14 @@ public class Main extends Application {
 					showAlert("Invalid Input", ex.getMessage());
 				}
 			});
+
+			Button saveDataButton = new Button("Save Data");
+			saveDataButton.setOnAction(e -> saveData());
 			
 			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
 			
-			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl);
+			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton);
 			systemBox2.setSpacing(10);
 			
 			HBox systemBox = new HBox(systemBox1, systemBox2);
@@ -201,7 +213,66 @@ public class Main extends Application {
             e.printStackTrace();
 		}
 	}
-	
+
+	private void saveData(){
+		try(FileWriter writer = new FileWriter("auction_data.txt")){
+			writer.write("Categories\n");
+			for(String category: categoryController.getCategories()){
+				writer.write("- " + category + "\n");
+			}
+			writer.write("\nSeller Commission: ");
+			writer.write(commissionController.getSellerCommission() + "\n");
+			writer.write("Buyer Premium: ");
+			writer.write(premiumController.getBuyerPremium() + "\n");
+
+			showAlert("Data Saved Successfuly", "Data saved successfully to auction_data.txt");
+		}
+		catch(Exception e){
+			showAlert("File Error", "Error saving data to file.");
+			e.printStackTrace();
+		}
+	}
+
+	private void loadData(){
+		File file = new File("auction_data.txt");
+		if (file.exists()){
+			try (BufferedReader reader = new BufferedReader(new FileReader(file))){
+				String line;
+				boolean inCategories = false;
+
+				while ((line = reader.readLine()) != null){
+					if (line.equals("Categories")){
+						inCategories = true;
+						continue;
+					}
+					if (inCategories){
+						if(line.startsWith("- ")) {
+							String category = line.substring(2).trim();
+							categoryController.addCategory(category);
+						}
+						else {
+							inCategories = false;
+						}
+					}
+
+					if (line.startsWith("Seller Commission:")){
+						double commission = Double.parseDouble(line.split(":")[1].replace("%", "").trim());
+						commissionController.setSellerCommission(commission);
+					}
+					else if(line.startsWith("Buyer Premium:")){
+						double premium = Double.parseDouble(line.split(":")[1].replace("%", "").trim());
+						premiumController.setBuyerPremium(premium);
+					}
+				}
+				updateCategoryListView(categories);
+			}
+			catch (IOException | NumberFormatException e){
+				showAlert("File Error", "Error loading data from file.");
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void updateCategoryListView(ObservableList<String> categories) {
         categories.clear();
         List<String> categoryNames = categoryController.getCategories();
