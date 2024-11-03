@@ -1,112 +1,219 @@
 package application;
-
+	
 import java.util.List;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
+import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 
 public class Main extends Application {
 	private ObservableList<String> categories;
 	private CategoryController categoryController;
-	private CheckBox SystemAdminCheckBox;
-	private CheckBox UserCheckBox;
-	private CheckBox AuthUserCheckBox;
-	private Label statusLabel;
-	private Button CreateCategoryButton;
+	private CommissionController commissionController;
+	private PremiumController premiumController;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-//			BorderPane root = new BorderPane();
-			SystemAdminCheckBox = new CheckBox("System Admin");
-			UserCheckBox = new CheckBox("User");
-			AuthUserCheckBox = new CheckBox("Authorized User");
-			statusLabel = new Label("Select User Type");
-
-			SystemAdminCheckBox.setOnAction(e -> {SystemAdminCheckBox(primaryStage);});
-//			UserCheckBox.setOnAction(e -> {UserCheckBox(primaryStage);});
-//			AuthUserCheckBox.setOnAction(e -> {AuthUserCheckBox(primaryStage);});
-
-
-
-
-
-			VBox layout = new VBox(10.0);
-			layout.getChildren().addAll(new Node[]{SystemAdminCheckBox, UserCheckBox, AuthUserCheckBox, statusLabel});
-			Scene scene = new Scene(layout, 400.0, 200.0);
-			primaryStage.setTitle("Select User Type");
+			primaryStage.setTitle("Auction System");
+			Label statusLbl  = new Label("Select User Type: ");
+			RadioButton SystemAdminCheckBox = new RadioButton("System Admin");
+		    RadioButton UserCheckBox = new RadioButton("User");
+		    RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
+		    SystemAdminCheckBox.setOnAction(e -> systemAdminUser(primaryStage));
+		    RegisteredUserCheckBox.setOnAction(e -> sellerListItem(primaryStage));
+		    
+		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox);
+		    Scene scene = new Scene(UserBox,250,250);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	private void SystemAdminCheckBox(Stage primaryStage) {
+	
+	public void systemAdminUser(Stage primaryStage) {
 		try {
-			CreateCategoryButton = new Button("Create Category");
-			CreateCategoryButton.setOnAction((ex) -> {
-				CreateCategoryName();
-			});
-			CategoryManager categoryManager = new CategoryManager();
-			this.categoryController = new CategoryController(categoryManager);
-			ListView<String> categoryListView = new ListView();
-			this.categories = FXCollections.observableArrayList();
-			categoryListView.setItems(this.categories);
-			VBox vBox = new VBox(new Node[]{this.CreateCategoryButton, categoryListView});
-			vBox.setSpacing(10.0);
-			Scene scene = new Scene(vBox, 400.0, 400.0);
-			scene.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
+//			BorderPane root = new BorderPane();
 			primaryStage.setTitle("System Admin");
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch (Exception var6) {
-			Exception e = var6;
-			e.printStackTrace();
-		}
+			CategoryManager categoryManager = new CategoryManager();
+			categoryController = new CategoryController(categoryManager);
+			commissionController = new CommissionController();
+			premiumController = new PremiumController();
+			// US-1
+			TextField categoryField = new TextField("Enter category name");
+	        Button addButton = new Button("Add Category");
+	        
+	        ListView<String> categoryListView = new ListView<>();
+            categories = FXCollections.observableArrayList();
+            categoryListView.setItems(categories);
 
-	}
-	private void CreateCategoryName() {
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Enter Category");
-		dialog.setHeaderText("Enter a new category name:");
-		dialog.setContentText("Category:");
-		dialog.showAndWait().ifPresent((categoryName) -> {
-			categoryName = categoryName.trim();
-			if (!categoryName.isEmpty() && !categories.contains(categoryName)) {
+			addButton.setOnAction(e -> {
+				String categoryName = categoryField.getText().trim();
+				if (categoryName.isEmpty()) {
+					showAlert("Invalid Input", "Please enter a category name.");
+					return;
+				}
+				if (categoryController.getCategories().contains(categoryName)) {
+					showAlert("Invalid Input", "Category already exists.");
+					return;
+				}
 				categoryController.addCategory(categoryName);
 				updateCategoryListView(categories);
-			} else if (categories.contains(categoryName)) {
-				Stage exists = new Stage();
-				exists.setTitle("Category Exists");
-				Label existsLabel = new Label("Category already exists.");
-				Button okButton = new Button("OK");
-				okButton.setOnAction((e) -> {
-					exists.close();
-				});
-				VBox existsLayout = new VBox(10.0);
-				existsLayout.getChildren().addAll(new Node[]{existsLabel, okButton});
-				Scene existsScene = new Scene(existsLayout, 200.0, 100.0);
-				exists.setScene(existsScene);
-				exists.show();
-			}
-
-		});
+				categoryField.clear();
+				
+			});
+			
+			// US-2
+			TextField commissionField = new TextField("Enter commission");
+			Button setCommissionButton = new Button("Set Seller Commission");
+			Label currentCommissionLbl = new Label("Current Commission: 0%");
+						
+			setCommissionButton.setOnAction(e -> {
+				String commissionText = commissionField.getText().trim();
+				try {
+					double commissionValue = Double.parseDouble(commissionText);
+					commissionController.setSellerCommission(commissionValue);
+					currentCommissionLbl.setText("Current Commission: " + commissionController.getSellerCommission() + "%");
+					commissionField.clear();
+			        } 
+				catch (NumberFormatException ex) {
+					showAlert("Invalid Input", "Please enter a valid number for commission percentage.");
+			    } 
+			    catch (IllegalArgumentException ex) {
+			    	showAlert("Invalid Input", ex.getMessage());
+			    }
+			});
+			
+			// US-3
+			TextField premiumField = new TextField("Enter premium");
+			Button setPremiumButton = new Button("Set Buyer Premium ");
+			Label currentPremiumLbl = new Label("Current Premium: 0%");
+			
+			setPremiumButton.setOnAction(e -> {
+				String premiumText = premiumField.getText().trim();
+				try {
+					double premiumValue = Double.parseDouble(premiumText);
+					premiumController.setBuyerPremium(premiumValue);
+					currentPremiumLbl.setText("Current Premium: " + premiumController.getBuyerPremium() + "%");
+					premiumField.clear();
+				} catch (NumberFormatException ex) {
+					showAlert("Invalid Input", "Please enter a valid number for premium percentage.");
+				} catch (IllegalArgumentException ex) {
+					showAlert("Invalid Input", ex.getMessage());
+				}
+			});
+			
+			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
+			systemBox1.setSpacing(10);
+			
+			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl);
+			systemBox2.setSpacing(10);
+			
+			HBox systemBox = new HBox(systemBox1, systemBox2);
+			systemBox.setSpacing(20);
+			
+			Scene scene = new Scene(systemBox,600,400);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	        
+	public void sellerListItem(Stage primaryStage) {
+		try {
+			primaryStage.setTitle("Seller");
+			Label ListItemLbl = new Label("List Item to Auction: ");
+			HBox listItemBox = new HBox(ListItemLbl);
+			listItemBox.setSpacing(10);
+			
+			Label idLbl = new Label("Enter Item ID: ");
+			TextField idField = new TextField();
+			HBox idBox = new HBox(idLbl, idField);
+			idBox.setSpacing(10);
+			
+			Label nameLbl = new Label("Enter Item Name: ");
+			TextField nameField = new TextField();
+			HBox nameBox = new HBox(nameLbl, nameField);
+			nameBox.setSpacing(10);
+			
+			Label startDateLbl = new Label("Enter Start Date: ");
+			TextField startDateField = new TextField();
+			HBox startDateBox = new HBox(startDateLbl, startDateField);
+			startDateBox.setSpacing(10);
+			
+			Label endDateLbl = new Label("Enter End Date: ");
+			TextField endDateField = new TextField();
+			HBox endDateBox = new HBox(endDateLbl, endDateField);
+			endDateBox.setSpacing(10);
+			
+			Label binLbl = new Label("Enter BIN (Buy-It-Now) Price: ");
+			TextField binField = new TextField();
+			HBox binBox = new HBox(binLbl, binField);
+			
+			Button addItemButton = new Button("Add Item");
+			HBox addItemBox = new HBox(addItemButton);
+			
+			TextArea itemListArea = new TextArea();
+			addItemButton.setOnAction(e -> {
+				String id = idField.getText();
+	            String name = nameField.getText();
+	            String startDate = startDateField.getText();
+	            String endDate = endDateField.getText();
+	            String bin = binField.getText();
+	            
+	            String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s\n", id, name, startDate, endDate, bin);
+	            itemListArea.appendText(itemDetails);
+	            
+		        idField.clear();
+		        nameField.clear();
+		        startDateField.clear();
+		        endDateField.clear();
+		        binField.clear();
+			});
+			
+			Button showMyAuctionsBtn = new Button("Show My Auctions");
+			
+			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, itemListArea, myAuctionsBox);
+			itemBox.setSpacing(10);
+			Scene scene = new Scene(itemBox,600,400);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		}
+		catch(Exception e) {
+            e.printStackTrace();
+		}
 	}
 	
 	private void updateCategoryListView(ObservableList<String> categories) {
         categories.clear();
         List<String> categoryNames = categoryController.getCategories();
         categories.addAll(categoryNames);
+    }
+	
+	private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 	
 	
