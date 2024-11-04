@@ -141,18 +141,22 @@ public class Main extends Application {
 	
 	public void User(Stage primaryStage) {
 		try {
-			primaryStage.setTitle("User");
+			primaryStage.setTitle("Bidder");
 			Button returnButton = new Button("<-- User Selection");
 			returnButton.setOnAction(e -> start(primaryStage));
 			HBox returnBox = new HBox(returnButton);
 			returnBox.setSpacing(10);
-
-			Label searchLbl = new Label("Search for Item: ");
+			
+			// US-6
+			// All search results should be active auctions ending soonest to latest.
+			Label searchLbl = new Label("Search for Auctions: ");
 			TextField searchField = new TextField();
+			Button searchButton = new Button("Search");
+
+			
 			HBox searchBox = new HBox(searchLbl, searchField);
 			searchBox.setSpacing(10);
 
-			Button searchButton = new Button("Search");
 			HBox searchButtonBox = new HBox(searchButton);
 			searchButtonBox.setSpacing(10);
 
@@ -165,10 +169,28 @@ public class Main extends Application {
 				searchResultsArea.appendText("Search results for: " + search + "\n");
 				searchField.clear();
 			});
+			
+			// US-7 & 8
+			// Bid function
+			Button bidButton = new Button("Place Bid");
+			TextField bidField = new TextField("Enter Bid Amount");
+			Button showBidsButton = new Button("Show My Bids");
+			TextArea currentBidsArea = new TextArea();
+			
+			HBox bidBox = new HBox(bidButton, bidField);
+			bidBox.setSpacing(10);
+			
+			currentBidsArea.setEditable(false);
+			showBidsButton.setOnAction(e -> {
+				String bid = bidField.getText();
+				currentBidsArea.appendText("Bid placed: $" + bid + "\n");
+				bidField.clear();
+			});
 
-			VBox userBox = new VBox(returnButton, searchBox, searchButtonBox, searchResultsArea);
-			userBox.setSpacing(10);
-			Scene scene = new Scene(userBox, 600, 400);
+			VBox userBox1 = new VBox(returnButton, searchBox, searchButtonBox, searchResultsArea, bidField, bidBox, showBidsButton, currentBidsArea);
+			userBox1.setSpacing(10);
+			
+			Scene scene = new Scene(userBox1, 600, 400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
