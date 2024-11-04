@@ -24,7 +24,8 @@ public class AuctionPersistence {
     	String line = "";
     	String name = "";
     	int id = 0;
-    	double bIN = 5.0;
+    	double bIN = 0.0; // fix later
+		// dates saved as strings for now
     	String startDate = "";
     	String endDate = "";
     	String status = "";
@@ -41,7 +42,7 @@ public class AuctionPersistence {
     				endDate = test[4];
     				status = test[5];
     				item = new Item(id, name);
-    				auction = new Auction(item, bIN);
+    				auction = new Auction(item, bIN); // auction class will need more constructors
     				auctionManager.addAuction(auction);
     			}
     		}
