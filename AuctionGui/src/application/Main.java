@@ -63,7 +63,7 @@ public class Main extends Application {
 			categories = FXCollections.observableArrayList();
 			categoryListView.setItems(categories);
 
-			loadData();
+			loadAdminData();
 
 			addButton.setOnAction(e -> {
 				String categoryName = categoryField.getText().trim();
@@ -122,7 +122,7 @@ public class Main extends Application {
 			});
 
 			Button saveDataButton = new Button("Save Data");
-			saveDataButton.setOnAction(e -> saveData());
+			saveDataButton.setOnAction(e -> saveAdminData());
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
@@ -180,6 +180,10 @@ public class Main extends Application {
 			HBox addItemBox = new HBox(addItemButton);
 
 			TextArea itemListArea = new TextArea();
+
+			loadRegisteredUserData(itemListArea);
+
+
 			addItemButton.setOnAction(e -> {
 				String id = idField.getText();
 				String name = nameField.getText();
@@ -197,13 +201,16 @@ public class Main extends Application {
 				binField.clear();
 			});
 
+			Button saveDataButton = new Button("Save Data");
+			saveDataButton.setOnAction(e -> saveRegisteredUserData(itemListArea));
+
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
 			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
-			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, itemListArea, myAuctionsBox, signOutButton);
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, signOutButton);
 			itemBox.setSpacing(10);
 			Scene scene = new Scene(itemBox,600,400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -215,8 +222,8 @@ public class Main extends Application {
 		}
 	}
 
-	private void saveData(){
-		try(FileWriter writer = new FileWriter("auction_data.txt")){
+	private void saveAdminData(){
+		try(FileWriter writer = new FileWriter("admin_data.txt")){
 			writer.write("Categories\n");
 			for(String category: categoryController.getCategories()){
 				writer.write("- " + category + "\n");
@@ -226,7 +233,7 @@ public class Main extends Application {
 			writer.write("Buyer Premium: ");
 			writer.write(premiumController.getBuyerPremium() + "\n");
 
-			showAlert("Data Saved Successfuly", "Data saved successfully to auction_data.txt");
+			showAlert("Data Saved Successfully", "Data saved successfully to admin_data.txt");
 		}
 		catch(Exception e){
 			showAlert("File Error", "Error saving data to file.");
@@ -234,8 +241,35 @@ public class Main extends Application {
 		}
 	}
 
-	private void loadData(){
-		File file = new File("auction_data.txt");
+	private void saveRegisteredUserData(TextArea itemListArea){
+		try(FileWriter writer = new FileWriter("registered_user_data.txt", true)) {
+			writer.write(itemListArea.getText());
+			showAlert("Data Saved Successfully", "Data saved successfully to registered_user_data.txt");
+		}
+		catch(Exception e){
+			showAlert("File Error", "Error saving data to file.");
+			e.printStackTrace();
+		}
+	}
+
+	private void loadRegisteredUserData(TextArea itemListArea){
+		File file = new File("registered_user_data.txt");
+		if (file.exists()) {
+			try (BufferedReader reader = new BufferedReader(new FileReader("registered_user_data.txt"))){
+				String line;
+				while ((line = reader.readLine()) != null) {
+					itemListArea.appendText(line + "\n");
+				}
+			}
+			catch (IOException e){
+				showAlert("File Error", "Error loading data from file.");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void loadAdminData(){
+		File file = new File("admin_data.txt");
 		if (file.exists()){
 			try (BufferedReader reader = new BufferedReader(new FileReader(file))){
 				String line;
