@@ -1,8 +1,8 @@
 package application;
 
 import java.io.*;
-import java.nio.Buffer;
 import java.util.List;
+import java.util.Objects;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -29,12 +29,16 @@ public class Main extends Application {
 			RadioButton UserCheckBox = new RadioButton("User");
 			RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
 
-			SystemAdminCheckBox.setOnAction(e -> password(primaryStage, "admin"));
-			RegisteredUserCheckBox.setOnAction(e -> password(primaryStage, "seller"));
 
-			VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox);
+			SystemAdminCheckBox.setOnAction(e -> login(primaryStage, "System Admin"));
+			RegisteredUserCheckBox.setOnAction(e -> login(primaryStage, "Registered User"));
+
+			Button createAccountButton = new Button("Create Account");
+			createAccountButton.setOnAction(e -> createAccount());
+
+			VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
 			Scene scene = new Scene(UserBox,250,250);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -137,7 +141,7 @@ public class Main extends Application {
 			systemBox.setSpacing(20);
 
 			Scene scene = new Scene(systemBox,600,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -213,7 +217,7 @@ public class Main extends Application {
 			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, signOutButton);
 			itemBox.setSpacing(10);
 			Scene scene = new Scene(itemBox,600,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		}
@@ -314,27 +318,112 @@ public class Main extends Application {
 		categories.addAll(categoryNames);
 	}
 
-	private void password(Stage primaryStage, String userType){
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Password Required");
-		dialog.setHeaderText("Enter Password");
-		PasswordField passwordField = new PasswordField();
-		dialog.getDialogPane().setContent(passwordField);
-		dialog.showAndWait();
+	private void createAccount(){
+		Stage accountStage = new Stage();
+		accountStage.setTitle("Create Account");
 
-		if (passwordField.getText().equals("hi")) {
-			if ("admin".equals(userType)) {
+		Label usernameLbl = new Label("Enter Username: ");
+		TextField usernameField = new TextField();
+
+		Label passwordLbl = new Label("Enter Password: ");
+		PasswordField passwordField = new PasswordField();
+
+		Label userTypeLbl = new Label("Select User Type: ");
+		RadioButton systemAdminCheckBox = new RadioButton("System Admin");
+		RadioButton registeredUserCheckBox = new RadioButton("Registered User");
+
+		systemAdminCheckBox.setOnAction(e -> {
+			registeredUserCheckBox.setSelected(false);
+		});
+		registeredUserCheckBox.setOnAction(e -> {
+			systemAdminCheckBox.setSelected(false);
+		});
+
+		Button createAccountButton = new Button("Create Account");
+		createAccountButton.setOnAction(e -> {
+			String username = usernameField.getText();
+			String password = passwordField.getText();
+			String userTyp = "";
+
+			if (systemAdminCheckBox.isSelected()) {
+				userTyp = "System Admin";
+			} else if (registeredUserCheckBox.isSelected()) {
+				userTyp = "Registered User";
+			}
+
+			System.out.println("Account Created: Username: " + username + ", Password: " + password + ", User Type: " + userTyp);
+			saveCredentials(username, password, userTyp);
+			accountStage.close();
+		});
+
+		VBox layout = new VBox(10, usernameLbl, usernameField, passwordLbl, passwordField, userTypeLbl, systemAdminCheckBox, registeredUserCheckBox, createAccountButton);
+		Scene scene = new Scene(layout, 300, 300);
+		accountStage.setScene(scene);
+		accountStage.show();
+	}
+
+	private void saveCredentials(String username, String password, String userType){
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter("credentials.txt", true))) {
+			writer.write(username + ":" + password + ":" + userType);
+			writer.newLine();
+		}
+		catch(Exception e){
+			showAlert("File Error", "Error saving credentials to file.");
+			e.printStackTrace();
+		}
+	}
+
+	private void login(Stage primaryStage, String userType){
+		TextInputDialog userNameDialog = new TextInputDialog();
+		userNameDialog.setTitle("Login Required");
+		userNameDialog.setHeaderText("Enter Username");
+		userNameDialog.setContentText("Username:");
+		String username = userNameDialog.showAndWait().orElse("").trim();
+
+		TextInputDialog passwordDialog = new TextInputDialog();
+		passwordDialog.setTitle("Password Required");
+		passwordDialog.setHeaderText("Enter Password");
+		PasswordField passwordField = new PasswordField();
+		passwordDialog.getDialogPane().setContent(passwordField);
+		passwordDialog.showAndWait();
+
+		String password = passwordField.getText().trim();
+		boolean isValid = false;
+
+
+		try (BufferedReader reader = new BufferedReader(new FileReader ("credentials.txt"))){
+			String line;
+			while ((line = reader.readLine()) != null){
+				String[] credentials = line.split(":");
+				if (credentials.length == 3){
+					String UserName = credentials[0].trim();
+					String Password = credentials[1].trim();
+					String UserType = credentials[2].trim();
+
+					if (UserName.equals(username) && Password.equals(password) && UserType.equals(userType)){
+						isValid = true;
+						break;
+					}
+				}
+			}
+		}
+		catch (IOException e){
+			showAlert("File Error", "Error loading credentials from file.");
+			e.printStackTrace();
+		}
+		if (isValid){
+			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
 			}
-		} else if (passwordField.getText().equals("hello")) {
-			if ("seller".equals(userType)) {
+			else if ("Registered User".equals(userType)){
 				sellerListItem(primaryStage);
 			}
-		} else {
-			showAlert("Access Denied", "Invalid password. Please try again.");
 		}
-
+		else {
+			showAlert("Access Denied", "Invalid username or password. Please try again.");
+		}
 	}
+
 
 	private void showAlert(String title, String message) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
