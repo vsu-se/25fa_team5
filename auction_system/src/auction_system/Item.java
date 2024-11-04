@@ -1,34 +1,47 @@
 package auction_system;
-import java.util.Date;
-import java.util.LocalDateTime;
-import java.util.DateTime;
-import java.util.DateTimeFormatter;
-import java.util.Map;
-import java.util.TreeMap;
+//import java.util.*;
+//import java.lang.Double;
 
 public class Item {
     private int id;
     private String name;
-    private LocalDateTime startDate = LocalDateTime.now();
-    DateTimeFormatter myFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-    String startDateFormatted = startDate.format(myFormat);
-    private Date endDate = new Date(year, month, day, hours, minutes);
-    private TreeMap<int, double> bids = new TreeMap<>();
-    private double bIN = null;
+//    Calendar c = Calendar.getInstance();
+//    private Date startDate;
+//    private Date endDate;
+//    TreeMap<Integer, Double> bids = new TreeMap<>();
+//    private double bIN = 0.0;
 
-    public Item (int id, String name, Date startDate, Date endDate){
+    
+//      public static void main(String[] args) {
+//    	  Item item = new Item(12345, "Cool Hat");
+//    	  System.out.println(item.toString());
+//      }
+      
+    public Item (int id, String name){
         this.id = id;
         this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
+//        this.bIN = bIN;
+//        Calendar c = Calendar.getInstance();
+//        startDate = c.getTime();
+//        c.add(Calendar.DATE, 30); 
+//        // Current auction time is set at 30 days for testing purposes
+//        endDate = c.getTime();
     }
 
-    public void setStartingBid (double startingBid){
-        bids.put(id, startingBid);
-        System.out.println("The starting Bid is: " + bids.get(id));
-    }
+//    public void setStartingBid (double startingBid){
+//        bids.put(id, startingBid);
+//        System.out.println("The starting Bid is: " + bids.get(id));
+//    }
+    
+//    public double getCurrentBid (){
+//    	double currBid = 0.0;
+//    	for (int key : bids.keySet()) {
+//    		currBid = bids.get(key);
+//    		// A comparable will be needed to sort the treeMap by highest value
+//    	}
+//    	return currBid;
+//    }
 
-    // Include basic getters and setters
     public int getID () {
     	return this.id;
     }
@@ -37,27 +50,57 @@ public class Item {
     	return this.name;
     }
     
-    public LocalDateTime getStartDate() {
-    	return this.startDate;
+//    public Date getStartDate() {
+//    	return this.startDate;
+//    }
+//    
+//    public Date getEndDate() {
+//    	return this.endDate;
+//    }
+//    
+//    public double getbIN() {
+//    	return this.bIN;
+//    }
+//
+//    public void setBIN (double bIN) {
+//     	// Not required, but can be set by the seller at any time
+//    	if(bIN <= 0.0) {
+//    		System.out.println("The Buy it Now price cannot be at or lower than $0.00");
+//    	} else {
+//     	this.bIN = bIN;
+//    	}
+//    }
+//    
+    public void setName (String name) {
+    	this.name = name;
     }
     
-    public Date
-    
-     public void setBIN (double bIN) {
-     	// Not required, but can be set by the seller at any time
-     	this.bIN = bIN;
-     }
-    
+    public void setID (int ID) {
+    	this.id = ID;
+    }
+          
+//    public void addBid(int userID, double bid) {
+//    	if(this.getCurrentBid() < bid) {
+//    		bids.put(userID, bid);
+////    		if(bid == this.getbIN()) {
+////    			System.out.println("Buy it Now Price Reached");
+////    			endAuction();
+////    		}
+//    		System.out.println("Bid Accepted");
+//    	} else {
+//    		System.out.println("Bid Denied");
+//    	}
+//    }
+   
     @Override
     public String toString () {
-    	private String line1 = "Item ID: " +  id + "\n";
-    	private String line2 = "Item Name: "+ name + "\n";
-    	private String line3 = "Auction Start Date: " + startDateFormatted + "\n";
-    	private String line4 = "Auction End Date: " + endDate + "\n";
-    	 private String line5 = null;
-    	 if (bIN != null) {
-    	 	line5 = "Item Buy-It-Now Price: " + bIN + "\n";
-    	 }
-    	return line1+line2+line3+line4+line5;
+    	String line1 = "Item ID: " +  id + "\n";
+    	String line2 = "Item Name: "+ name + "\n";
+    	return line1+line2;
     }
+
+//	public void setStartDate(Date date) { // Concept is to end auction by moving the start date to the end date, probably gonna need some rewrites eventually
+//		this.startDate = date;
+//		
+//	}
 }
