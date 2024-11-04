@@ -4,7 +4,7 @@ import java.util.*;
 import java.lang.Double;
 
 public class Auction {
-	TreeMap<Integer, Double> bids = new TreeMap<>();
+	TreeMap<Double, Integer> bids = new TreeMap<>();
 	private double bIN = 0.0;
 	private Date startDate;
 	private Date endDate;
@@ -58,10 +58,7 @@ public class Auction {
 	public double getCurrentBid() {
 		double currBid = 0.0;
 		if(isActive == true) {
-			for (int key : bids.keySet()) {
-				currBid = bids.get(key); // I'm actually pretty sure this iteration won't work because of what values are used for the keys, will need to find out
-				return currBid;
-			}
+			currBid =  bids.lastKey(); // Treemaps order themselves based on the numerical value of the key, so if the bid amount is the key instead of userID, it self sorts
 		} 
 		return currBid;
 	}
@@ -71,10 +68,20 @@ public class Auction {
     	this.isActive = false;
     	System.out.println("Auction #" + item.getID() + " for " + item.getName() + " ended at " + c.getTime());
     }
+
+	public void checkDate() {
+		Calendar c = Calendar.getInstance();
+		if(c.getTime().compareTo(this.getEndDate()) > -1) {
+			System.out.println("This auction has ended");
+			endAuction(this.item());
+		} else {
+			System.out.println("This auction is ongoing");
+		}
+	}
 	
 	public void addBid(int userID, double bid) {
 		if(this.getCurrentBid() < bid) {
-			bids.put(userID, bid);
+			bids.put(bid, userID);
 			System.out.println("Bid Accepted");
 		} else {
 			System.out.println("Bid Denied: Lower than Current Bid");
@@ -84,7 +91,7 @@ public class Auction {
 	@Override
 	public String toString() {
 		String line1 = this.item.toString();
-		String line2 = "\nCurrent and Previous bids: " + bids.values();
+		String line2 = "\nCurrent and Previous bids: " + bids.keySet();
 		String line3 = "\nBuy-it-Now Price: " + this.getbIN();
 		String line4 = "\nStarting Date: " + startDate;
 		String line5 = "\nEnding Date: " + endDate;
