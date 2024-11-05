@@ -8,8 +8,7 @@ import java.io.PrintWriter;
 
 public class AuctionPersistence {
     private AuctionManager auctionManager;
-    private File auctionFile = new File("C:\\Users\\kathl\\IdeaProjects\\25fa_team5\\auction_system\\src\\auction_system\\Files\\auctions.txt");
-	// path name must be changed
+    private File auctionFile = new File("auction_system\\src\\auction_system\\Files\\auctions.txt");
     public AuctionPersistence() {
 
     }
