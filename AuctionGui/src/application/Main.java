@@ -171,7 +171,7 @@ public class Main extends Application {
 			});
 			
 			// US-7 & 8
-			// Bid function
+			// Bid function & Show my bids
 			Button bidButton = new Button("Place Bid");
 			TextField bidField = new TextField("Enter Bid Amount");
 			Button showBidsButton = new Button("Show My Bids");
