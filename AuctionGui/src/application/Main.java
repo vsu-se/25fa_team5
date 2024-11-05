@@ -48,7 +48,7 @@ public class Main extends Application {
 		    Button createAccountButton = new Button("Create Account");
 			createAccountButton.setOnAction(e -> createAccount());
 			
-		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox);
+		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
 		    Scene scene = new Scene(UserBox,250,250);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -426,7 +426,7 @@ public class Main extends Application {
 		boolean isValid = false;
 
 
-		try (BufferedReader reader = new BufferedReader(new FileReader ("src/credentials.txt"))){
+		try (BufferedReader reader = new BufferedReader(new FileReader ("credentials.txt"))){
 			String line;
 			while ((line = reader.readLine()) != null){
 				String[] credentials = line.split(":");
