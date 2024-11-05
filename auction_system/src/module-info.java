@@ -5,5 +5,5 @@
  * 
  */
 module auction_system {
-    requires junit;
+    exports auction_system;
 }
