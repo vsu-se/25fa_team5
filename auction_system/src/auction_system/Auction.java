@@ -17,7 +17,7 @@ public class Auction {
 		startDate = c.getTime();
 		c.add(Calendar.DATE, 30); // Auction time set for 30 days
 		endDate = c.getTime();
-		bids.put(item.getID(), startBid);
+		bids.put(startBid, item.getID());
 		this.item = item;
 		this.isActive = true;
 		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate + " with a starting bid of $" + startBid);
@@ -28,7 +28,7 @@ public class Auction {
 		startDate = c.getTime();
 		c.add(Calendar.DATE, 30); // Auction time set for 30 days
 		endDate = c.getTime();
-		bids.put(item.getID(), startBid);
+		bids.put(startBid, item.getID());
 		this.item = item;
 		this.isActive = true;
 		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate + " with a starting bid of $" + startBid + " and a Buy-it-Now price of $" + bIN);
@@ -58,9 +58,19 @@ public class Auction {
 	public double getCurrentBid() {
 		double currBid = 0.0;
 		if(isActive == true) {
-			currBid =  bids.lastKey(); // Treemaps order themselves based on the numerical value of the key, so if the bid amount is the key instead of userID, it self sorts
+			currBid =  bids.lastKey(); // Tree maps order themselves based on the numerical value of the key, so if the bid amount is the key instead of userID, it self sorts
 		} 
 		return currBid;
+	}
+	
+	public void getAllBids() {
+		Set<Map.Entry<Double, Integer> > entrySet = bids.entrySet();
+		for(Map.Entry<Double, Integer> currentBid : entrySet) {
+			// Printing the Value (User ID)
+			System.out.print("User: " + currentBid.getValue());
+			// Printing the Key (Bid amount)
+			System.out.println(" Bid: " + currentBid.getKey());
+		}
 	}
 	
 	public void endAuction(Item item) {
@@ -73,7 +83,7 @@ public class Auction {
 		Calendar c = Calendar.getInstance();
 		if(c.getTime().compareTo(this.getEndDate()) > -1) {
 			System.out.println("This auction has ended");
-			endAuction(this.item());
+			endAuction(this.getItem());
 		} else {
 			System.out.println("This auction is ongoing");
 		}
