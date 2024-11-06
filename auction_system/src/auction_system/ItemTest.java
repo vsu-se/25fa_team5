@@ -1,31 +1,57 @@
 package auction_system;
 
-public class ItemTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-	public static void main(String[] args) {
-		// Test 1: toString 
-		Item item1 = new Item(12345, "Comically Large Spoon", 30.75);
-		System.out.println("Expected toString output: \nItem ID: 12345 \nItem Name: Comically Large Spoon \nAuction Start Date: Local Computer Time \nEnd Date: Local Computer Time + 30 Days \nItem Buy-It-Now Price: 30.75");
-		System.out.println("Actual Output:");
-		System.out.println(item1.toString());
-		
-		// Test 2: setStartingBid
-		item1.setStartingBid(5.15);
-		System.out.println("Expected Output: \n5.15");
-		System.out.println("Actual Output: ");
-		System.out.println(item1.getCurrentBid());
-		
-		// Test 3: setBIN fail condition
-		System.out.println("Expected Output: \nThe Buy it Now price cannot be at or lower than $0.00");
-		System.out.println("Actual Output: ");
-		item1.setBIN(0.0);
-		
-		// Test 4: addBid
-		System.out.println("Expected Output: \nBid Accepted \n8.2");
-		System.out.println("Actual Output: ");
-		item1.addBid(12346, 8.20);
-		System.out.println(item1.getCurrentBid());
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+class ItemTest {
+	private Item item;
+	
+	@BeforeEach
+	public void init() {
+	item = new Item(12345, "Hat");
+	}
+	
+	@AfterEach
+	public void reset() {
+		item.setName("Hat");
+		item.setID(12345);
+	}
+	
+//	@Test
+//	void testItem() {
+//		fail("Not yet implemented");
+//	}
+
+	@Test
+	void testGetID() {
+		assertEquals(12345, item.getID(), "getID() returns an incorrect value\n");
+	}
+
+	@Test
+	void testGetName() {
+		assertEquals("Hat", item.getName(), "getName() returns an incorrect value\n");
+	}
+
+	@Test
+	void testSetName() {
+		item.setName("Trilby");
+		assertEquals("Trilby", item.getName(), "setName() does not change the name properly\n");
+	}
+
+	@Test
+	void testSetID() {
+		item.setID(99999);
+		assertEquals(99999, item.getID(), "setID() does not change the ID properly\n");
+	}
+
+	@Test
+	void testToString() {
+		String expected = "Item ID: 12345\nItem Name: Hat\n";
+		assertEquals(expected, item.toString(), "toString() does not return the proper string");
+		
 	}
 
 }
