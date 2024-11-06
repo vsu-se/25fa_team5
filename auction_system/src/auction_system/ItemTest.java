@@ -2,38 +2,56 @@ package auction_system;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ItemTest {
-
-	@Test
-	void testItem() {
-		fail("Not yet implemented");
+	private Item item;
+	
+	@BeforeEach
+	public void init() {
+	item = new Item(12345, "Hat");
 	}
+	
+	@AfterEach
+	public void reset() {
+		item.setName("Hat");
+		item.setID(12345);
+	}
+	
+//	@Test
+//	void testItem() {
+//		fail("Not yet implemented");
+//	}
 
 	@Test
 	void testGetID() {
-		fail("Not yet implemented");
+		assertEquals(12345, item.getID(), "getID() returns an incorrect value\n");
 	}
 
 	@Test
 	void testGetName() {
-		fail("Not yet implemented");
+		assertEquals("Hat", item.getName(), "getName() returns an incorrect value\n");
 	}
 
 	@Test
 	void testSetName() {
-		fail("Not yet implemented");
+		item.setName("Trilby");
+		assertEquals("Trilby", item.getName(), "setName() does not change the name properly\n");
 	}
 
 	@Test
 	void testSetID() {
-		fail("Not yet implemented");
+		item.setID(99999);
+		assertEquals(99999, item.getID(), "setID() does not change the ID properly\n");
 	}
 
 	@Test
 	void testToString() {
-		fail("Not yet implemented");
+		String expected = "Item ID: 12345\nItem Name: Hat\n";
+		assertEquals(expected, item.toString(), "toString() does not return the proper string");
+		
 	}
 
 }

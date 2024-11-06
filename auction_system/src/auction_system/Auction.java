@@ -31,6 +31,7 @@ public class Auction {
 		bids.put(startBid, item.getID());
 		this.item = item;
 		this.isActive = true;
+		this.bIN = bIN;
 		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate + " with a starting bid of $" + startBid + " and a Buy-it-Now price of $" + bIN);
 		
 	}
@@ -55,12 +56,23 @@ public class Auction {
     	this.endDate = date;
     }
     
+    public void setbIN(double bIN) {
+    	this.bIN = bIN;
+    }
+    
 	public double getCurrentBid() {
 		double currBid = 0.0;
+		if(bids.isEmpty()) {
+			return 0.0;
+		}
 		if(isActive == true) {
 			currBid =  bids.lastKey(); // Tree maps order themselves based on the numerical value of the key, so if the bid amount is the key instead of userID, it self sorts
 		} 
 		return currBid;
+	}
+	
+	public boolean getIsActive() {
+		return isActive;
 	}
 	
 	public void getAllBids() {

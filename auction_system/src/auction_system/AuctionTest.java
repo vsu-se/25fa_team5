@@ -2,78 +2,102 @@ package auction_system;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Date;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 class AuctionTest {
-
-	@Test
-	void testAuctionItemDouble() {
-		Item item = new Item(12345, "Hat");
-		Auction auction = new Auction(item, 10.00);	
-		assertEquals(12345, auction.getItem().getID(), "Failed to get itemID");
-		System.out.println("Got itemID from Auction");
-		assertEquals("Hat", auction.getItem().getName(), "Failed to get itemName");
-		System.out.println("Got itemName from Auction");
-		fail("Not yet implemented");
+	Item item;
+	Auction auction;
+	Date defEndDate;
+	Date defStartDate;
+	double bIN;
+	
+	@BeforeEach
+	void init() {
+		item = new Item(12345, "Hat");
+		bIN = 25.99;
+		auction = new Auction(item, 10.25, bIN);
+		defEndDate = auction.getEndDate();
+		defStartDate = auction.getStartDate();
 	}
 
-	@Test
-	void testAuctionItemDoubleDouble() {
-		fail("Not yet implemented");
+	@AfterEach
+	void reset() {
+		item.setID(12345);
+		item.setName("Hat");
+		auction.setbIN(25.99);
+		auction.bids.clear();
+		auction.addBid(item.getID(), 10.25);
+		auction.setEndDate(defEndDate);
 	}
-
+	
 	@Test
 	void testGetItem() {
-		fail("Not yet implemented");
+		assertEquals(item, auction.getItem(), "getItem() did not return the expected item");
 	}
 
 	@Test
 	void testGetStartDate() {
-		fail("Not yet implemented");
+		assertEquals(defStartDate, auction.getStartDate(), "getStartDate() did not return the expected date");
 	}
 
 	@Test
 	void testGetEndDate() {
-		fail("Not yet implemented");
+		assertEquals(defEndDate, auction.getEndDate(), "getEndDate() did not return the expected date");
 	}
 
 	@Test
 	void testGetbIN() {
-		fail("Not yet implemented");
+		assertEquals(bIN, auction.getbIN(), "getbIN() did not return the expected Buy-it-Now price");
 	}
 
 	@Test
 	void testSetEndDate() {
-		fail("Not yet implemented");
+		Date newEndDate = new Date(defEndDate.getTime() + 86400000); //Adds one day to the end date
+		auction.setEndDate(newEndDate);
+		assertEquals(newEndDate, auction.getEndDate(), "setEndDate() did not update the end date properly");
 	}
 
 	@Test
 	void testGetCurrentBid() {
-		fail("Not yet implemented");
+		assertEquals(10.25, auction.getCurrentBid(), "getCurrentBid() did not return the expected bid value");
 	}
 
 	@Test
 	void testGetAllBids() {
-		fail("Not yet implemented");
+		auction.addBid(12346, 15.75);
+		auction.getAllBids();
 	}
 	@Test
 	void testEndAuction() {
-		fail("Not yet implemented");
+		auction.endAuction(item);
+		assertFalse(auction.getIsActive(), "endAuction() did not set the auction as inactive");
 	}
 
 	@Test
 	void testCheckDate() {
-		fail("Not yet implemented");
+		auction.checkDate();
 	}
 
 	@Test
-	void testAddBid() {
-		fail("Not yet implemented");
+	void testAddBidSuccess() {
+		auction.addBid(12346, 15.75);
+		assertEquals(15.75, auction.getCurrentBid(), "addBid() did not accept a valid bid");
+	}
+	
+	@Test
+	void testAddBidFailure() {
+		auction.addBid(12346, 5.00);
+		assertEquals(10.25, auction.getCurrentBid(), "addBid() accepted a bid lower than the current bid");
 	}
 
 	@Test
 	void testToString() {
-		fail("Not yet implemented");
+		String output = auction.toString();
+		assertTrue(output.contains("Current and Previous bids:"), "toString() output is not as expected");
 	}
 
 }
