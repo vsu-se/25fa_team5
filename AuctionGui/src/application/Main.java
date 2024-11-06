@@ -1,5 +1,15 @@
 package application;
+
+	
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.io.*;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -18,6 +28,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -31,25 +47,28 @@ public class Main extends Application {
 	private FileManager fileManager = new FileManager();
 
 
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
 			primaryStage.setTitle("Auction System");
 			Label statusLbl  = new Label("Select User Type: ");
 			RadioButton SystemAdminCheckBox = new RadioButton("System Admin");
-			RadioButton UserCheckBox = new RadioButton("User");
-			RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
+
+		    RadioButton UserCheckBox = new RadioButton("User");
+		    RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
+		    SystemAdminCheckBox.setOnAction(e -> login(primaryStage, "System Admin"));
+		    RegisteredUserCheckBox.setOnAction(e -> login(primaryStage, "Registered User"));
+		    UserCheckBox.setOnAction(e -> login(primaryStage, "User"));
+		    
+		    Button createAccountButton = new Button("Create Account");
+      createAccountButton.setOnAction(e -> createAccount());
+			
+		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
+		    Scene scene = new Scene(UserBox,250,250);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
 
-			SystemAdminCheckBox.setOnAction(e -> login(primaryStage, "System Admin"));
-			RegisteredUserCheckBox.setOnAction(e -> login(primaryStage, "Registered User"));
-
-			Button createAccountButton = new Button("Create Account");
-			createAccountButton.setOnAction(e -> createAccount());
-
-			VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
-			Scene scene = new Scene(UserBox,250,250);
-			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -71,13 +90,15 @@ public class Main extends Application {
 
 			// US-1
 			TextField categoryField = new TextField("Enter category name");
-			Button addButton = new Button("Add Category");
 
-			ListView<String> categoryListView = new ListView<>();
-			categories = FXCollections.observableArrayList();
-			categoryListView.setItems(categories);
+	        Button addButton = new Button("Add Category");
+	        
+	        ListView<String> categoryListView = new ListView<>();
+            categories = FXCollections.observableArrayList();
+            categoryListView.setItems(categories);
+            
+            loadAdminData();
 
-			loadAdminData();
 
 			addButton.setOnAction(e -> {
 				String categoryName = categoryField.getText().trim();
@@ -141,8 +162,10 @@ public class Main extends Application {
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
+			
 			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
+			
 
 			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, signOutButton);
 			systemBox2.setSpacing(10);
@@ -221,8 +244,17 @@ public class Main extends Application {
 
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 
+			showMyAuctionsBtn.setOnAction(e -> {
+				itemListArea.clear();
+	            for (String item : items) {
+	                itemListArea.appendText(item);
+	            }
+			});
+			
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
+                
+			
 
 			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
 			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, signOutButton);
@@ -236,6 +268,26 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
+
+	
+	// User Page / Not completed
+	public void User(Stage primaryStage) {
+		try {
+			primaryStage.setTitle("Bidder");
+
+//			Scene scene = new Scene(     , 600, 400);
+//			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+//			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+
+	
+
 
 	private void saveAdminData(){
 		List<String> categories = categoryController.getCategories();
@@ -263,6 +315,7 @@ public class Main extends Application {
 		List<String> categoryNames = categoryController.getCategories();
 		categories.addAll(categoryNames);
 	}
+
 
 	private void createAccount(){
 		Stage accountStage = new Stage();
@@ -308,9 +361,11 @@ public class Main extends Application {
 		accountStage.show();
 	}
 
+
 	private void saveCredentials(String username, String password, String userType){
 		fileManager.saveCredentials(username,password, userType);
 	}
+
 
 	private void login(Stage primaryStage, String userType){
 		TextInputDialog userNameDialog = new TextInputDialog();
@@ -329,6 +384,7 @@ public class Main extends Application {
 		String password = passwordField.getText().trim();
 		boolean isValid = fileManager.loadCredentials(username, password, userType);
 
+
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
@@ -343,6 +399,7 @@ public class Main extends Application {
 	}
 
 
+
 	private void showAlert(String title, String message) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle(title);
@@ -350,7 +407,6 @@ public class Main extends Application {
 		alert.setContentText(message);
 		alert.showAndWait();
 	}
-
 
 	public static void main(String[] args) {
 		launch(args);
