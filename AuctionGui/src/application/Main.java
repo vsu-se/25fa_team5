@@ -18,6 +18,7 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -35,6 +36,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.TextInputDialog;
+
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -44,7 +46,9 @@ public class Main extends Application {
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
+
 	private FileManager fileManager = new FileManager();
+
 
 
 
@@ -54,6 +58,7 @@ public class Main extends Application {
 			primaryStage.setTitle("Auction System");
 			Label statusLbl  = new Label("Select User Type: ");
 			RadioButton SystemAdminCheckBox = new RadioButton("System Admin");
+
 
 		    RadioButton UserCheckBox = new RadioButton("User");
 		    RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
@@ -69,6 +74,7 @@ public class Main extends Application {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
 
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -76,22 +82,29 @@ public class Main extends Application {
 		}
 	}
 
+
 	public void systemAdminUser(Stage primaryStage) {
 		try {
+
 			primaryStage.setTitle("System Admin");
 			CategoryManager categoryManager = new CategoryManager();
 			categoryController = new CategoryController(categoryManager);
 			commissionController = new CommissionController();
 			premiumController = new PremiumController();
 
+
 //			categories = FXCollections.observableArrayList();
 //			ListView<String> categoryListView = new ListView<>(categories);
 //			loadData();
 
+
 			// US-1
+			Button returnButton = new Button("<-- User Selection");
 			TextField categoryField = new TextField("Enter category name");
 
 	        Button addButton = new Button("Add Category");
+	        
+	        returnButton.setOnAction(e -> start(primaryStage));
 	        
 	        ListView<String> categoryListView = new ListView<>();
             categories = FXCollections.observableArrayList();
@@ -114,12 +127,14 @@ public class Main extends Application {
 				updateCategoryListView(categories);
 				categoryField.clear();
 
+
 			});
 
 			// US-2
 			TextField commissionField = new TextField("Enter commission");
 			Button setCommissionButton = new Button("Set Seller Commission");
 			Label currentCommissionLbl = new Label("Current Commission: " + commissionController.getSellerCommission() + "%");
+
 
 			setCommissionButton.setOnAction(e -> {
 				String commissionText = commissionField.getText().trim();
@@ -128,6 +143,7 @@ public class Main extends Application {
 					commissionController.setSellerCommission(commissionValue);
 					currentCommissionLbl.setText("Current Commission: " + commissionController.getSellerCommission() + "%");
 					commissionField.clear();
+
 				}
 				catch (NumberFormatException ex) {
 					showAlert("Invalid Input", "Please enter a valid number for commission percentage.");
@@ -142,6 +158,7 @@ public class Main extends Application {
 			Button setPremiumButton = new Button("Set Buyer Premium ");
 			Label currentPremiumLbl = new Label("Current Premium: " + premiumController.getBuyerPremium() + "%");
 
+
 			setPremiumButton.setOnAction(e -> {
 				String premiumText = premiumField.getText().trim();
 				try {
@@ -155,6 +172,7 @@ public class Main extends Application {
 					showAlert("Invalid Input", ex.getMessage());
 				}
 			});
+
 
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveAdminData());
@@ -175,6 +193,7 @@ public class Main extends Application {
 
 			Scene scene = new Scene(systemBox,600,400);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -265,6 +284,7 @@ public class Main extends Application {
 	}
 
 	
+
 	// User Page / Not completed
 	public void User(Stage primaryStage) {
 		try {
@@ -273,13 +293,101 @@ public class Main extends Application {
 //			Scene scene = new Scene(     , 600, 400);
 //			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 //			primaryStage.setScene(scene);
+
+
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
 
+	        
+	public void sellerListItem(Stage primaryStage) {
+		try {
+			primaryStage.setTitle("Seller");
+			Button returnButton = new Button("<-- User Selection");
+			Label ListItemLbl = new Label("List Item to Auction: ");
+			HBox listItemBox = new HBox(ListItemLbl);
+			listItemBox.setSpacing(10);
+			
+			returnButton.setOnAction(e -> start(primaryStage));
+			HBox returnBox = new HBox(returnButton);
+			returnBox.setSpacing(10);
+			
+			Label idLbl = new Label("Enter Item ID: ");
+			TextField idField = new TextField();
+			HBox idBox = new HBox(idLbl, idField);
+			idBox.setSpacing(10);
+			
+			Label nameLbl = new Label("Enter Item Name: ");
+			TextField nameField = new TextField();
+			HBox nameBox = new HBox(nameLbl, nameField);
+			nameBox.setSpacing(10);
+			
+			Label startDateLbl = new Label("Enter Start Date: ");
+			TextField startDateField = new TextField();
+			HBox startDateBox = new HBox(startDateLbl, startDateField);
+			startDateBox.setSpacing(10);
+			
+			Label endDateLbl = new Label("Enter End Date: ");
+			TextField endDateField = new TextField();
+			HBox endDateBox = new HBox(endDateLbl, endDateField);
+			endDateBox.setSpacing(10);
+			
+			Label binLbl = new Label("Enter BIN (Buy-It-Now) Price: ");
+			TextField binField = new TextField();
+			HBox binBox = new HBox(binLbl, binField);
+			
+			Button addItemButton = new Button("Add Item");
+			HBox addItemBox = new HBox(addItemButton);
+			
+			TextArea itemListArea = new TextArea();
+			addItemButton.setOnAction(e -> {
+				String id = idField.getText();
+	            String name = nameField.getText();
+	            String startDate = startDateField.getText();
+	            String endDate = endDateField.getText();
+	            String bin = binField.getText();
+	            
+	            String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s\n", id, name, startDate, endDate, bin);
+	            itemListArea.appendText(itemDetails);
+	            
+		        idField.clear();
+		        nameField.clear();
+		        startDateField.clear();
+		        endDateField.clear();
+		        binField.clear();
+			});
+			
+			Button showMyAuctionsBtn = new Button("Show My Auctions");
+			
+			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
+			VBox itemBox = new VBox(returnButton, listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, itemListArea, myAuctionsBox);
+			itemBox.setSpacing(10);
+			Scene scene = new Scene(itemBox,600,400);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		}
+		catch(Exception e) {
+            e.printStackTrace();
+		}
+	}
+	
+	private void updateCategoryListView(ObservableList<String> categories) {
+        categories.clear();
+        List<String> categoryNames = categoryController.getCategories();
+        categories.addAll(categoryNames);
+    }
+	
+	private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+	
 
 	
 
