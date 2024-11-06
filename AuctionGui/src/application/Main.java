@@ -244,12 +244,7 @@ public class Main extends Application {
 
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 
-			showMyAuctionsBtn.setOnAction(e -> {
-				itemListArea.clear();
-	            for (String item : items) {
-	                itemListArea.appendText(item);
-	            }
-			});
+
 			
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
