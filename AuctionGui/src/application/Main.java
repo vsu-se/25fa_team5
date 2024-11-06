@@ -1,9 +1,10 @@
 package application;
-
 import java.io.*;
 import java.util.List;
 import java.util.Objects;
 
+
+import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,7 +12,15 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 
 public class Main extends Application {
@@ -50,7 +59,6 @@ public class Main extends Application {
 
 	public void systemAdminUser(Stage primaryStage) {
 		try {
-//			BorderPane root = new BorderPane();
 			primaryStage.setTitle("System Admin");
 			CategoryManager categoryManager = new CategoryManager();
 			categoryController = new CategoryController(categoryManager);
@@ -151,6 +159,7 @@ public class Main extends Application {
 		}
 	}
 
+
 	public void sellerListItem(Stage primaryStage) {
 		try {
 			primaryStage.setTitle("Seller");
@@ -229,22 +238,6 @@ public class Main extends Application {
 	}
 
 	private void saveAdminData(){
-//		try(FileWriter writer = new FileWriter("admin_data.txt")){
-//			writer.write("Categories\n");
-//			for(String category: categoryController.getCategories()){
-//				writer.write("- " + category + "\n");
-//			}
-//			writer.write("\nSeller Commission: ");
-//			writer.write(commissionController.getSellerCommission() + "\n");
-//			writer.write("Buyer Premium: ");
-//			writer.write(premiumController.getBuyerPremium() + "\n");
-//
-//			showAlert("Data Saved Successfully", "Data saved successfully to admin_data.txt");
-//		}
-//		catch(Exception e){
-//			showAlert("File Error", "Error saving data to file.");
-//			e.printStackTrace();
-//		}
 		List<String> categories = categoryController.getCategories();
 		double sellerCommission = commissionController.getSellerCommission();
 		double buyerPremium = premiumController.getBuyerPremium();
@@ -263,6 +256,7 @@ public class Main extends Application {
 		fileManager.loadAdminData(categoryController, commissionController, premiumController);
 		updateCategoryListView(categories);
 	}
+
 
 	private void updateCategoryListView(ObservableList<String> categories) {
 		categories.clear();
