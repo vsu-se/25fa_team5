@@ -1,5 +1,8 @@
 package application;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +17,7 @@ public class CategoryController {
 		Category category = new Category(categoryName);
 		categoryManager.addCategory(category);
 	}
-	
+
 	public List<String> getCategories() {
 		List<String> categoryNames = new ArrayList<>();
 		for (Category category : categoryManager.getCategories()) {
@@ -22,7 +25,7 @@ public class CategoryController {
 		}
 		return categoryNames;
 	}
-	
+
 /*	public void removeCategory(String categoryName) {
 		for (Category category : categoryManager.getCategories()) {
 			if (category.getName().equals(categoryName)) {
