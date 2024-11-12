@@ -8,8 +8,7 @@ import java.io.PrintWriter;
 
 public class AuctionPersistence {
     private AuctionManager auctionManager;
-    private File auctionFile = new File("C:\\Users\\kathl\\IdeaProjects\\25fa_team5\\auction_system\\src\\auction_system\\Files\\auctions.txt");
-	// path name must be changed
+    private File auctionFile = new File("auction_system\\src\\auction_system\\Files\\auctions.txt");
     public AuctionPersistence() {
 
     }
@@ -28,7 +27,7 @@ public class AuctionPersistence {
 		// dates saved as strings for now
     	String startDate = "";
     	String endDate = "";
-    	String status = "";
+    	boolean status = false;
     	try {
     		Scanner scan = new Scanner(auctionFile); // .useDelimiter(",\\s+");
     		while(scan.hasNext()) {
@@ -40,7 +39,7 @@ public class AuctionPersistence {
     				bIN = Double.valueOf(test[2]);
     				startDate = test[3];
     				endDate = test[4];
-    				status = test[5];
+    				status = Boolean.valueOf(test[5]);
     				item = new Item(id, name);
     				auction = new Auction(item, bIN); // auction class will need more constructors
     				auctionManager.addAuction(auction);
@@ -64,9 +63,8 @@ public class AuctionPersistence {
 			// will need category and other data
 			String sep = ",";
 			pW.println(auction.getItem().getName() + sep + auction.getItem().getID() + sep + auction.getbIN()
-			+ sep + auction.getStartDate() + sep + auction.getEndDate() + sep + "active");
+			+ sep + auction.getStartDate() + sep + auction.getEndDate() + sep + auction.getActive());
 			System.out.println("Printed successfully!");
-			System.out.println(auction.getbIN());
 			
 			pW.close();
     		fW.close();
@@ -87,12 +85,16 @@ public class AuctionPersistence {
         recordAuction(two);
         recordAuction(three);
     }
+
+	public void testBuildAuctionManager() {
+		testRecordAuction();
+		AuctionManager auctionManager = buildAuctionManager();
+		System.out.println(auctionManager.toString());
+	}
     
     public static void main(String[] args) {
         AuctionPersistence auctionPersistence = new AuctionPersistence();
-  //      auctionPersistence.testRecordAuction();
-        AuctionManager auctionManager = auctionPersistence.buildAuctionManager();
-        System.out.println(auctionManager.toString());
+        auctionPersistence.testBuildAuctionManager();
            
     }
 }

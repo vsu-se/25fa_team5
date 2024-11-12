@@ -50,7 +50,11 @@ public class Auction {
     
     public double getbIN() {
     	return this.bIN;
-    }	
+    }
+
+	public boolean getActive() {
+		return isActive;
+	}
 	
     public void setEndDate(Date date) {
     	this.endDate = date;
