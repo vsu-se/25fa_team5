@@ -7,3 +7,6 @@ module AuctionGui {
 	
 	opens application to javafx.graphics, javafx.fxml;
 }
+	
+	
+	
