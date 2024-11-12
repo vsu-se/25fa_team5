@@ -5,10 +5,12 @@ package auction_system;
 public class Item {
     private int id;
     private String name;
+    private User user;
       
-    public Item (int id, String name){
+    public Item (int id, String name, User user){
         this.id = id;
         this.name = name;
+        this.user = user;
     }
 
     public int getID () {
