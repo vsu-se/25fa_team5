@@ -4,6 +4,6 @@
 /**
  * 
  */
-module auction_system {
-    exports auction_system;
-}
+
+module cs4321 {
+	requires org.junit.jupiter.api;
