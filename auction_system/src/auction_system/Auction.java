@@ -75,7 +75,7 @@ public class Auction {
 		return isActive;
 	}
 	
-	public void getAllBids() {
+	public void getAllBids() { // Printing should include: bid amount, date/time, user name, order descending based on bid amount
 		Set<Map.Entry<Double, Integer> > entrySet = bids.entrySet();
 		for(Map.Entry<Double, Integer> currentBid : entrySet) {
 			// Printing the Value (User ID)
@@ -101,7 +101,7 @@ public class Auction {
 		}
 	}
 	
-	public void addBid(int userID, double bid) {
+	public void addBid(int userID, double bid) { // method needs to be reworked to show the user name as well as the date/time the bid was placed
 		if(this.getCurrentBid() < bid) {
 			bids.put(bid, userID);
 			System.out.println("Bid Accepted");
