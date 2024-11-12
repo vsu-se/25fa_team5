@@ -1,5 +1,15 @@
 package application;
+
+	
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.io.*;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -8,6 +18,7 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -18,7 +29,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.TextInputDialog;
+
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -28,7 +46,10 @@ public class Main extends Application {
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
+
 	private FileManager fileManager = new FileManager();
+
+
 
 
 	@Override
@@ -37,19 +58,23 @@ public class Main extends Application {
 			primaryStage.setTitle("Auction System");
 			Label statusLbl  = new Label("Select User Type: ");
 			RadioButton SystemAdminCheckBox = new RadioButton("System Admin");
-			RadioButton UserCheckBox = new RadioButton("User");
-			RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
 
 
-			SystemAdminCheckBox.setOnAction(e -> login(primaryStage, "System Admin"));
-			RegisteredUserCheckBox.setOnAction(e -> login(primaryStage, "Registered User"));
+		    RadioButton UserCheckBox = new RadioButton("User");
+		    RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
+		    SystemAdminCheckBox.setOnAction(e -> login(primaryStage, "System Admin"));
+		    RegisteredUserCheckBox.setOnAction(e -> login(primaryStage, "Registered User"));
+		    UserCheckBox.setOnAction(e -> login(primaryStage, "User"));
+		    
+		    Button createAccountButton = new Button("Create Account");
+      createAccountButton.setOnAction(e -> createAccount());
+			
+		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
+		    Scene scene = new Scene(UserBox,250,250);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
-			Button createAccountButton = new Button("Create Account");
-			createAccountButton.setOnAction(e -> createAccount());
 
-			VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
-			Scene scene = new Scene(UserBox,250,250);
-			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -57,27 +82,36 @@ public class Main extends Application {
 		}
 	}
 
+
 	public void systemAdminUser(Stage primaryStage) {
 		try {
+
 			primaryStage.setTitle("System Admin");
 			CategoryManager categoryManager = new CategoryManager();
 			categoryController = new CategoryController(categoryManager);
 			commissionController = new CommissionController();
 			premiumController = new PremiumController();
 
+
 //			categories = FXCollections.observableArrayList();
 //			ListView<String> categoryListView = new ListView<>(categories);
 //			loadData();
 
+
 			// US-1
+			Button returnButton = new Button("<-- User Selection");
 			TextField categoryField = new TextField("Enter category name");
-			Button addButton = new Button("Add Category");
 
-			ListView<String> categoryListView = new ListView<>();
-			categories = FXCollections.observableArrayList();
-			categoryListView.setItems(categories);
+	        Button addButton = new Button("Add Category");
+	        
+	        returnButton.setOnAction(e -> start(primaryStage));
+	        
+	        ListView<String> categoryListView = new ListView<>();
+            categories = FXCollections.observableArrayList();
+            categoryListView.setItems(categories);
+            
+            loadAdminData();
 
-			loadAdminData();
 
 			addButton.setOnAction(e -> {
 				String categoryName = categoryField.getText().trim();
@@ -93,12 +127,14 @@ public class Main extends Application {
 				updateCategoryListView(categories);
 				categoryField.clear();
 
+
 			});
 
 			// US-2
 			TextField commissionField = new TextField("Enter commission");
 			Button setCommissionButton = new Button("Set Seller Commission");
 			Label currentCommissionLbl = new Label("Current Commission: " + commissionController.getSellerCommission() + "%");
+
 
 			setCommissionButton.setOnAction(e -> {
 				String commissionText = commissionField.getText().trim();
@@ -107,6 +143,7 @@ public class Main extends Application {
 					commissionController.setSellerCommission(commissionValue);
 					currentCommissionLbl.setText("Current Commission: " + commissionController.getSellerCommission() + "%");
 					commissionField.clear();
+
 				}
 				catch (NumberFormatException ex) {
 					showAlert("Invalid Input", "Please enter a valid number for commission percentage.");
@@ -120,6 +157,7 @@ public class Main extends Application {
 			TextField premiumField = new TextField("Enter premium");
 			Button setPremiumButton = new Button("Set Buyer Premium ");
 			Label currentPremiumLbl = new Label("Current Premium: " + premiumController.getBuyerPremium() + "%");
+
 
 			setPremiumButton.setOnAction(e -> {
 				String premiumText = premiumField.getText().trim();
@@ -135,14 +173,17 @@ public class Main extends Application {
 				}
 			});
 
+
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveAdminData());
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
+			
 			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
+			
 
 			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, signOutButton);
 			systemBox2.setSpacing(10);
@@ -152,6 +193,7 @@ public class Main extends Application {
 
 			Scene scene = new Scene(systemBox,600,400);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -221,8 +263,12 @@ public class Main extends Application {
 
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 
+
+			
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
+                
+			
 
 			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
 			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, signOutButton);
@@ -236,6 +282,27 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
+
+	
+
+	// User Page / Not completed
+	public void User(Stage primaryStage) {
+		try {
+			primaryStage.setTitle("Bidder");
+
+//			Scene scene = new Scene(     , 600, 400);
+//			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+//			primaryStage.setScene(scene);
+
+
+			primaryStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
 
 	private void saveAdminData(){
 		List<String> categories = categoryController.getCategories();
@@ -263,6 +330,7 @@ public class Main extends Application {
 		List<String> categoryNames = categoryController.getCategories();
 		categories.addAll(categoryNames);
 	}
+
 
 	private void createAccount(){
 		Stage accountStage = new Stage();
@@ -308,9 +376,11 @@ public class Main extends Application {
 		accountStage.show();
 	}
 
+
 	private void saveCredentials(String username, String password, String userType){
 		fileManager.saveCredentials(username,password, userType);
 	}
+
 
 	private void login(Stage primaryStage, String userType){
 		TextInputDialog userNameDialog = new TextInputDialog();
@@ -329,6 +399,7 @@ public class Main extends Application {
 		String password = passwordField.getText().trim();
 		boolean isValid = fileManager.loadCredentials(username, password, userType);
 
+
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
@@ -343,6 +414,7 @@ public class Main extends Application {
 	}
 
 
+
 	private void showAlert(String title, String message) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle(title);
@@ -350,7 +422,6 @@ public class Main extends Application {
 		alert.setContentText(message);
 		alert.showAndWait();
 	}
-
 
 	public static void main(String[] args) {
 		launch(args);
