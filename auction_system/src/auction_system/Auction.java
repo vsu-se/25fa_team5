@@ -4,7 +4,8 @@ import java.util.*;
 import java.lang.Double;
 
 public class Auction {
-	TreeMap<Double, Integer> bids = new TreeMap<>();
+	TreeMap<Double, User> bids = new TreeMap<>();
+	TreeMap<Double, Date> bidDates = new TreeMap<>();
 	private double bIN = 0.0;
 	private Date startDate;
 	private Date endDate;
@@ -75,13 +76,15 @@ public class Auction {
 		return isActive;
 	}
 	
-	public void getAllBids() { // Printing should include: bid amount, date/time, user name, order descending based on bid amount
+	public void getAllBids() { // Printing should include: bid amount, date/time, user name, order descending based on bid amount, rework in progress
 		Set<Map.Entry<Double, Integer> > entrySet = bids.entrySet();
 		for(Map.Entry<Double, Integer> currentBid : entrySet) {
 			// Printing the Value (User ID)
-			System.out.print("User: " + currentBid.getValue());
+			System.out.print("User: " + currentBid.getValue().getName());
 			// Printing the Key (Bid amount)
 			System.out.println(" Bid: " + currentBid.getKey());
+			// Printing the Value of bidDates (Time of Bid)
+			System.out.println("Time of Bid Placement: " + bidDates.getValue(currentBid.getKey()))
 		}
 	}
 	
@@ -101,12 +104,14 @@ public class Auction {
 		}
 	}
 	
-	public void addBid(int userID, double bid) { // method needs to be reworked to show the user name as well as the date/time the bid was placed
+	public void addBid(User user, double bid) { // show the user name as well as the date/time the bid was placed, rework in progress
 		if(this.getCurrentBid() < bid) {
-			bids.put(bid, userID);
-			System.out.println("Bid Accepted");
+			Calendar c = Calendar.getInstance();
+			bids.put(bid, user);
+			bidDates.put(bid, c.getTime())
+			System.out.println("Bid Accepted from " + user.getName() + " at " + bidDates.getValue(bid));
 		} else {
-			System.out.println("Bid Denied: Lower than Current Bid");
+			System.out.println("Bid Denied from " + user.getName() + " Lower than Current Bid");
 		}
 	}
 	
