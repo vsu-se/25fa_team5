@@ -1,7 +1,8 @@
-package application;
+package Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import auction_system.Category;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
