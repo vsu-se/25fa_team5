@@ -1,20 +1,10 @@
-package application;
+package auction_system;
 
 	
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import java.io.*;
-
 import java.util.List;
 import java.util.Objects;
 
 
-import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,10 +13,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -34,11 +21,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.HBox;
-import javafx.scene.control.TextInputDialog;
 
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 
 public class Main extends Application {
@@ -176,7 +160,26 @@ public class Main extends Application {
 
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveAdminData());
+			// US - 13
+			Button bidHistoryBtn = new Button("Show Bid History");
+			bidHistoryBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 6
+			Button activeAuctionsBtn = new Button("Show Active Auctions");
+			activeAuctionsBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 10
+			Button concludedAuctionsBtn = new Button("Show Concluded Auctions");
+			concludedAuctionsBtn.setOnAction(e -> {
+				// not yet implemented
+			});
 
+			HBox systemAdminBtns = new HBox(bidHistoryBtn, activeAuctionsBtn, concludedAuctionsBtn);
+			systemAdminBtns.setSpacing(10);
+
+			TextArea systemAdminData = new TextArea();
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
@@ -185,13 +188,13 @@ public class Main extends Application {
 			systemBox1.setSpacing(10);
 			
 
-			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, signOutButton);
+			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, systemAdminBtns, systemAdminData, signOutButton);
 			systemBox2.setSpacing(10);
 
 			HBox systemBox = new HBox(systemBox1, systemBox2);
 			systemBox.setSpacing(20);
 
-			Scene scene = new Scene(systemBox,600,400);
+			Scene scene = new Scene(systemBox,700,400);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 
 			primaryStage.setScene(scene);
@@ -261,19 +264,37 @@ public class Main extends Application {
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveRegisteredUserData(itemListArea));
 
+			// US - 5
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
+			showMyAuctionsBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 13
+			Button bidHistoryBtn = new Button("Show Bid History");
+			bidHistoryBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 11
+			Button sellersReportBtn = new Button("Show Sellers Report");
+			sellersReportBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 12
+			Button buyersReportBtn = new Button("Show Buyers Report");
+			buyersReportBtn.setOnAction(e -> {
+				// not yet implemented
+			});
 
+			TextArea registeredUserData = new TextArea();
 
-			
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
-                
-			
 
-			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
-			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, signOutButton);
+			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn, sellersReportBtn, buyersReportBtn);
+			myAuctionsBox.setSpacing(10);
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, registeredUserData, signOutButton);
 			itemBox.setSpacing(10);
-			Scene scene = new Scene(itemBox,600,400);
+			Scene scene = new Scene(itemBox,600,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
