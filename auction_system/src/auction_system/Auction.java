@@ -75,9 +75,9 @@ public class Auction {
 		return currBid;
 	}
 	
-	public boolean getIsActive() {
-		return isActive;
-	}
+//	public boolean getIsActive() {
+//		return isActive;
+//	}
 	
 	public void getAllBids() {
 		Set<Map.Entry<Double, Integer> > entrySet = bids.entrySet();
