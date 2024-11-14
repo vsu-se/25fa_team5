@@ -30,6 +30,7 @@ public class Main extends Application {
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
+	private User currentUser;
 
 	private FileManager fileManager = new FileManager();
 
@@ -243,7 +244,6 @@ public class Main extends Application {
 
 			loadRegisteredUserData(itemListArea);
 
-
 			addItemButton.setOnAction(e -> {
 				String id = idField.getText();
 				String name = nameField.getText();
@@ -251,7 +251,7 @@ public class Main extends Application {
 				String endDate = endDateField.getText();
 				String bin = binField.getText();
 
-				String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s\n", id, name, startDate, endDate, bin);
+				String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s, User: %d\n", id, name, startDate, endDate, bin, currentUser.getID());
 				itemListArea.appendText(itemDetails);
 
 				idField.clear();
@@ -468,12 +468,16 @@ public class Main extends Application {
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
+				currentUser = new User(1); // should be removed later in favor of code below:
+	//			currentUser = new User(username);
 			}
 			else if ("User".equals(userType)){
 				User(primaryStage);
 			}
 			else if ("Registered User".equals(userType)){
 				sellerListItem(primaryStage);
+				currentUser = new User(2); // should be removed later in favor of code below:
+	//			currentUser = new User(username);
 			}
 		}
 		else {
