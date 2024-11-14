@@ -1,7 +1,4 @@
-package application;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+package auction_system;
 
 import java.util.ArrayList;
 import java.util.List;

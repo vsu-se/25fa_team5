@@ -50,7 +50,11 @@ public class Auction {
     
     public double getbIN() {
     	return this.bIN;
-    }	
+    }
+
+	public boolean getActive() {
+		return isActive;
+	}
 	
     public void setEndDate(Date date) {
     	this.endDate = date;
@@ -71,9 +75,9 @@ public class Auction {
 		return currBid;
 	}
 	
-	public boolean getIsActive() {
-		return isActive;
-	}
+//	public boolean getIsActive() {
+//		return isActive;
+//	}
 	
 	public void getAllBids() {
 		Set<Map.Entry<Double, Integer> > entrySet = bids.entrySet();

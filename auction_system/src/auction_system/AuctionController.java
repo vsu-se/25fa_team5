@@ -1,11 +1,9 @@
 package auction_system;
 
 public class AuctionController {
-//	private AuctionGui gui;
 //	private AuctionManager auctionManager;
-//	
-//	public AuctionController(AuctionGui gui) {
-//		this.gui = gui;
+//
+//	public AuctionController(AuctionManager auctionManager) {
 //		this.auctionManager = auctionManager;
 //	}
 		 
