@@ -4,15 +4,14 @@ import java.util.*;
 import java.lang.Double;
 
 public class Auction {
-	TreeMap<Double, User> bids = new TreeMap<>();
+	TreeMap<Double, Integer> bids = new TreeMap<>();
 	TreeMap<Double, Date> bidDates = new TreeMap<>();
 	private double bIN = 0.0;
 	private Date startDate;
 	private Date endDate;
 	private Item item;
 	private boolean isActive = false;
-	
-	
+
 	public Auction(Item item, double startBid) {
 		Calendar c = Calendar.getInstance();
 		startDate = c.getTime();
@@ -21,9 +20,10 @@ public class Auction {
 		bids.put(startBid, item.getID());
 		this.item = item;
 		this.isActive = true;
-		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate + " with a starting bid of $" + startBid);
+		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate
+				+ " with a starting bid of $" + startBid);
 	}
-	
+
 	public Auction(Item item, double startBid, double bIN) {
 		Calendar c = Calendar.getInstance();
 		startDate = c.getTime();
@@ -33,92 +33,92 @@ public class Auction {
 		this.item = item;
 		this.isActive = true;
 		this.bIN = bIN;
-		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate + " with a starting bid of $" + startBid + " and a Buy-it-Now price of $" + bIN);
-		
+		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate
+				+ " with a starting bid of $" + startBid + " and a Buy-it-Now price of $" + bIN);
+
 	}
-	
+
 	public Item getItem() {
 		return this.item;
 	}
-	
-    public Date getStartDate() {
-    	return this.startDate;
-    }
-    
-    public Date getEndDate() {
-    	return this.endDate;
-    }
-    
-    public double getbIN() {
-    	return this.bIN;
-    }
 
-	public boolean getActive() {
-		return isActive;
+	public Date getStartDate() {
+		return this.startDate;
 	}
-	
-    public void setEndDate(Date date) {
-    	this.endDate = date;
-    }
-    
-    public void setbIN(double bIN) {
-    	this.bIN = bIN;
-    }
-    
+
+	public Date getEndDate() {
+		return this.endDate;
+	}
+
+	public double getbIN() {
+		return this.bIN;
+	}
+
+	public void setEndDate(Date date) {
+		this.endDate = date;
+	}
+
+	public void setbIN(double bIN) {
+		this.bIN = bIN;
+	}
+
 	public double getCurrentBid() {
 		double currBid = 0.0;
-		if(bids.isEmpty()) {
+		if (bids.isEmpty()) {
 			return 0.0;
 		}
-		if(isActive == true) {
-			currBid =  bids.lastKey(); // Tree maps order themselves based on the numerical value of the key, so if the bid amount is the key instead of userID, it self sorts
-		} 
+		if (isActive == true) {
+			currBid = bids.lastKey(); // Tree maps order themselves based on the numerical value of the key, so if the
+									  // bid amount is the key instead of userID, it self sorts
+		}
 		return currBid;
 	}
-	
-//	public boolean getIsActive() {
-//		return isActive;
-//	}
-	
-	public void getAllBids() { // Printing should include: bid amount, date/time, user name, order descending based on bid amount, rework in progress
-		Set<Map.Entry<Double, Integer> > entrySet = bids.entrySet();
-		for(Map.Entry<Double, Integer> currentBid : entrySet) {
+
+	public boolean getIsActive() {
+		return isActive;
+	}
+
+	public void getAllBids() { // Printing should include: bid amount, date/time, user name, order descending
+							   // based on bid amount, rework in progress
+		Set<Map.Entry<Double, Integer>> entrySet = bids.entrySet();
+		for (Map.Entry<Double, Integer> currentBid : entrySet) {
 			// Printing the Value (User ID)
-			System.out.print("User: " + currentBid.getValue().getName());
+			System.out.print("User: " + currentBid.getValue());
 			// Printing the Key (Bid amount)
 			System.out.println(" Bid: " + currentBid.getKey());
 			// Printing the Value of bidDates (Time of Bid)
-			System.out.println("Time of Bid Placement: " + bidDates.getValue(currentBid.getKey()))
+			System.out.println("Time of Bid Placement: " + bidDates.get(currentBid.getKey()));
 		}
 	}
-	
+
 	public void endAuction(Item item) {
-    	Calendar c = Calendar.getInstance();
-    	this.isActive = false;
-    	System.out.println("Auction #" + item.getID() + " for " + item.getName() + " ended at " + c.getTime());
-    }
+		Calendar c = Calendar.getInstance();
+		this.isActive = false;
+		System.out.println("Auction #" + item.getID() + " for " + item.getName() + " ended at " + c.getTime());
+	}
 
 	public void checkDate() {
 		Calendar c = Calendar.getInstance();
-		if(c.getTime().compareTo(this.getEndDate()) > -1) {
+		if (c.getTime().compareTo(this.getEndDate()) > -1) {
 			System.out.println("This auction has ended");
 			endAuction(this.getItem());
 		} else {
 			System.out.println("This auction is ongoing");
 		}
 	}
-	
-	public void addBid(User user, double bid) { // show the user name as well as the date/time the bid was placed, rework in progress
-		if(this.getCurrentBid() < bid) {
+
+	public void addBid(User user, double bid) { // show the user name as well as the date/time the bid was placed,
+												// rework in progress
+		if (this.getCurrentBid() < bid) {
 			Calendar c = Calendar.getInstance();
-			bids.put(bid, user);
-			bidDates.put(bid, c.getTime())
-			System.out.println("Bid Accepted from " + user.getName() + " at " + bidDates.getValue(bid));
+			bids.put(bid, user.getID());
+			bidDates.put(bid, c.getTime());
+			System.out.println("Bid Accepted from " + user.getName() + " at " + bidDates.get(bid));
 		} else {
 			System.out.println("Bid Denied from " + user.getName() + " Lower than Current Bid");
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		String line1 = this.item.toString();
@@ -127,7 +127,7 @@ public class Auction {
 		String line4 = "\nStarting Date: " + startDate;
 		String line5 = "\nEnding Date: " + endDate;
 		String line6;
-		if(isActive) {
+		if (isActive) {
 			line6 = "\nStatus: Active";
 		} else {
 			line6 = "\nStatus: Inactive";
