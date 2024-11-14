@@ -1,14 +1,8 @@
-package application;
+package auction_system;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
-import javafx.stage.Stage;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 

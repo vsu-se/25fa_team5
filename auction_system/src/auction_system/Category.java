@@ -1,4 +1,4 @@
-package application;
+package auction_system;
 
 public class Category {
 	private String name;
