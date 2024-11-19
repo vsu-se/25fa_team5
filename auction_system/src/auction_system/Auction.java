@@ -113,6 +113,16 @@ public class Auction {
 			System.out.println("Bid Denied: Lower than Current Bid");
 		}
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Auction auction) {
+			return this.getItem().getID() == (auction.getItem().getID());
+		}
+		else {
+			return false;
+		}
+	}
 	
 	@Override
 	public String toString() {
