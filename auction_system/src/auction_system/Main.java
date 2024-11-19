@@ -30,6 +30,8 @@ public class Main extends Application {
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
+	private AuctionManager auctionManager = new AuctionManager();
+	private AuctionController auctionController = new AuctionController(auctionManager);
 	private User currentUser;
 
 	private FileManager fileManager = new FileManager();
@@ -245,20 +247,32 @@ public class Main extends Application {
 			loadRegisteredUserData(itemListArea);
 
 			addItemButton.setOnAction(e -> {
-				String id = idField.getText();
-				String name = nameField.getText();
-				String startDate = startDateField.getText();
-				String endDate = endDateField.getText();
-				String bin = binField.getText();
+//				String id = idField.getText();
+//				String name = nameField.getText();
+//				String startDate = startDateField.getText();
+//				String endDate = endDateField.getText();
+//				String bin = binField.getText();
 
-				String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s, User: %d\n", id, name, startDate, endDate, bin, currentUser.getID());
-				itemListArea.appendText(itemDetails);
+//				String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s, User: %d\n", id, name, startDate, endDate, bin, currentUser.getID());
+//				itemListArea.appendText(itemDetails);
 
-				idField.clear();
-				nameField.clear();
-				startDateField.clear();
-				endDateField.clear();
-				binField.clear();
+//				idField.clear();
+//				nameField.clear();
+//				startDateField.clear();
+//				endDateField.clear();
+//				binField.clear();
+				try {
+					auctionController.addAuction(idField, nameField, startDateField, endDateField, binField, itemListArea);
+				}
+				catch (IDException exID) {
+					showAlert("Test alert", exID.getMessage());
+				}
+				catch (NameException exName) {
+					showAlert("test", exName.getMessage());
+				}
+				catch (BinException exBin) {
+					showAlert("test", exBin.getMessage());
+				}
 			});
 
 			Button saveDataButton = new Button("Save Data");
