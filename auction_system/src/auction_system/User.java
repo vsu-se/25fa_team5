@@ -4,8 +4,9 @@ public class User {
 	private int id;
 	private String name;
 
-	public User(int id, String name) {
+	public User(int id, String name) { // Constructor needs to be reworked to auto generate id to a specified format that checks for duplicates
 		this.id = id;
+		this.name = name;
 	}
 
 	public int getID() {
@@ -23,20 +24,4 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-//    public int getIDGivenName(String userName) {
-//    	int id = 0;
-//        if(userName.equals(getName())){
-//            id = this.id;
-//        }
-//		return id;
-//    }
-//
-//    public String getNameGivenID(int id) {
-//    	String name = "Null";
-//        if(id == getID()) {
-//            name = this.name;
-//        }
-//        return name;
-//    }
 }
