@@ -74,7 +74,7 @@ public class Auction {
 		return currBid;
 	}
 
-	public boolean getIsActive() {
+	public boolean getActive() {
 		return isActive;
 	}
 
@@ -91,7 +91,7 @@ public class Auction {
 		}
 	}
 
-	public void endAuction(Item item) {
+	public void endAuction() {
 		Calendar c = Calendar.getInstance();
 		this.isActive = false;
 		System.out.println("Auction #" + item.getID() + " for " + item.getName() + " ended at " + c.getTime());
@@ -101,7 +101,7 @@ public class Auction {
 		Calendar c = Calendar.getInstance();
 		if (c.getTime().compareTo(this.getEndDate()) > -1) {
 			System.out.println("This auction has ended");
-			endAuction(this.getItem());
+			endAuction();
 		} else {
 			System.out.println("This auction is ongoing");
 		}
