@@ -8,7 +8,7 @@ public class Item {
 	private String name;
 	private User user;
 
-	public Item(int id, String name, User user) {
+	public Item(int id, String name, User user) { // Constructor needs to be reworked to generate the id on its own, the id should be a random integer of a predetermined format that checks for duplication prevention
 		this.id = id;
 		this.name = name;
 		this.user = user;
