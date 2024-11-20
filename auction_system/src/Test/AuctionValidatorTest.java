@@ -41,6 +41,14 @@ public class AuctionValidatorTest {
     }
 
     @Test
+    @DisplayName("testValidateBinWithThreeDigits")
+    void testValidateBinWithThreeDigits() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateBin("100");
+        assertTrue(actual);
+    }
+
+    @Test
     @DisplayName("testInvalidBinIsntDouble")
     void testInValidBinIsntDouble() {
         AuctionValidator validator = new AuctionValidator();
@@ -69,6 +77,22 @@ public class AuctionValidatorTest {
     void testInvalidBin() {
         AuctionValidator validator = new AuctionValidator();
         boolean actual = validator.validateBin("3.14159");
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidBinHasNonnumericAfterDecimal")
+    void testInvalidBinHasNonnumericAfterDecimal() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateBin("20.3t");
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidBinHasNonnumericBeforeDecimal")
+    void testInvalidBinHasNonnumericBeforeDecimal() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateBin("8t.21");
         assertFalse(actual);
     }
 

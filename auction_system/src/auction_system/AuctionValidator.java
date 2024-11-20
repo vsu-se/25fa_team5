@@ -53,43 +53,68 @@ public class AuctionValidator {
 //        return validateDateFormat(s);
 //    }
 
+    private int periodCounter(String bin) {
+        int numPeriods = 0;
+        for(int i = 0; i < bin.length(); i++) {
+            if(String.valueOf(bin.charAt(i)).equals(".")) {
+                numPeriods++;
+            }
+        }
+        return numPeriods;
+    }
 
-    public boolean validateBin(String bin) {
-        boolean result;
-        if(!validateBinisDouble(bin)) {
-            result = false;
-            return result;
+    private boolean checkPeriodPos(String bin) {
+        if(bin.indexOf(".") == bin.length() - 3) {
+            return true;
         }
         else {
-            if (bin.length() >= 3) {
-                int periodPos = bin.length() - 3;
-                String charAtPeriodPos = String.valueOf(bin.charAt(periodPos));
-                if(charAtPeriodPos.equals(".")) {
-                    result = true;
-                    return result;
-                }
-                else {
-                    result = false;
-                    return result;
-                }
-            }
-            else {
-                result = true;
-                return true;
-            }
+            return false;
         }
     }
 
-    private boolean validateBinisDouble(String bin) {
-        double result;
-        boolean valid;
+    private String splitStringAtPeriod(String bin) {
+        return bin.substring(bin.length() - 2);
+    }
+
+    private String splitStringBeforePeriod(String bin) {
+        return bin.substring(0, bin.length() - 3);
+    }
+
+    private boolean checkForNumbers(String s) {
+        boolean hasAllNumbers;
+        int binNumber;
         try {
-            result = Double.parseDouble(bin);
-            valid = true;
-            return valid;
-        } catch (IllegalArgumentException e) {
-            valid = false;
-            return valid;
+            binNumber = Integer.parseInt(s);
+            hasAllNumbers = true;
+            return hasAllNumbers;
+        } catch (NumberFormatException e) {
+            hasAllNumbers = false;
+            return hasAllNumbers;
+        }
+    }
+
+    public boolean validateBin(String bin) {
+        boolean result;
+        if(periodCounter(bin) == 0) {
+            return result = checkForNumbers(bin);
+        }
+        else if(periodCounter(bin) == 1) {
+            if(checkPeriodPos(bin)) {
+                String s1 = splitStringAtPeriod(bin);
+                String s2 = splitStringBeforePeriod(bin);
+                if(checkForNumbers(s1) && checkForNumbers(s2)) {
+                    return result = true;
+                }
+                else {
+                    return result = false;
+                }
+            }
+            else {
+                return result = false;
+            }
+        }
+        else {
+            return result = false;
         }
     }
 
