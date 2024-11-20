@@ -1,5 +1,7 @@
 package auction_system;
 
+import javafx.scene.control.TextField;
+
 public class Premium {
 	private double buyerPremium;
 	
