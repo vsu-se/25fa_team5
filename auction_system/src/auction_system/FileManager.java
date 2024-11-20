@@ -1,6 +1,7 @@
 package auction_system;
 
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 import java.io.*;
 import java.util.List;
@@ -82,7 +83,7 @@ public class FileManager {
                         commissionController.setSellerCommission(commission);
                     } else if (line.startsWith("Buyer Premium:")) {
                         double premium = Double.parseDouble(line.split(":")[1].replace("%", "").trim());
-                        premiumController.setBuyerPremium(premium);
+                        premiumController.setBuyerPremium(String.valueOf(premium));
                     }
                 }
             } catch (IOException | NumberFormatException e) {

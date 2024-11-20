@@ -116,6 +116,7 @@ public class Main extends Application {
 
 			// US-2
 			TextField commissionField = new TextField("Enter commission");
+			commissionField.setMaxWidth(130);
 			Button setCommissionButton = new Button("Set Seller Commission");
 			Label currentCommissionLbl = new Label("Current Commission: " + commissionController.getSellerCommission() + "%");
 
@@ -139,15 +140,13 @@ public class Main extends Application {
 
 			// US-3
 			TextField premiumField = new TextField("Enter premium");
+			premiumField.setMaxWidth(120);
 			Button setPremiumButton = new Button("Set Buyer Premium ");
 			Label currentPremiumLbl = new Label("Current Premium: " + premiumController.getBuyerPremium() + "%");
 
-
 			setPremiumButton.setOnAction(e -> {
-				String premiumText = premiumField.getText().trim();
 				try {
-					double premiumValue = Double.parseDouble(premiumText);
-					premiumController.setBuyerPremium(premiumValue);
+					premiumController.setBuyerPremium(premiumField.getText());
 					currentPremiumLbl.setText("Current Premium: " + premiumController.getBuyerPremium() + "%");
 					premiumField.clear();
 				} catch (NumberFormatException ex) {
@@ -265,9 +264,12 @@ public class Main extends Application {
 			saveDataButton.setOnAction(e -> saveRegisteredUserData(itemListArea));
 
 			// US - 5
+			AuctionManager auctionManager = new AuctionManager();
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 			showMyAuctionsBtn.setOnAction(e -> {
-				// not yet implemented
+				String name = nameField.getText();
+				String endDate = endDateField.getText();
+
 			});
 			// US - 13
 			Button bidHistoryBtn = new Button("Show Bid History");
