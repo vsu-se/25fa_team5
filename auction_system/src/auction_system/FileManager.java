@@ -1,5 +1,6 @@
 package auction_system;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -80,7 +81,7 @@ public class FileManager {
 
                     if (line.startsWith("Seller Commission:")) {
                         double commission = Double.parseDouble(line.split(":")[1].replace("%", "").trim());
-                        commissionController.setSellerCommission(commission);
+                        commissionController.setSellerCommission(String.valueOf(commission));
                     } else if (line.startsWith("Buyer Premium:")) {
                         double premium = Double.parseDouble(line.split(":")[1].replace("%", "").trim());
                         premiumController.setBuyerPremium(String.valueOf(premium));
