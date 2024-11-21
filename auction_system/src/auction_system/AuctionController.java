@@ -56,7 +56,7 @@ public class AuctionController {
             Auction auction = new Auction(item, 0, Double.parseDouble(bin));
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
-                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End: %s, BIN: $%s, User: \n", id, name, startDate, startTime, endDate, bin); // currentUser.getID());
+                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: \n", id, name, startDate, startTime, endTime, endDate, bin); // currentUser.getID());
                 itemListArea.appendText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
