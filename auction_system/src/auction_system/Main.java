@@ -265,13 +265,13 @@ public class Main extends Application {
 					auctionController.addAuction(idField, nameField, startDateField, endDateField, binField, itemListArea);
 				}
 				catch (IDException exID) {
-					showAlert("Test alert", exID.getMessage());
+					showAlert("Auction ID error", exID.getMessage());
 				}
 				catch (NameException exName) {
-					showAlert("test", exName.getMessage());
+					showAlert("Auction name error", exName.getMessage());
 				}
 				catch (BinException exBin) {
-					showAlert("test", exBin.getMessage());
+					showAlert("Auction BIN error", exBin.getMessage());
 				}
 			});
 
