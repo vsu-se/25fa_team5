@@ -226,13 +226,27 @@ public class Main extends Application {
 			nameBox.setSpacing(10);
 
 			Label startDateLbl = new Label("Enter Start Date: ");
-			TextField startDateField = new TextField();
-			HBox startDateBox = new HBox(startDateLbl, startDateField);
+	//		TextField startDateField = new TextField();
+			DatePicker startDatePicker = new DatePicker();
+			Label startTimeLbl = new Label("Enter start time (HH:MM:ss): ");
+			TextField startTimeField = new TextField();
+			HBox startDateBox = new HBox(startDateLbl, startDatePicker, startTimeLbl, startTimeField);
 			startDateBox.setSpacing(10);
 
+			startDatePicker.setOnAction(e -> {
+//				LocalDate date = startDatePicker.getValue();
+//				DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//				String stringDate = format.format(date);
+//				startDateField.setText(stringDate);
+				startDatePicker.setEditable(false);
+			});
+
 			Label endDateLbl = new Label("Enter End Date: ");
-			TextField endDateField = new TextField();
-			HBox endDateBox = new HBox(endDateLbl, endDateField);
+	//		TextField endDateField = new TextField();
+			DatePicker endDatePicker = new DatePicker();
+			Label endTimeLbl = new Label("Enter end time (HH:MM:ss): ");
+			TextField endTimeField = new TextField();
+			HBox endDateBox = new HBox(endDateLbl, endDatePicker, endTimeLbl, endTimeField);
 			endDateBox.setSpacing(10);
 
 			Label binLbl = new Label("Enter BIN (Buy-It-Now) Price: ");
@@ -245,6 +259,8 @@ public class Main extends Application {
 			TextArea itemListArea = new TextArea();
 
 			loadRegisteredUserData(itemListArea);
+
+			TextArea registeredUserData = new TextArea();
 
 			addItemButton.setOnAction(e -> {
 //				String id = idField.getText();
@@ -262,7 +278,7 @@ public class Main extends Application {
 //				endDateField.clear();
 //				binField.clear();
 				try {
-					auctionController.addAuction(idField, nameField, startDateField, endDateField, binField, itemListArea);
+					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea);
 				}
 				catch (IDException exID) {
 					showAlert("Auction ID error", exID.getMessage());
@@ -273,6 +289,9 @@ public class Main extends Application {
 				catch (BinException exBin) {
 					showAlert("Auction BIN error", exBin.getMessage());
 				}
+				catch (TimeException exTime) {
+					showAlert("Auction time error", exTime.getMessage());
+				}
 			});
 
 			Button saveDataButton = new Button("Save Data");
@@ -281,7 +300,7 @@ public class Main extends Application {
 			// US - 5
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 			showMyAuctionsBtn.setOnAction(e -> {
-				// not yet implemented
+				auctionController.showMyAuctions(registeredUserData);
 			});
 			// US - 13
 			Button bidHistoryBtn = new Button("Show Bid History");
@@ -299,7 +318,7 @@ public class Main extends Application {
 				// not yet implemented
 			});
 
-			TextArea registeredUserData = new TextArea();
+	//		TextArea registeredUserData = new TextArea();
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));

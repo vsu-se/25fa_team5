@@ -3,6 +3,8 @@ package auction_system;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class AuctionValidator {
@@ -52,6 +54,16 @@ public class AuctionValidator {
 //    public boolean validateEndDate(String s) {
 //        return validateDateFormat(s);
 //    }
+
+    public boolean validateTime(String time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        try {
+            LocalTime localTime = LocalTime.parse(time, formatter);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
 
     private int periodCounter(String bin) {
         int numPeriods = 0;
@@ -132,7 +144,8 @@ public class AuctionValidator {
     }
 
     public static void main(String[] args) {
-
+        AuctionValidator validator = new AuctionValidator();
+        System.out.println(validator.validateTime("12:32:21"));
     }
 
 }

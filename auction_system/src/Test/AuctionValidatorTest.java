@@ -6,6 +6,8 @@ import auction_system.AuctionValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalTime;
+
 public class AuctionValidatorTest {
 
     @Test
@@ -102,6 +104,64 @@ public class AuctionValidatorTest {
         AuctionValidator validator = new AuctionValidator();
         boolean actual = validator.validateName("name");
         assertTrue(actual);
+    }
+
+    @Test
+    @DisplayName("testValidTime")
+    void testValidTime() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateTime("14:43:02");
+        assertTrue(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidTimeIsBlank")
+    void testInvalidTimeIsBlank() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateTime("");
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidTimeWithMaxTime")
+    void testInvalidTime() {
+        AuctionValidator validator = new AuctionValidator();
+        LocalTime time = LocalTime.MAX;
+        boolean actual = validator.validateTime(time.toString());
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidTimeWithMinTime")
+    void testInvalidTimeWithMinTime() {
+        AuctionValidator validator = new AuctionValidator();
+        LocalTime time = LocalTime.MIN;
+        boolean actual = validator.validateTime(time.toString());
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidTimeWithInvalidHours")
+    void testInvalidTimeWithValidHours() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateTime("99:59:59");
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidTimeWithInvalidMinutes")
+    void testInvalidTimeWithInvalidMinutes() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateTime("12:90:12");
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidTimeWithInvalidSeconds")
+    void testInvalidTimeWithInvalidSeconds() {
+        AuctionValidator validator = new AuctionValidator();
+        boolean actual = validator.validateTime("12:59:90");
+        assertFalse(actual);
     }
 }
 

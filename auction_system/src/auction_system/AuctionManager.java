@@ -16,6 +16,14 @@ public class AuctionManager {
         }
     }
 
+    public Auction getAuctionFromAuctionList(int index) {
+        return auctionList.get(index);
+    }
+
+    public int getAuctionListLength() {
+        return auctionList.size();
+    }
+
     public boolean containsAuction(Auction auction) {
         return auctionList.contains(auction);
     }
