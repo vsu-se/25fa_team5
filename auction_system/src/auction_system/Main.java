@@ -84,8 +84,7 @@ public class Main extends Application {
 
 			// US-1
 			Button returnButton = new Button("<-- User Selection");
-			TextField categoryField = new TextField("Enter category name");
-
+			TextField categoryField = new TextField("Enter category name:");
 	        Button addButton = new Button("Add Category");
 	        
 	        returnButton.setOnAction(e -> start(primaryStage));
@@ -115,31 +114,27 @@ public class Main extends Application {
 			});
 
 			// US-2
-			TextField commissionField = new TextField("Enter commission");
+			TextField commissionField = new TextField();
+			commissionField.setPromptText("Enter commission");
 			commissionField.setMaxWidth(130);
 			Button setCommissionButton = new Button("Set Seller Commission");
 			Label currentCommissionLbl = new Label("Current Commission: " + commissionController.getSellerCommission() + "%");
 
-
 			setCommissionButton.setOnAction(e -> {
-				String commissionText = commissionField.getText().trim();
 				try {
-					double commissionValue = Double.parseDouble(commissionText);
-					commissionController.setSellerCommission(commissionValue);
+					commissionController.setSellerCommission(commissionField.getText());
 					currentCommissionLbl.setText("Current Commission: " + commissionController.getSellerCommission() + "%");
 					commissionField.clear();
-
-				}
-				catch (NumberFormatException ex) {
+				} catch (NumberFormatException ex) {
 					showAlert("Invalid Input", "Please enter a valid number for commission percentage.");
-				}
-				catch (IllegalArgumentException ex) {
+				} catch (IllegalArgumentException ex) {
 					showAlert("Invalid Input", ex.getMessage());
 				}
 			});
 
 			// US-3
-			TextField premiumField = new TextField("Enter premium");
+			TextField premiumField = new TextField();
+			premiumField.setPromptText("Enter premium");
 			premiumField.setMaxWidth(120);
 			Button setPremiumButton = new Button("Set Buyer Premium ");
 			Label currentPremiumLbl = new Label("Current Premium: " + premiumController.getBuyerPremium() + "%");
