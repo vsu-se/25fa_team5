@@ -249,6 +249,10 @@ public class Main extends Application {
 			HBox endDateBox = new HBox(endDateLbl, endDatePicker, endTimeLbl, endTimeField);
 			endDateBox.setSpacing(10);
 
+			endDatePicker.setOnAction(e -> {
+				endDatePicker.setEditable(false);
+			});
+
 			Label binLbl = new Label("Enter BIN (Buy-It-Now) Price: ");
 			TextField binField = new TextField();
 			HBox binBox = new HBox(binLbl, binField);
@@ -286,11 +290,20 @@ public class Main extends Application {
 				catch (NameException exName) {
 					showAlert("Auction name error", exName.getMessage());
 				}
+				catch (TimeException exTime) {
+					showAlert("Auction time error", exTime.getMessage());
+				}
+//				catch (NullPointerException exNullDates) {
+//					showAlert("Auction date error", exNullDates.getMessage());
+//				}
 				catch (BinException exBin) {
 					showAlert("Auction BIN error", exBin.getMessage());
 				}
-				catch (TimeException exTime) {
-					showAlert("Auction time error", exTime.getMessage());
+				catch (IllegalArgumentException exDates) {
+					showAlert("Auction date and time error", exDates.getMessage());
+				}
+				catch (RuntimeException ex) {
+					showAlert("Auction date error", "Please enter date information.");
 				}
 			});
 

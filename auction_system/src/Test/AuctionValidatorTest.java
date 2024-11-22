@@ -163,5 +163,53 @@ public class AuctionValidatorTest {
         boolean actual = validator.validateTime("12:59:90");
         assertFalse(actual);
     }
+
+    @Test
+    @DisplayName("testValidDate")
+    void testValidDate() {
+        AuctionValidator validator = new AuctionValidator();
+        String startDate = "2024-11-21";
+        String endDate = "2024-11-22";
+        String startTime = "12:12:12";
+        String endTime = "12:12:12";
+        boolean actual = validator.validateDate(startDate, endDate, startTime, endTime);
+        assertTrue(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidStartDateDayAfterEndDate")
+    void testInvalidStartDateAfterEndDate() {
+        AuctionValidator validator = new AuctionValidator();
+        String startDate = "2024-11-22";
+        String endDate = "2024-11-21";
+        String startTime = "12:12:12";
+        String endTime = "12:12:12";
+        boolean actual = validator.validateDate(startDate, endDate, startTime, endTime);
+        assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testValidateSameDatesWithDifferentTimes")
+    void testValidateSameDatesWithDifferentTimes() {
+        AuctionValidator validator = new AuctionValidator();
+        String startDate = "2024-11-21";
+        String endDate = "2024-11-21";
+        String startTime = "12:12:12";
+        String endTime = "13:13:13";
+        boolean actual = validator.validateDate(startDate, endDate, startTime, endTime);
+        assertTrue(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidateSameDatesWithSameTimes")
+    void testInvalidateSameDatesWithSameTimes() {
+        AuctionValidator validator = new AuctionValidator();
+        String startDate = "2024-11-21";
+        String endDate = "2024-11-21";
+        String startTime = "12:12:12";
+        String endTime = "12:12:12";
+        boolean actual = validator.validateDate(startDate, endDate, startTime, endTime);
+        assertFalse(actual);
+    }
 }
 

@@ -1,11 +1,11 @@
 package auction_system;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import javafx.scene.control.DatePicker;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class AuctionValidator {
     public AuctionValidator() {
@@ -26,34 +26,21 @@ public class AuctionValidator {
         }
     }
 
-//    public boolean validateStartDate(String s) {
-//        boolean validFormat = validateDateFormat(s);
-//        boolean validMonth;
-//        boolean validDay;
-//        boolean validYear;
-//        return validateDateFormat(s);
-//    }
-//
-//    private boolean validateDateFormat(String s) {
-//        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-//        try {
-//            Date date = dateFormat.parse(s);
-//            return true;
-//        } catch (ParseException e) {
-//            return false;
-//        }
-//    }
-
-//    private boolean validateDateNumbers(String s) {
-//        boolean validMonth;
-//        boolean validDay;
-//        boolean validYear;
-//        return false;
-//    }
-//
-//    public boolean validateEndDate(String s) {
-//        return validateDateFormat(s);
-//    }
+    public boolean validateDate(String stringStartDate, String stringEndDate, String startTime, String endTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime localStartTime = LocalTime.parse(startTime, formatter);
+        LocalTime localEndTime = LocalTime.parse(endTime, formatter);
+        LocalDate startDate = LocalDate.parse(stringStartDate);
+        LocalDate endDate = LocalDate.parse(stringEndDate);
+        LocalDateTime startDateTime = LocalDateTime.of(startDate, localStartTime);
+        LocalDateTime endDateTime = LocalDateTime.of(endDate, localEndTime);
+        if(startDateTime.isBefore(endDateTime)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     public boolean validateTime(String time) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -141,11 +128,6 @@ public class AuctionValidator {
 
     public boolean allValid() {
         return false;
-    }
-
-    public static void main(String[] args) {
-        AuctionValidator validator = new AuctionValidator();
-        System.out.println(validator.validateTime("12:32:21"));
     }
 
 }

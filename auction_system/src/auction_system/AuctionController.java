@@ -24,7 +24,6 @@ public class AuctionController {
     public void addAuction(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField, TextArea itemListArea) {
         String id = idField.getText();
         String name = nameField.getText();
-    //    String startDate = startDateField.getText();
         String startDate = String.valueOf(startDatePicker.getValue());
         String startTime = startTimeField.getText();
         String endDate = String.valueOf(endDatePicker.getValue());
@@ -37,6 +36,7 @@ public class AuctionController {
         boolean validBin = validator.validateBin(bin);
         boolean validStartTime = validator.validateTime(startTime);
         boolean validEndTime = validator.validateTime(endTime);
+        boolean validDates = false;
 
         if(!validId) {
             throw new IDException("ID is invalid. Please re-enter ID.");
@@ -44,19 +44,26 @@ public class AuctionController {
         if(!validName) {
             throw new NameException("Length of name must be greater than 0. Please re-enter name.");
         }
+        if(!validStartTime || !validEndTime) {
+            throw new TimeException("Start time or end time is invalid. Please re-enter time.");
+        }
+        if(validStartTime && validEndTime) {
+            validDates = validator.validateDate(startDate, endDate, startTime, endTime);
+        }
+        if(!validDates) {
+            throw new IllegalArgumentException("Start date and time of auction must be before the end date and time. Please re-enter date and time information.");
+        }
         if(!validBin) {
             throw new BinException("BIN price is invalid. Please re-enter BIN price.");
         }
-        if(!validStartTime || !validEndTime) {
-            throw new TimeException("Time is invalid. Please re-enter time.");
-        }
 
-        if(validId && validName && validBin && validStartTime && validEndTime) {
+
+        if(validId && validName && validBin && validDates) {
             Item item = new Item(Integer.parseInt(id), name);
             Auction auction = new Auction(item, 0, Double.parseDouble(bin));
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
-                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: \n", id, name, startDate, startTime, endTime, endDate, bin); // currentUser.getID());
+                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: \n", id, name, startDate, startTime, endDate, endTime, bin); // currentUser.getID());
                 itemListArea.appendText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
@@ -89,14 +96,16 @@ public class AuctionController {
     }
 
     // needs to reworked, will show auctions from all users instead of the one logged in
+    // only displays the auctions added in current session
     public void showMyAuctions(TextArea registeredUserData) {
-        String auctionData = "";
+    //    String auctionData = "";
         registeredUserData.clear();
-        for(int i = 0; i < getAuctionListLength(); i++) {
-            Auction auction = getAuctionFromAuctionList(i);
-            auctionData += auction.toString() + "\n";
-            registeredUserData.setText(auctionData);
-        }
+//        for(int i = 0; i < getAuctionListLength(); i++) {
+//            Auction auction = getAuctionFromAuctionList(i);
+//            auctionData += auction.toString() + "\n";
+//            registeredUserData.setText(auctionData);
+//        }
+        registeredUserData.setText(toString());
     }
 
     @Override
