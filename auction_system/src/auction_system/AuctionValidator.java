@@ -28,14 +28,25 @@ public class AuctionValidator {
 
     public boolean validateDate(String stringStartDate, String stringEndDate, String startTime, String endTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        LocalTime localStartTime = LocalTime.parse(startTime, formatter);
-        LocalTime localEndTime = LocalTime.parse(endTime, formatter);
-        LocalDate startDate = LocalDate.parse(stringStartDate);
-        LocalDate endDate = LocalDate.parse(stringEndDate);
-        LocalDateTime startDateTime = LocalDateTime.of(startDate, localStartTime);
-        LocalDateTime endDateTime = LocalDateTime.of(endDate, localEndTime);
-        if(startDateTime.isBefore(endDateTime)) {
-            return true;
+        LocalTime localStartTime = null;
+        LocalTime localEndTime = null;
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+        if (validateTime(startTime) && validateTime(endTime)) {
+            localStartTime = LocalTime.parse(startTime, formatter);
+            localEndTime = LocalTime.parse(endTime, formatter);
+            startDate = LocalDate.parse(stringStartDate);
+            endDate = LocalDate.parse(stringEndDate);
+            startDateTime = LocalDateTime.of(startDate, localStartTime);
+            endDateTime = LocalDateTime.of(endDate, localEndTime);
+            if(startDateTime.isBefore(endDateTime)) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
         else {
             return false;
