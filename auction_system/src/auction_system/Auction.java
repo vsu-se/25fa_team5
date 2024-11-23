@@ -1,5 +1,7 @@
 package auction_system;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.lang.Double;
 
@@ -10,6 +12,21 @@ public class Auction {
 	private Date endDate;
 	private Item item;
 	private boolean isActive = false;
+
+	private LocalDate startingDate;
+	private LocalDate endingDate;
+	private LocalTime startTime;
+	private LocalTime endTime;
+
+	public Auction(Item item, LocalDate startingDate, LocalDate endingDate, LocalTime startTime, LocalTime endTime, double bIN) {
+		this.item = item;
+		this.startingDate = startingDate;
+		this.endingDate = endingDate;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.bIN = bIN;
+		this.isActive = true;
+	}
 	
 	
 	public Auction(Item item, double startBid) {
@@ -75,10 +92,6 @@ public class Auction {
 		return currBid;
 	}
 	
-//	public boolean getIsActive() {
-//		return isActive;
-//	}
-	
 	public void getAllBids() {
 		Set<Map.Entry<Double, Integer> > entrySet = bids.entrySet();
 		for(Map.Entry<Double, Integer> currentBid : entrySet) {
@@ -124,19 +137,33 @@ public class Auction {
 		}
 	}
 	
+//	@Override
+//	public String toString() {
+//		String line1 = this.item.toString();
+//		String line2 = "\nCurrent and Previous bids: " + bids.keySet();
+//		String line3 = "\nBuy-it-Now Price: " + this.getbIN();
+//		String line4 = "\nStarting Date: " + startDate;
+//		String line5 = "\nEnding Date: " + endDate;
+//		String line6;
+//		if(isActive) {
+//			line6 = "\nStatus: Active";
+//		} else {
+//			line6 = "\nStatus: Inactive";
+//		}
+//		return line1 + line2 + line3 + line4 + line5 + line6;
+//	}
+
 	@Override
 	public String toString() {
-		String line1 = this.item.toString();
-		String line2 = "\nCurrent and Previous bids: " + bids.keySet();
-		String line3 = "\nBuy-it-Now Price: " + this.getbIN();
-		String line4 = "\nStarting Date: " + startDate;
-		String line5 = "\nEnding Date: " + endDate;
-		String line6;
-		if(isActive) {
-			line6 = "\nStatus: Active";
-		} else {
-			line6 = "\nStatus: Inactive";
-		}
-		return line1 + line2 + line3 + line4 + line5 + line6;
+		String itemLine = this.item.toString();
+		String bidLine = "\nCurrent and Previous bids: " + bids.keySet();
+		String binLine = "\nBuy-it-Now Price: " + this.getbIN();
+		String startingDateLine = "\nStarting date: " + startingDate.toString();
+		String startTimeLine = "\nStarting time: " + startTime.toString();
+		String endingDateLine = "\nEnding date: " + endingDate.toString();
+		String endTimeLine = "\nEnding time: " + endTime.toString();
+		String isActiveLine = "\nActive: " + getActive();
+		return itemLine + bidLine + binLine + startingDateLine + startTimeLine + endingDateLine
+				+ endTimeLine + isActiveLine + "\n";
 	}
 }

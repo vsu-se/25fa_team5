@@ -60,7 +60,13 @@ public class AuctionController {
 
         if(validId && validName && validBin && validDates) {
             Item item = new Item(Integer.parseInt(id), name);
-            Auction auction = new Auction(item, 0, Double.parseDouble(bin));
+        //    Auction auction = new Auction(item, 0, Double.parseDouble(bin));
+            LocalDate localStartDate = LocalDate.parse(startDate);
+            LocalTime localStartTime = LocalTime.parse(startTime);
+            LocalDate localEndDate = LocalDate.parse(endDate);
+            LocalTime localEndTime = LocalTime.parse(endTime);
+
+            Auction auction = new Auction(item, localStartDate, localEndDate, localStartTime, localEndTime, Double.parseDouble(bin));
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
                 String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: \n", id, name, startDate, startTime, endDate, endTime, bin); // currentUser.getID());
