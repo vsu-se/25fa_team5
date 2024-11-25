@@ -4,7 +4,6 @@ public class Item {
 	private int id;
 	private String name;
 	private User user;
-	final int idLength = 5;
 
 	public Item(int id, String name, User user) { 
 		this.id = id;
