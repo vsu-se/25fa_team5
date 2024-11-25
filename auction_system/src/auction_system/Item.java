@@ -4,9 +4,10 @@ public class Item {
 	private int id;
 	private String name;
 	private User user;
+	final int idLength = 5;
 
-	public Item(String name, User user) { // Constructor needs to be reworked to generate the id on its own, the id should be a random integer of a predetermined format that checks for duplication prevention
-		this.id = generateItemID();
+	public Item(int id, String name, User user) { 
+		this.id = id;
 		this.name = name;
 		this.user = user;
 		// After the constructor generates the item, it will need to be added to the itemList in itemManager
@@ -36,5 +37,4 @@ public class Item {
 		String line4 = "Seller Name: " + user.getName() + "\n";
 		return line1 + line2 + line3 + line4;
 	}
-
 }
