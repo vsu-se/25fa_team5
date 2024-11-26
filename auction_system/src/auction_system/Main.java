@@ -259,11 +259,8 @@ public class Main extends Application {
 			saveDataButton.setOnAction(e -> saveRegisteredUserData(itemListArea));
 
 			// US - 5
-			AuctionManager auctionManager = new AuctionManager();
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 			showMyAuctionsBtn.setOnAction(e -> {
-				String name = nameField.getText();
-				String endDate = endDateField.getText();
 
 			});
 			// US - 13
