@@ -1,31 +1,19 @@
-package application;
+package auction_system;
 
 	
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import java.io.*;
-
 import java.util.List;
 import java.util.Objects;
 
 
-import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -33,10 +21,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.HBox;
-import javafx.scene.control.TextInputDialog;
+
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 
 public class Main extends Application {
@@ -44,7 +30,9 @@ public class Main extends Application {
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
+
 	private FileManager fileManager = new FileManager();
+
 
 
 
@@ -54,6 +42,7 @@ public class Main extends Application {
 			primaryStage.setTitle("Auction System");
 			Label statusLbl  = new Label("Select User Type: ");
 			RadioButton SystemAdminCheckBox = new RadioButton("System Admin");
+
 
 		    RadioButton UserCheckBox = new RadioButton("User");
 		    RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
@@ -69,6 +58,7 @@ public class Main extends Application {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
 
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -76,22 +66,29 @@ public class Main extends Application {
 		}
 	}
 
+
 	public void systemAdminUser(Stage primaryStage) {
 		try {
+
 			primaryStage.setTitle("System Admin");
 			CategoryManager categoryManager = new CategoryManager();
 			categoryController = new CategoryController(categoryManager);
 			commissionController = new CommissionController();
 			premiumController = new PremiumController();
 
+
 //			categories = FXCollections.observableArrayList();
 //			ListView<String> categoryListView = new ListView<>(categories);
 //			loadData();
 
+
 			// US-1
+			Button returnButton = new Button("<-- User Selection");
 			TextField categoryField = new TextField("Enter category name");
 
 	        Button addButton = new Button("Add Category");
+	        
+	        returnButton.setOnAction(e -> start(primaryStage));
 	        
 	        ListView<String> categoryListView = new ListView<>();
             categories = FXCollections.observableArrayList();
@@ -114,12 +111,14 @@ public class Main extends Application {
 				updateCategoryListView(categories);
 				categoryField.clear();
 
+
 			});
 
 			// US-2
 			TextField commissionField = new TextField("Enter commission");
 			Button setCommissionButton = new Button("Set Seller Commission");
 			Label currentCommissionLbl = new Label("Current Commission: " + commissionController.getSellerCommission() + "%");
+
 
 			setCommissionButton.setOnAction(e -> {
 				String commissionText = commissionField.getText().trim();
@@ -128,6 +127,7 @@ public class Main extends Application {
 					commissionController.setSellerCommission(commissionValue);
 					currentCommissionLbl.setText("Current Commission: " + commissionController.getSellerCommission() + "%");
 					commissionField.clear();
+
 				}
 				catch (NumberFormatException ex) {
 					showAlert("Invalid Input", "Please enter a valid number for commission percentage.");
@@ -141,6 +141,7 @@ public class Main extends Application {
 			TextField premiumField = new TextField("Enter premium");
 			Button setPremiumButton = new Button("Set Buyer Premium ");
 			Label currentPremiumLbl = new Label("Current Premium: " + premiumController.getBuyerPremium() + "%");
+
 
 			setPremiumButton.setOnAction(e -> {
 				String premiumText = premiumField.getText().trim();
@@ -156,9 +157,29 @@ public class Main extends Application {
 				}
 			});
 
+
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveAdminData());
+			// US - 13
+			Button bidHistoryBtn = new Button("Show Bid History");
+			bidHistoryBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 6
+			Button activeAuctionsBtn = new Button("Show Active Auctions");
+			activeAuctionsBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 10
+			Button concludedAuctionsBtn = new Button("Show Concluded Auctions");
+			concludedAuctionsBtn.setOnAction(e -> {
+				// not yet implemented
+			});
 
+			HBox systemAdminBtns = new HBox(bidHistoryBtn, activeAuctionsBtn, concludedAuctionsBtn);
+			systemAdminBtns.setSpacing(10);
+
+			TextArea systemAdminData = new TextArea();
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
@@ -167,14 +188,15 @@ public class Main extends Application {
 			systemBox1.setSpacing(10);
 			
 
-			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, signOutButton);
+			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, systemAdminBtns, systemAdminData, signOutButton);
 			systemBox2.setSpacing(10);
 
 			HBox systemBox = new HBox(systemBox1, systemBox2);
 			systemBox.setSpacing(20);
 
-			Scene scene = new Scene(systemBox,600,400);
+			Scene scene = new Scene(systemBox,700,400);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -242,19 +264,37 @@ public class Main extends Application {
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveRegisteredUserData(itemListArea));
 
+			// US - 5
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
+			showMyAuctionsBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 13
+			Button bidHistoryBtn = new Button("Show Bid History");
+			bidHistoryBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 11
+			Button sellersReportBtn = new Button("Show Sellers Report");
+			sellersReportBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+			// US - 12
+			Button buyersReportBtn = new Button("Show Buyers Report");
+			buyersReportBtn.setOnAction(e -> {
+				// not yet implemented
+			});
 
+			TextArea registeredUserData = new TextArea();
 
-			
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
-                
-			
 
-			VBox myAuctionsBox = new VBox(showMyAuctionsBtn);
-			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, signOutButton);
+			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn, sellersReportBtn, buyersReportBtn);
+			myAuctionsBox.setSpacing(10);
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, registeredUserData, signOutButton);
 			itemBox.setSpacing(10);
-			Scene scene = new Scene(itemBox,600,400);
+			Scene scene = new Scene(itemBox,600,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -265,23 +305,62 @@ public class Main extends Application {
 	}
 
 	
+
 	// User Page / Not completed
 	public void User(Stage primaryStage) {
 		try {
 			primaryStage.setTitle("Bidder");
 
-//			Scene scene = new Scene(     , 600, 400);
-//			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-//			primaryStage.setScene(scene);
+			// US-6
+			// Lists all active auctions
+			Label listLbl = new Label("All Active Auctions: ");
+			TextField listField = new TextField();
+
+			HBox listBox = new HBox(listLbl, listField);
+			listBox.setSpacing(10);
+
+
+			// US-7
+			// Allows user to bid on an auction
+			Button bidButton = new Button("Submit Bid");
+			HBox bidBox = new HBox(bidButton);
+			bidBox.setSpacing(10);
+			TextArea bidArea = new TextArea();
+
+			bidButton.setOnAction(e -> {
+				String bid = bidArea.getText();
+				bidArea.appendText("Bid: " + bid + "\n");
+				bidArea.clear();
+			});
+
+			// US-8
+			// Shows all auctions user has bid on
+			Button showBidsButton = new Button("Show My Bids");
+			HBox showBidsBox = new HBox(showBidsButton);
+			showBidsBox.setSpacing(10);
+			TextArea showBidsArea = new TextArea();
+
+			showBidsButton.setOnAction(e -> {
+				showBidsArea.appendText("Bids: \n");
+			});
+
+			Button signOutButton = new Button("Sign Out");
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			VBox userBox = new VBox(listBox, bidBox, bidArea, showBidsBox, showBidsArea, signOutButton);
+			userBox.setSpacing(10);
+
+			Scene scene = new Scene(userBox,600,400);
+			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
+			primaryStage.setScene(scene);
+
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
 
 
-	
 
 
 	private void saveAdminData(){
@@ -324,9 +403,13 @@ public class Main extends Application {
 
 		Label userTypeLbl = new Label("Select User Type: ");
 		RadioButton systemAdminCheckBox = new RadioButton("System Admin");
+		RadioButton userCheckBox = new RadioButton("User");
 		RadioButton registeredUserCheckBox = new RadioButton("Registered User");
 
 		systemAdminCheckBox.setOnAction(e -> {
+			registeredUserCheckBox.setSelected(false);
+		});
+		userCheckBox.setOnAction(e -> {
 			registeredUserCheckBox.setSelected(false);
 		});
 		registeredUserCheckBox.setOnAction(e -> {
@@ -341,6 +424,8 @@ public class Main extends Application {
 
 			if (systemAdminCheckBox.isSelected()) {
 				userTyp = "System Admin";
+			} else if (userCheckBox.isSelected()) {
+				userTyp = "User";
 			} else if (registeredUserCheckBox.isSelected()) {
 				userTyp = "Registered User";
 			}
@@ -350,7 +435,7 @@ public class Main extends Application {
 			accountStage.close();
 		});
 
-		VBox layout = new VBox(10, usernameLbl, usernameField, passwordLbl, passwordField, userTypeLbl, systemAdminCheckBox, registeredUserCheckBox, createAccountButton);
+		VBox layout = new VBox(10, usernameLbl, usernameField, passwordLbl, passwordField, userTypeLbl, systemAdminCheckBox, userCheckBox, registeredUserCheckBox, createAccountButton);
 		Scene scene = new Scene(layout, 300, 300);
 		accountStage.setScene(scene);
 		accountStage.show();
@@ -383,6 +468,9 @@ public class Main extends Application {
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
+			}
+			else if ("User".equals(userType)){
+				User(primaryStage);
 			}
 			else if ("Registered User".equals(userType)){
 				sellerListItem(primaryStage);
