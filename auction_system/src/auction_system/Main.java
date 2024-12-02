@@ -305,10 +305,48 @@ public class Main extends Application {
 		try {
 			primaryStage.setTitle("Bidder");
 
-//			Scene scene = new Scene(     , 600, 400);
-//			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-//			primaryStage.setScene(scene);
+			// US-6
+			// Lists all active auctions
+			Label listLbl = new Label("All Active Auctions: ");
+			TextField listField = new TextField();
 
+			HBox listBox = new HBox(listLbl, listField);
+			listBox.setSpacing(10);
+
+
+			// US-7
+			// Allows user to bid on an auction
+			Button bidButton = new Button("Submit Bid");
+			HBox bidBox = new HBox(bidButton);
+			bidBox.setSpacing(10);
+			TextArea bidArea = new TextArea();
+
+			bidButton.setOnAction(e -> {
+				String bid = bidArea.getText();
+				bidArea.appendText("Bid: " + bid + "\n");
+				bidArea.clear();
+			});
+
+			// US-8
+			// Shows all auctions user has bid on
+			Button showBidsButton = new Button("Show My Bids");
+			HBox showBidsBox = new HBox(showBidsButton);
+			showBidsBox.setSpacing(10);
+			TextArea showBidsArea = new TextArea();
+
+			showBidsButton.setOnAction(e -> {
+				showBidsArea.appendText("Bids: \n");
+			});
+
+			Button signOutButton = new Button("Sign Out");
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			VBox userBox = new VBox(listBox, bidBox, bidArea, showBidsBox, showBidsArea, signOutButton);
+			userBox.setSpacing(10);
+
+			Scene scene = new Scene(userBox,600,400);
+			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
+			primaryStage.setScene(scene);
 
 			primaryStage.show();
 		} catch (Exception e) {
@@ -359,9 +397,13 @@ public class Main extends Application {
 
 		Label userTypeLbl = new Label("Select User Type: ");
 		RadioButton systemAdminCheckBox = new RadioButton("System Admin");
+		RadioButton userCheckBox = new RadioButton("User");
 		RadioButton registeredUserCheckBox = new RadioButton("Registered User");
 
 		systemAdminCheckBox.setOnAction(e -> {
+			registeredUserCheckBox.setSelected(false);
+		});
+		userCheckBox.setOnAction(e -> {
 			registeredUserCheckBox.setSelected(false);
 		});
 		registeredUserCheckBox.setOnAction(e -> {
@@ -376,6 +418,8 @@ public class Main extends Application {
 
 			if (systemAdminCheckBox.isSelected()) {
 				userTyp = "System Admin";
+			} else if (userCheckBox.isSelected()) {
+				userTyp = "User";
 			} else if (registeredUserCheckBox.isSelected()) {
 				userTyp = "Registered User";
 			}
@@ -385,7 +429,7 @@ public class Main extends Application {
 			accountStage.close();
 		});
 
-		VBox layout = new VBox(10, usernameLbl, usernameField, passwordLbl, passwordField, userTypeLbl, systemAdminCheckBox, registeredUserCheckBox, createAccountButton);
+		VBox layout = new VBox(10, usernameLbl, usernameField, passwordLbl, passwordField, userTypeLbl, systemAdminCheckBox, userCheckBox, registeredUserCheckBox, createAccountButton);
 		Scene scene = new Scene(layout, 300, 300);
 		accountStage.setScene(scene);
 		accountStage.show();
@@ -418,6 +462,9 @@ public class Main extends Application {
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
+			}
+			else if ("User".equals(userType)){
+				User(primaryStage);
 			}
 			else if ("Registered User".equals(userType)){
 				sellerListItem(primaryStage);
