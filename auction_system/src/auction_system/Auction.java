@@ -67,7 +67,7 @@ public class Auction {
 		if (bids.isEmpty()) {
 			return 0.0;
 		}
-		if (isActive == true) {
+		if (isActive) {
 			currBid = bids.lastKey(); // Tree maps order themselves based on the numerical value of the key, so if the
 									  // bid amount is the key instead of userID, it self sorts
 		}
@@ -97,14 +97,14 @@ public class Auction {
 		System.out.println("Auction #" + item.getID() + " for " + item.getName() + " ended at " + c.getTime());
 	}
 
-	public void checkDate() {
+	public boolean checkDate() {
 		Calendar c = Calendar.getInstance();
-		if (c.getTime().compareTo(this.getEndDate()) > -1) {
-			System.out.println("This auction has ended");
-			endAuction();
-		} else {
-			System.out.println("This auction is ongoing");
+		Date now = c.getTime();
+		if(!isActive || now.after(endDate)) {
+			isActive = false;
+			return true;
 		}
+		return false;
 	}
 
 	public void addBid(User user, double bid) { // show the user name as well as the date/time the bid was placed
