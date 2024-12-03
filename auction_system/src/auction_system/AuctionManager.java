@@ -1,71 +1,68 @@
 package auction_system;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AuctionManager {
-//	private Map<Integer, Auction> auctionsMap = new TreeMap<>();
-//	private ArrayList<Auction> auctionsList;
-//
-//	public AuctionManager() {
-//
-//	}
-//
-//	public void addAuction(Auction auction) {
-//		auctionsMap.put(auction.getItem().getID(), auction);
-//	}
-//
-//	public int getNumAuctions() {
-//		return auctionsMap.size();
-//	}
-//
-//	public Auction getAuction(int id) {
-//		if(auctionsMap.containsKey(id)) {
-//			return auctionsMap.get(id);
-//		}
-//		return null;
-//	}
-//
-//	public void clear() {
-//		auctionsMap.clear();
-//	}
-//
-//	public boolean containsAuction(int id) {
-//		return auctionsMap.containsKey(id);
-//	}
-//
-//	public ArrayList<Auction> listAuctions() {
-//		auctionsList = new ArrayList<>(auctionsMap.values());
-//		return auctionsList;
-//	}
-//
-//	public String toString() {
-//		String result = "";
-//		for(Auction auction : auctionsMap.values()) {
-//			result += auction.toString() + "\n";
-//		}
-//		return result;
-//	}
-//
-//	public void testingToString() {
-//		AuctionManager auctionManager = new AuctionManager();
-//		ArrayList<Auction> auctions;
-//		Item item1 = new Item(1, "one");
-//		Item item2 = new Item(2, "two");
-//		Item item3 = new Item(3, "three");
-//		Auction one = new Auction(item1, 5.00);
-//		Auction two = new Auction(item2, 5.00);
-//		Auction three = new Auction(item3, 5.00);
-//		auctionManager.addAuction(one);
-//		auctionManager.addAuction(two);
-//		auctionManager.addAuction(three);
-//		System.out.println(auctionManager.toString());
-//	}
-//
-//	public static void main(String[] args) {
-//		AuctionManager auctionManager = new AuctionManager();
-//		auctionManager.testingToString();
-//	}
+    private ArrayList<Auction> auctionList = new ArrayList<>();
 
+    public AuctionManager() {
+
+    }
+
+    public void addAuction(Auction auction) {
+    //    auctionList.add(auction);
+        if((!auctionList.contains(auction)) && auction.getActive()) {
+            auctionList.add(auction);
+        }
+    }
+
+    public Auction getAuctionFromAuctionList(int index) {
+        return auctionList.get(index);
+    }
+
+    public int getAuctionListLength() {
+        return auctionList.size();
+    }
+
+    public boolean containsAuction(Auction auction) {
+        return auctionList.contains(auction);
+    }
+
+    // returns list of all auctions regardless of active or inactive
+    public ArrayList<Auction> getAuctionList() {
+        return auctionList;
+    }
+
+    public void getSoonestEndingActiveAuctions() {
+        Comparator<Auction> auctionComparator = (Auction one, Auction two) -> one.getLocalEndDateAndTime().compareTo(two.getLocalEndDateAndTime());
+        Collections.sort(auctionList, auctionComparator); // replace later with activeauctionlist
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        for(Auction a : auctionList) {
+            str += a.toString() + "\n";
+        }
+        return str;
+    }
+
+    public static void main(String[] arg) {
+        Item one = new Item(1, "name");
+        Auction auctionOne = new Auction(one, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
+        Item two = new Item(2, "name");
+        Auction auctionTwo = new Auction(two, LocalDate.now(), LocalDate.parse("2024-01-06"), LocalTime.now(), LocalTime.now(), 40);
+        Item three = new Item(3, "name");
+        Auction auctionThree = new Auction(three, LocalDate.now(), LocalDate.parse("2030-01-06"), LocalTime.now(), LocalTime.now(), 40);
+        AuctionManager auctionManager = new AuctionManager();
+        auctionManager.addAuction(auctionOne);
+        auctionManager.addAuction(auctionThree);
+        auctionManager.addAuction(auctionTwo);
+        auctionManager.getSoonestEndingActiveAuctions();
+        System.out.println(auctionManager.toString());
+    }
 }
