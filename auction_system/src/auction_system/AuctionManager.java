@@ -1,58 +1,46 @@
 package auction_system;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AuctionManager {
     private ArrayList<Auction> auctionList = new ArrayList<>();
-    private ArrayList<Auction> inactiveAuctionList = new ArrayList<>();
-    private ArrayList<Auction> activeAuctionList = new ArrayList<>();
-    private ScheduledExecutorService scheduler;
 
     public AuctionManager() {
-    scheduler = Executors.newScheduledThreadPool(1);
-    scheduler.scheduleAtFixedRate(this::checkAuctionStatus, 0, 1, TimeUnit.MINUTES);
+
     }
 
     public void addAuction(Auction auction) {
-        // auctionList.add(auction);
+    //    auctionList.add(auction);
         if((!auctionList.contains(auction)) && auction.getActive()) {
             auctionList.add(auction);
-            activeAuctionList.add(auction);
-        }
-    }
-    
-    public void endAuction(Auction auction) {
-    	activeAuctionList.remove(auction);
-    	inactiveAuctionList.add(auction);
-    	auction.endAuction();
-    }
-
-    private void checkAuctionStatus() {
-        Date now = new Date();
-        List<Auction> endedAuctions = new ArrayList<>();
-        for(Auction auction : activeAuctionList){
-            if(auction.getEndDate().before(now)){
-                endedAuctions.add(auction);
-            }
-        }
-        for(Auction auction : endedAuctions) {
-            endAuction(auction);
         }
     }
 
-    public void shutDownScheduler() {
-        if(scheduler != null && !scheduler.isShutdown()){
-            scheduler.shutdown();
-        }
+    public Auction getAuctionFromAuctionList(int index) {
+        return auctionList.get(index);
+    }
+
+    public int getAuctionListLength() {
+        return auctionList.size();
     }
 
     public boolean containsAuction(Auction auction) {
         return auctionList.contains(auction);
+    }
+
+
+    // returns list of all auctions regardless of active or inactive
+    public ArrayList<Auction> getAuctionList() {
+        return auctionList;
+    }
+
+    public void getSoonestEndingActiveAuctions() {
+        Comparator<Auction> auctionComparator = (Auction one, Auction two) -> one.getLocalEndDateAndTime().compareTo(two.getLocalEndDateAndTime());
+        Collections.sort(auctionList, auctionComparator); // replace later with activeauctionlist
     }
 
     @Override
@@ -62,5 +50,20 @@ public class AuctionManager {
             str += a.toString() + "\n";
         }
         return str;
+    }
+
+    public static void main(String[] arg) {
+        Item one = new Item(1, "name");
+        Auction auctionOne = new Auction(one, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
+        Item two = new Item(2, "name");
+        Auction auctionTwo = new Auction(two, LocalDate.now(), LocalDate.parse("2024-01-06"), LocalTime.now(), LocalTime.now(), 40);
+        Item three = new Item(3, "name");
+        Auction auctionThree = new Auction(three, LocalDate.now(), LocalDate.parse("2030-01-06"), LocalTime.now(), LocalTime.now(), 40);
+        AuctionManager auctionManager = new AuctionManager();
+        auctionManager.addAuction(auctionOne);
+        auctionManager.addAuction(auctionThree);
+        auctionManager.addAuction(auctionTwo);
+        auctionManager.getSoonestEndingActiveAuctions();
+        System.out.println(auctionManager.toString());
     }
 }
