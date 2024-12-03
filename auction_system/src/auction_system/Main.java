@@ -35,6 +35,7 @@ public class Main extends Application {
 	private CommissionController commissionController;
 	private PremiumController premiumController;
 	private AuctionManager auctionManager = fileManager.buildAuctionManager();
+//	private AuctionManager auctionManager;
 	private AuctionController auctionController = new AuctionController(auctionManager);
 	private User currentUser;
 
@@ -361,21 +362,37 @@ public class Main extends Application {
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
-			auctionManager.getSoonestEndingActiveAuctions();
-			ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
-			activeAuctionList.setItems(observableList);
-			activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
-				@Override
-				protected void updateItem(Auction auction, boolean empty) {
-					super.updateItem(auction, empty);
+            if (auctionManager != null) {
+                auctionManager.getSoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+				activeAuctionList.setItems(observableList);
+				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+					@Override
+					protected void updateItem(Auction auction, boolean empty) {
+						super.updateItem(auction, empty);
 
-					if (empty || auction == null || auction.getItem() == null) {
-						setText(null);
-					} else {
-						setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+						if (empty || auction == null || auction.getItem() == null) {
+							setText(null);
+						} else {
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+						}
 					}
-				}
-			});
+				});
+            }
+//            ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+//			activeAuctionList.setItems(observableList);
+//			activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+//				@Override
+//				protected void updateItem(Auction auction, boolean empty) {
+//					super.updateItem(auction, empty);
+//
+//					if (empty || auction == null || auction.getItem() == null) {
+//						setText(null);
+//					} else {
+//						setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+//					}
+//				}
+//			});
 
 			activeAuctionList.setPrefSize(300,300);
 
