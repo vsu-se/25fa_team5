@@ -43,9 +43,6 @@ public class Main extends Application {
 
 //	private FileManager fileManager = new FileManager();
 
-
-
-
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -212,6 +209,13 @@ public class Main extends Application {
 	public void sellerListItem(Stage primaryStage) {
 		try {
 			primaryStage.setTitle("Seller");
+
+			TabPane tabPane = new TabPane();
+
+			// List item tab
+			Tab listItemTab = new Tab("List Item");
+			listItemTab.setClosable(false);
+
 			Label ListItemLbl = new Label("List Item to Auction: ");
 			HBox listItemBox = new HBox(ListItemLbl);
 			listItemBox.setSpacing(10);
@@ -323,13 +327,67 @@ public class Main extends Application {
 			bidHistoryBtn.setOnAction(e -> {
 				// not yet implemented
 			});
+
+			TextArea registeredUserData = new TextArea();
+
+			Button signOutButton = new Button("Sign Out");
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			// Bidding tab
+			// Will be changed
+			Tab biddingTab = new Tab("Bidding");
+			biddingTab.setClosable(false);
+
+			Label biddingLabel = new Label("Place Bids Here:");
+			TextField itemNameField = new TextField();
+			itemNameField.setPromptText("Enter Item Name");
+			itemNameField.setMaxWidth(120);
+
+			TextField bidderNameField = new TextField();
+			bidderNameField.setPromptText("Bidder Name");
+			bidderNameField.setMaxWidth(120);
+
+			TextField bidAmountField = new TextField();
+			bidAmountField.setPromptText("Enter Bid Amount");
+			bidAmountField.setMaxWidth(120);
+
+			Button placeBidButton = new Button("Place Bid");
+			TextArea bidHistoryArea = new TextArea();
+			bidHistoryArea.setEditable(false);
+
+			placeBidButton.setOnAction(e -> {
+				String itemName = itemNameField.getText();
+				String bidderName = bidderNameField.getText();
+				String bidAmount = bidAmountField.getText();
+				if (!itemName.isEmpty() && !bidderName.isEmpty() && !bidAmount.isEmpty()) {
+					bidHistoryArea.appendText("Bid Placed On Item: " + itemName + " -- $" + bidAmount + " by " + bidderName + "\n");
+					itemNameField.clear();
+					bidderNameField.clear();
+					bidAmountField.clear();
+				}
+				else {
+					showAlert("Error", "All fields must be filled.");
+				}
+			});
+
+			// Reports tab
+			Tab reportsTab = new Tab("Reports");
+			reportsTab.setClosable(false);
+
 			// US - 11
+			Label sellersReportLbl = new Label ("Sellers Report:");
+			TextArea sellersReportData = new TextArea();
 			Button sellersReportBtn = new Button("Show Sellers Report");
+
 			sellersReportBtn.setOnAction(e -> {
 				// not yet implemented
 			});
+
 			// US - 12
+			Label buyersReportLbl = new Label ("Buyers Report:");
+			TextArea buyersReportData = new TextArea();
 			Button buyersReportBtn = new Button("Show Buyers Report");
+
 			buyersReportBtn.setOnAction(e -> {
 				// not yet implemented
 			});
@@ -339,11 +397,20 @@ public class Main extends Application {
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn, sellersReportBtn, buyersReportBtn);
+			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn);
 			myAuctionsBox.setSpacing(10);
+
 			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, registeredUserData, signOutButton);
 			itemBox.setSpacing(10);
-			Scene scene = new Scene(itemBox,600,500);
+			listItemTab.setContent(itemBox);
+
+			VBox reports = new VBox(sellersReportLbl, sellersReportData, sellersReportBtn, buyersReportLbl, buyersReportData, buyersReportBtn);
+			reports.setSpacing(10);
+			reportsTab.setContent(reports);
+
+			tabPane.getTabs().addAll(listItemTab, biddingTab, reportsTab);
+
+			Scene scene = new Scene(tabPane,600,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -627,6 +694,11 @@ public class Main extends Application {
 	}
 
 	public static void main(String[] args) {
+		AuctionManager auctionManager = new AuctionManager();
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			auctionManager.shutDownScheduler();
+			System.out.println("Auction Scheduler Stopped");
+		}));
 		launch(args);
 	}
 }
