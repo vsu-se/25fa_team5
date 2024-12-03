@@ -49,10 +49,10 @@ public class Main extends Application {
 		    SystemAdminCheckBox.setOnAction(e -> login(primaryStage, "System Admin"));
 		    RegisteredUserCheckBox.setOnAction(e -> login(primaryStage, "Registered User"));
 		    UserCheckBox.setOnAction(e -> login(primaryStage, "User"));
-		    
+
 		    Button createAccountButton = new Button("Create Account");
       createAccountButton.setOnAction(e -> createAccount());
-			
+
 		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
 		    Scene scene = new Scene(UserBox,250,250);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -77,23 +77,19 @@ public class Main extends Application {
 			premiumController = new PremiumController();
 
 
-//			categories = FXCollections.observableArrayList();
-//			ListView<String> categoryListView = new ListView<>(categories);
-//			loadData();
-
 
 			// US-1
 			Button returnButton = new Button("<-- User Selection");
 			TextField categoryField = new TextField("Enter category name");
 
 	        Button addButton = new Button("Add Category");
-	        
+
 	        returnButton.setOnAction(e -> start(primaryStage));
-	        
+
 	        ListView<String> categoryListView = new ListView<>();
             categories = FXCollections.observableArrayList();
             categoryListView.setItems(categories);
-            
+
             loadAdminData();
 
 
@@ -183,10 +179,10 @@ public class Main extends Application {
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			
+
 			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
-			
+
 
 			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, systemAdminBtns, systemAdminData, signOutButton);
 			systemBox2.setSpacing(10);
@@ -205,7 +201,7 @@ public class Main extends Application {
 	}
 
 
-	public void sellerListItem(Stage primaryStage) {
+	public void sellerListItem(Stage primaryStage, String username) {
 		try {
 			primaryStage.setTitle("Seller");
 			Label ListItemLbl = new Label("List Item to Auction: ");
@@ -241,7 +237,6 @@ public class Main extends Application {
 
 			TextArea itemListArea = new TextArea();
 
-			loadRegisteredUserData(itemListArea);
 
 
 			addItemButton.setOnAction(e -> {
@@ -262,11 +257,11 @@ public class Main extends Application {
 			});
 
 			Button saveDataButton = new Button("Save Data");
-			saveDataButton.setOnAction(e -> saveRegisteredUserData(itemListArea));
+			saveDataButton.setOnAction(e -> saveRegisteredUserData(username, itemListArea));
 
 			// US - 5
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
-			showMyAuctionsBtn.setOnAction(e -> {
+			showMyAuctionsBtn.setOnAction(e -> {loadRegisteredUserData(username, itemListArea);
 				// not yet implemented
 			});
 			// US - 13
@@ -304,7 +299,7 @@ public class Main extends Application {
 		}
 	}
 
-	
+
 
 	// User Page / Not completed
 	public void User(Stage primaryStage) {
@@ -370,12 +365,12 @@ public class Main extends Application {
 		fileManager.saveAdminData(categories, sellerCommission, buyerPremium);
 	}
 
-	private void saveRegisteredUserData(TextArea itemListArea){
-		fileManager.saveRegisteredUserData(itemListArea);
+	private void saveRegisteredUserData(String username, TextArea itemListArea){
+		fileManager.saveRegisteredUserData(username, itemListArea);
 	}
 
-	private void loadRegisteredUserData(TextArea itemListArea){
-		fileManager.loadRegisteredUserData(itemListArea);
+	private void loadRegisteredUserData(String username, TextArea itemListArea){
+		fileManager.loadRegisteredUserData(username, itemListArea);
 	}
 
 	private void loadAdminData(){
@@ -408,12 +403,15 @@ public class Main extends Application {
 
 		systemAdminCheckBox.setOnAction(e -> {
 			registeredUserCheckBox.setSelected(false);
+			userCheckBox.setSelected(false);
 		});
 		userCheckBox.setOnAction(e -> {
 			registeredUserCheckBox.setSelected(false);
+			systemAdminCheckBox.setSelected(false);
 		});
 		registeredUserCheckBox.setOnAction(e -> {
 			systemAdminCheckBox.setSelected(false);
+			userCheckBox.setSelected(false);
 		});
 
 		Button createAccountButton = new Button("Create Account");
@@ -429,6 +427,15 @@ public class Main extends Application {
 			} else if (registeredUserCheckBox.isSelected()) {
 				userTyp = "Registered User";
 			}
+			if(username.isEmpty() || password.isEmpty()){
+				showAlert("Input Error", "Username and Password cannot be empty.");
+				return;
+			}
+
+			if(FileManager.isUsernameTaken(username)){
+				showAlert("Duplicate Username", "The username is already taken. Please choose a different one.");
+				return;
+			}
 
 			System.out.println("Account Created: Username: " + username + ", Password: " + password + ", User Type: " + userTyp);
 			saveCredentials(username, password, userTyp);
@@ -442,42 +449,59 @@ public class Main extends Application {
 	}
 
 
+
 	private void saveCredentials(String username, String password, String userType){
 		fileManager.saveCredentials(username,password, userType);
 	}
 
 
 	private void login(Stage primaryStage, String userType){
-		TextInputDialog userNameDialog = new TextInputDialog();
-		userNameDialog.setTitle("Login Required");
-		userNameDialog.setHeaderText("Enter Username");
-		userNameDialog.setContentText("Username:");
-		String username = userNameDialog.showAndWait().orElse("").trim();
+		try{
+			TextInputDialog userNameDialog = new TextInputDialog();
+			userNameDialog.setTitle("Login Required");
+			userNameDialog.setHeaderText("Enter Username");
+			userNameDialog.setContentText("Username:");
+			String username = userNameDialog.showAndWait().orElse("").trim();
 
-		TextInputDialog passwordDialog = new TextInputDialog();
-		passwordDialog.setTitle("Password Required");
-		passwordDialog.setHeaderText("Enter Password");
-		PasswordField passwordField = new PasswordField();
-		passwordDialog.getDialogPane().setContent(passwordField);
-		passwordDialog.showAndWait();
-
-		String password = passwordField.getText().trim();
-		boolean isValid = fileManager.loadCredentials(username, password, userType);
-
-
-		if (isValid){
-			if ("System Admin".equals(userType)){
-				systemAdminUser(primaryStage);
+			if (username.isEmpty()) {
+				showAlert("Input Error", "Username cannot be empty.");
+				return;
 			}
-			else if ("User".equals(userType)){
-				User(primaryStage);
+
+			TextInputDialog passwordDialog = new TextInputDialog();
+			passwordDialog.setTitle("Password Required");
+			passwordDialog.setHeaderText("Enter Password");
+			PasswordField passwordField = new PasswordField();
+			passwordDialog.getDialogPane().setContent(passwordField);
+			passwordDialog.showAndWait();
+
+			String password = passwordField.getText().trim();
+			if (password.isEmpty()) {
+				showAlert("Input Error", "Password cannot be empty.");
+				return;
 			}
-			else if ("Registered User".equals(userType)){
-				sellerListItem(primaryStage);
+			boolean isValid = fileManager.loadCredentials(username, password, userType);
+
+
+			if (isValid) {
+				if ("System Admin".equals(userType)) {
+					systemAdminUser(primaryStage);
+				} else if ("User".equals(userType)) {
+					User(primaryStage);
+				} else if ("Registered User".equals(userType)) {
+					sellerListItem(primaryStage, username);
+				} else {
+					showAlert("Error", "Invalid user type.");
+				}
+			} else {
+				showAlert("Access Denied", "Invalid username or password. Please try again.");
 			}
-		}
-		else {
-			showAlert("Access Denied", "Invalid username or password. Please try again.");
+		}catch(NullPointerException e) {
+			showAlert("Input Error", "An unexpected input error ocurred: " + e.getMessage());
+			e.printStackTrace();
+	} catch(Exception e){
+			showAlert("Unknown Error", "An unknown error occurred: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
