@@ -497,7 +497,7 @@ public class Main extends Application {
 				showAlert("Access Denied", "Invalid username or password. Please try again.");
 			}
 		}catch(NullPointerException e) {
-			showAlert("Input Error", "An unexpected input error ocurred: " + e.getMessage());
+			showAlert("Input Error", "An unexpected input error occurred: " + e.getMessage());
 			e.printStackTrace();
 	} catch(Exception e){
 			showAlert("Unknown Error", "An unknown error occurred: " + e.getMessage());
