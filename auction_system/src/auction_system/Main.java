@@ -313,6 +313,7 @@ public class Main extends Application {
 					showAlert("Error", "All fields must be filled.");
 				}
 			});
+
 			// Reports tab
 			Tab reportsTab = new Tab("Reports");
 			reportsTab.setClosable(false);
