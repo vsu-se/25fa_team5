@@ -35,7 +35,9 @@ public class Main extends Application {
 	private CommissionController commissionController;
 	private PremiumController premiumController;
 	private AuctionManager auctionManager = fileManager.buildAuctionManager();
+
 //	private AuctionManager auctionManager;
+
 	private AuctionController auctionController = new AuctionController(auctionManager);
 	private User currentUser;
 
@@ -362,6 +364,7 @@ public class Main extends Application {
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
+
             if (auctionManager != null) {
                 auctionManager.getSoonestEndingActiveAuctions();
 				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
@@ -393,6 +396,7 @@ public class Main extends Application {
 //					}
 //				}
 //			});
+
 
 			activeAuctionList.setPrefSize(300,300);
 
