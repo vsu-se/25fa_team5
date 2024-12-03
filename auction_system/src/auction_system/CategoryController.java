@@ -23,6 +23,16 @@ public class CategoryController {
 		return categoryNames;
 	}
 
+//	public boolean assignCategoryToItem(Item item, String categoryName) {
+//		for (Category category : categoryManager.getCategories()) {
+//			if (category.getName().equals(categoryName)) {
+//				item.addCategory(category);
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+
 /*	public void removeCategory(String categoryName) {
 		for (Category category : categoryManager.getCategories()) {
 			if (category.getName().equals(categoryName)) {
