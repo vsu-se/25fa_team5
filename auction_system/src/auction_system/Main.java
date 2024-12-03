@@ -694,6 +694,11 @@ public class Main extends Application {
 	}
 
 	public static void main(String[] args) {
+		AuctionManager auctionManager = new AuctionManager();
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			auctionManager.shutDownScheduler();
+			System.out.println("Auction Scheduler Stopped");
+		}));
 		launch(args);
 	}
 }

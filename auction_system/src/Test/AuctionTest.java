@@ -1,105 +1,66 @@
 package Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.*;
 
+import auction_system.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.Date;
 
-import auction_system.Auction;
-import auction_system.Item;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-
 class AuctionTest {
-	Item item;
-	Auction auction;
-	Date defEndDate;
-	Date defStartDate;
-	double bIN;
-	
-	@BeforeEach
-	void init() {
-		item = new Item(12345, "Hat");
-		bIN = 25.99;
-		auction = new Auction(item, 10.25, bIN);
-		defEndDate = auction.getEndDate();
-		defStartDate = auction.getStartDate();
-	}
 
-	@AfterEach
-	void reset() {
-		item.setID(12345);
-		item.setName("Hat");
-		auction.setbIN(25.99);
-	//	auction.bids.clear();
-		auction.addBid(item.getID(), 10.25);
-		auction.setEndDate(defEndDate);
-	}
-	
-	@Test
-	void testGetItem() {
-		assertEquals(item, auction.getItem(), "getItem() did not return the expected item");
-	}
+    Auction auction;
+    User user;
+    Item item;
 
-	@Test
-	void testGetStartDate() {
-		assertEquals(defStartDate, auction.getStartDate(), "getStartDate() did not return the expected date");
-	}
+    @BeforeEach
+    void setUp() {
 
-	@Test
-	void testGetEndDate() {
-		assertEquals(defEndDate, auction.getEndDate(), "getEndDate() did not return the expected date");
-	}
+        ItemManager itemManager = new ItemManager();
+        UserManager userManager = new UserManager();
+        AuctionManager auctionManager = new AuctionManager();
+        ItemController itemController = new ItemController(itemManager);
+        UserController userController = new UserController(userManager);
+        user = userController.createUser("Finch");
+        item = itemController.createItem("Cool Hat", user);
+        auction = new Auction(item, 50.0, 100.0);
+        auctionManager.addAuction(auction);
+        
+    }
 
-	@Test
-	void testGetbIN() {
-		assertEquals(bIN, auction.getbIN(), "getbIN() did not return the expected Buy-it-Now price");
-	}
+    @Test
+    void testAddBidAccepted() {
+    	System.out.println("Testing AddBid for accept condition");
+        auction.addBid(user, 60.0);
+        assertEquals(60.0, auction.getCurrentBid());
+    }
 
-	@Test
-	void testSetEndDate() {
-		Date newEndDate = new Date(defEndDate.getTime() + 86400000); //Adds one day to the end date
-		auction.setEndDate(newEndDate);
-		assertEquals(newEndDate, auction.getEndDate(), "setEndDate() did not update the end date properly");
-	}
+    @Test
+    void testAddBidRejected() {
+    	System.out.println("Testing AddBid for reject condition");
+        auction.addBid(user, 40.0);
+        assertNotEquals(40.0, auction.getCurrentBid());
+    }
 
-	@Test
-	void testGetCurrentBid() {
-		assertEquals(10.25, auction.getCurrentBid(), "getCurrentBid() did not return the expected bid value");
-	}
+    @Test
+    void testEndAuction() {
+    	System.out.println("Testing endAuction");
+        auction.endAuction();
+        assertFalse(auction.getActive());
+    }
 
-	@Test
-	void testGetAllBids() {
-		auction.addBid(12346, 15.75);
-		auction.getAllBids();
-	}
-//	@Test
-//	void testEndAuction() {
-//		auction.endAuction(item);
-//		assertFalse(auction.getIsActive(), "endAuction() did not set the auction as inactive");
-//	}
+    @Test
+    void testCheckDateAuctionEnded() {
+    	System.out.println("Testing checkDate on an auction that has ended");
+        auction.setEndDate(new Date(System.currentTimeMillis() - 1000)); // Set end date in the past
+        auction.checkDate();
+        assertFalse(auction.getActive());
+    }
 
-	@Test
-	void testCheckDate() {
-		auction.checkDate();
-	}
-
-	@Test
-	void testAddBidSuccess() {
-		auction.addBid(12346, 15.75);
-		assertEquals(15.75, auction.getCurrentBid(), "addBid() did not accept a valid bid");
-	}
-	
-	@Test
-	void testAddBidFailure() {
-		auction.addBid(12346, 5.00);
-		assertEquals(10.25, auction.getCurrentBid(), "addBid() accepted a bid lower than the current bid");
-	}
-
-	@Test
-	void testToString() {
-		String output = auction.toString();
-		assertTrue(output.contains("Current and Previous bids:"), "toString() output is not as expected");
-	}
-
+    @Test
+    void testCheckDateAuctionOngoing() {
+    	System.out.println("Testing checkDate on an auction that is ongoing");
+        auction.checkDate();
+        assertTrue(auction.getActive());
+    }
 }
