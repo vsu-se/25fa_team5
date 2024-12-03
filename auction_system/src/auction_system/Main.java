@@ -1,6 +1,9 @@
 package auction_system;
 
 	
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,15 +29,16 @@ import javafx.scene.layout.VBox;
 
 
 public class Main extends Application {
+	private FileManager fileManager = new FileManager();
 	private ObservableList<String> categories;
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
-	private AuctionManager auctionManager = new AuctionManager();
+	private AuctionManager auctionManager = fileManager.buildAuctionManager();
 	private AuctionController auctionController = new AuctionController(auctionManager);
 	private User currentUser;
 
-	private FileManager fileManager = new FileManager();
+//	private FileManager fileManager = new FileManager();
 
 
 
@@ -360,23 +364,89 @@ public class Main extends Application {
 			// US-6
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
-			TextField listField = new TextField();
+			ListView<Auction> activeAuctionList = new ListView<>();
+			auctionManager.getSoonestEndingActiveAuctions();
+			ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+			activeAuctionList.setItems(observableList);
+			activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+				@Override
+				protected void updateItem(Auction auction, boolean empty) {
+					super.updateItem(auction, empty);
 
-			HBox listBox = new HBox(listLbl, listField);
+					if (empty || auction == null || auction.getItem() == null) {
+						setText(null);
+					} else {
+						setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+					}
+				}
+			});
+
+			activeAuctionList.setPrefSize(300,300);
+
+			VBox listBox = new VBox(listLbl, activeAuctionList);
 			listBox.setSpacing(10);
 
+			// bidding area
+
+			Label space = new Label();
+			TextArea auctionDisplayArea = new TextArea();
+			auctionDisplayArea.setText("Select an auction from the list on the left to view auction information.");
+			auctionDisplayArea.setPrefSize(380,300);
+
+			TextField bidField = new TextField();
+			bidField.setPrefSize(100, 50);
+			Button bidButton = new Button("Submit bid");
+
+			Button showAuctionBids = new Button("Show this auction's bids");
+
+			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids);
+			enterBidBox.setSpacing(10);
+
+			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
+			biddingArea.setSpacing(10);
+
+
+
+			HBox auctionListWithBidding = new HBox(listBox, biddingArea);
+			auctionListWithBidding.setSpacing(50);
 
 			// US-7
 			// Allows user to bid on an auction
-			Button bidButton = new Button("Submit Bid");
-			HBox bidBox = new HBox(bidButton);
+
+			Button selectButton = new Button("Select auction");
+			HBox bidBox = new HBox(selectButton);
 			bidBox.setSpacing(10);
-			TextArea bidArea = new TextArea();
+
+			selectButton.setOnAction(e -> {
+				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+				auctionDisplayArea.setText(selectedAuction.toString());
+			});
 
 			bidButton.setOnAction(e -> {
-				String bid = bidArea.getText();
-				bidArea.appendText("Bid: " + bid + "\n");
-				bidArea.clear();
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+                else {
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					try {
+						auctionController.submitBid(selectedAuction, bidField);
+					}
+					catch (IllegalArgumentException ex) {
+						auctionDisplayArea.setText(ex.getMessage());
+					}
+
+                }
+            });
+			showAuctionBids.setOnAction(e -> {
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+				else {
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
+				}
 			});
 
 			// US-8
@@ -393,10 +463,10 @@ public class Main extends Application {
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			VBox userBox = new VBox(listBox, bidBox, bidArea, showBidsBox, showBidsArea, signOutButton);
+			VBox userBox = new VBox(auctionListWithBidding, bidBox, showBidsBox, showBidsArea, signOutButton);
 			userBox.setSpacing(10);
 
-			Scene scene = new Scene(userBox,600,400);
+			Scene scene = new Scene(userBox,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 
@@ -405,8 +475,6 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
-
-
 
 
 	private void saveAdminData(){

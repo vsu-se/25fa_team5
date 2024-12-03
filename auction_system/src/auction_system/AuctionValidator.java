@@ -137,6 +137,10 @@ public class AuctionValidator {
         }
     }
 
+    public boolean validateBid(String bidValue) {
+        return validateBin(bidValue); // return this for now, bid may need more validation
+    }
+
     public boolean allValid() {
         return false;
     }

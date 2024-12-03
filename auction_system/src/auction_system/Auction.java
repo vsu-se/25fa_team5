@@ -1,7 +1,9 @@
 package auction_system;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.lang.Double;
 
@@ -18,15 +20,17 @@ public class Auction {
 	private LocalTime startTime;
 	private LocalTime endTime;
 
+	private BidManager bidManager = new BidManager();
+
 	public Auction(Item item, LocalDate startingDate, LocalDate endingDate, LocalTime startTime, LocalTime endTime, double bIN) {
 		this.item = item;
 		this.startingDate = startingDate;
 		this.endingDate = endingDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startTime = startTime.truncatedTo(ChronoUnit.SECONDS);
+		this.endTime = endTime.truncatedTo(ChronoUnit.SECONDS);
 		this.bIN = bIN;
 		this.isActive = true;
-	}
+    }
 	
 	
 	public Auction(Item item, double startBid) {
@@ -51,6 +55,10 @@ public class Auction {
 		this.bIN = bIN;
 		System.out.println("Item #" + item.getID() + " for " + item.getName() + " begins at " + startDate + " with a starting bid of $" + startBid + " and a Buy-it-Now price of $" + bIN);
 		
+	}
+
+	public void setBidManager(BidManager bidManager) {
+		this.bidManager = bidManager;
 	}
 	
 	public Item getItem() {
@@ -117,6 +125,26 @@ public class Auction {
 			System.out.println("This auction is ongoing");
 		}
 	}
+
+	public LocalDate getLocalStartDate() {
+		return startingDate;
+	}
+
+	public LocalTime getLocalStartTime() {
+		return startTime;
+	}
+
+	public LocalDate getLocalEndDate() {
+		return endingDate;
+	}
+
+	public LocalTime getLocalEndTime() {
+		return endTime;
+	}
+
+	public LocalDateTime getLocalEndDateAndTime() {
+		return LocalDateTime.of(endingDate, endTime);
+	}
 	
 	public void addBid(int userID, double bid) {
 		if(this.getCurrentBid() < bid) {
@@ -125,6 +153,20 @@ public class Auction {
 		} else {
 			System.out.println("Bid Denied: Lower than Current Bid");
 		}
+	}
+
+	public boolean addBid2(Bid bid) {
+		if(bidManager.containsBid(bid)) {
+			return false;
+		}
+		else {
+			bidManager.addBid(bid);
+			return true;
+		}
+	}
+
+	public BidManager getBidManager() {
+		return bidManager;
 	}
 
 	@Override
@@ -156,14 +198,12 @@ public class Auction {
 	@Override
 	public String toString() {
 		String itemLine = this.item.toString();
-		String bidLine = "\nCurrent and Previous bids: " + bids.keySet();
-		String binLine = "\nBuy-it-Now Price: " + this.getbIN();
-		String startingDateLine = "\nStarting date: " + startingDate.toString();
-		String startTimeLine = "\nStarting time: " + startTime.toString();
-		String endingDateLine = "\nEnding date: " + endingDate.toString();
-		String endTimeLine = "\nEnding time: " + endTime.toString();
+	//	String bidLine = "Current and Previous bids: " + bidManager.toString(); //bids.keySet();
+		String binLine = "Buy-it-Now Price: " + this.getbIN();
+		String startingDateLine = "\nStarting time: " + startingDate.toString() + " at " + startTime.toString();
+		String endingDateLine = "\nEnding time: " + endingDate.toString() + " at " + endTime.toString();
 		String isActiveLine = "\nActive: " + getActive();
-		return itemLine + bidLine + binLine + startingDateLine + startTimeLine + endingDateLine
-				+ endTimeLine + isActiveLine + "\n";
+		return itemLine  + binLine + startingDateLine  + endingDateLine
+				 + isActiveLine + "\n";
 	}
 }

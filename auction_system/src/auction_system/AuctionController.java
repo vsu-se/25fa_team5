@@ -5,10 +5,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class AuctionController {
 	private AuctionManager auctionManager;
+    private FileManager fileManager = new FileManager();
 
 	public AuctionController(AuctionManager auctionManager) {
 		this.auctionManager = auctionManager;
@@ -60,7 +62,6 @@ public class AuctionController {
 
         if(validId && validName && validBin && validDates) {
             Item item = new Item(Integer.parseInt(id), name);
-        //    Auction auction = new Auction(item, 0, Double.parseDouble(bin));
             LocalDate localStartDate = LocalDate.parse(startDate);
             LocalTime localStartTime = LocalTime.parse(startTime);
             LocalDate localEndDate = LocalDate.parse(endDate);
@@ -69,7 +70,7 @@ public class AuctionController {
             Auction auction = new Auction(item, localStartDate, localEndDate, localStartTime, localEndTime, Double.parseDouble(bin));
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
-                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: \n", id, name, startDate, startTime, endDate, endTime, bin); // currentUser.getID());
+                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true"); // currentUser.getID());
                 itemListArea.appendText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
@@ -93,6 +94,34 @@ public class AuctionController {
         binField.clear();
     }
 
+    // when a bid is submitted...
+    // info of bidder saved, bid amount saved (if valid)
+    // date and time of bid saved
+    // this info needs to be saved somewhere
+    public void submitBid(Auction selectedAuction, TextField bidField) {
+        String bidValue = bidField.getText();
+        AuctionValidator validator = new AuctionValidator();
+        if(validator.validateBid(bidValue)) {
+            bidField.clear();
+            bidField.setText("bid is valid!");
+            LocalDateTime dateTime = LocalDateTime.now();
+            Bid bid = new Bid(selectedAuction.getItem().getID(), Double.parseDouble(bidValue), dateTime);
+            bidField.clear();
+            boolean result = selectedAuction.addBid2(bid);
+            if(result) {
+                bidField.setText(String.valueOf(result));
+                fileManager.saveBidInfo(bid);
+            }
+            else {
+                throw new IllegalArgumentException("Bid with that amount already exists, please re-enter bid amount.");
+            }
+        }
+        else {
+            bidField.clear();
+            bidField.setText("bid isn't valid :(");
+        }
+    }
+
     public int getAuctionListLength() {
         return auctionManager.getAuctionListLength();
     }
@@ -101,16 +130,9 @@ public class AuctionController {
         return auctionManager.getAuctionFromAuctionList(index);
     }
 
-    // needs to reworked, will show auctions from all users instead of the one logged in
-    // only displays the auctions added in current session
+    // needs to changed, will show auctions from all users instead of the one logged in
     public void showMyAuctions(TextArea registeredUserData) {
-    //    String auctionData = "";
         registeredUserData.clear();
-//        for(int i = 0; i < getAuctionListLength(); i++) {
-//            Auction auction = getAuctionFromAuctionList(i);
-//            auctionData += auction.toString() + "\n";
-//            registeredUserData.setText(auctionData);
-//        }
         registeredUserData.setText(toString());
     }
 
