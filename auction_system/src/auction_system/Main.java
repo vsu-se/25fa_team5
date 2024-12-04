@@ -667,7 +667,6 @@ public class Main extends Application {
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
-				currentUser = new User(1); // should be removed later in favor of code below:
 	//			currentUser = new User(username);
 			}
 			else if ("User".equals(userType)){
@@ -675,7 +674,6 @@ public class Main extends Application {
 			}
 			else if ("Registered User".equals(userType)){
 				sellerListItem(primaryStage);
-				currentUser = new User(2); // should be removed later in favor of code below:
 	//			currentUser = new User(username);
 			}
 		}
