@@ -34,7 +34,7 @@ public class Main extends Application {
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
-	private AuctionManager auctionManager = fileManager.buildAuctionManager();
+	private AuctionManager auctionManager = new AuctionManager();
 
 //	private AuctionManager auctionManager;
 
@@ -308,7 +308,8 @@ public class Main extends Application {
 					showAlert("Auction date and time error", exDates.getMessage());
 				}
 				catch (RuntimeException ex) {
-					showAlert("Auction date error", "Please enter date information.");
+					ex.printStackTrace(); // for testing
+					showAlert("Error", "Error with adding auction.");
 				}
 			});
 
@@ -328,7 +329,7 @@ public class Main extends Application {
 				// not yet implemented
 			});
 
-			TextArea registeredUserData = new TextArea();
+		//	TextArea registeredUserData = new TextArea();
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
@@ -394,7 +395,7 @@ public class Main extends Application {
 
 	//		TextArea registeredUserData = new TextArea();
 
-			Button signOutButton = new Button("Sign Out");
+	//		Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
 			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn);
@@ -432,7 +433,7 @@ public class Main extends Application {
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-            if (auctionManager != null) {
+            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
                 auctionManager.getSoonestEndingActiveAuctions();
 				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
 				activeAuctionList.setItems(observableList);
