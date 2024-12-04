@@ -1,19 +1,12 @@
 package auction_system;
 
 public class Item {
-	private int id;
 	private String name;
-	private User user;
+	private int id;
 
-	public Item(int id, String name, User user) { 
+	public Item(int id, String name) { 
 		this.id = id;
 		this.name = name;
-		this.user = user;
-		// After the constructor generates the item, it will need to be added to the itemList in itemManager
-	}
-
-	public int getID() {
-		return this.id;
 	}
 
 	public String getName() {
@@ -24,16 +17,18 @@ public class Item {
 		this.name = name;
 	}
 
-	public void setID(int ID) {
-		this.id = ID;
+	public int getID() {
+		return this.id;
+	}
+
+	public void setID(int id) {
+		this.id = id;
 	}
 
 	@Override
 	public String toString() {
-		String line1 = "Item ID: " + id + "\n";
-		String line2 = "Item Name: " + name + "\n";
-		String line3 = "Seller ID: " + user.getID() + "\n";
-		String line4 = "Seller Name: " + user.getName() + "\n";
-		return line1 + line2 + line3 + line4;
+		String line1 = "Item Name: " + name + "\n";
+		String line2 = "Item ID: " + id + "\n";
+		return line1 + line2;
 	}
 }
