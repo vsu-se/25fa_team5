@@ -28,5 +28,6 @@ public class User {
 	@Override
 	public String toString(){
 		String line1 = "Username: " + name;
+		return line1;
 	}
 }

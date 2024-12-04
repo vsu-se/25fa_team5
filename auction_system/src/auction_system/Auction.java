@@ -209,7 +209,7 @@ public class Auction {
 				 + isActiveLine + "\n";
 	}
 
-	private String getActive() {
-		return getActive();
+	public boolean getActive() {
+		return isActive;
 	}
 }
