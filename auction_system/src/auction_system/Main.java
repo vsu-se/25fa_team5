@@ -384,7 +384,7 @@ public class Main extends Application {
 			ListView<Auction> activeAuctionList = new ListView<>();
 
 			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-				auctionManager.getSoonestEndingActiveAuctions();
+				auctionManager.sortBySoonestEndingActiveAuctions();
 				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
