@@ -151,7 +151,7 @@ public class FileManager {
                     String[] auctionValues = line.trim().split(",");
                     Item item;
                     Auction auction;
-                    int id = Integer.parseInt(auctionValues[0].substring(auctionValues[0].indexOf(": ") + 2));
+                    int id = Integer.parseInt(auctionValues[0].substring(auctionValues[0].indexOf("ID: ") + 4));
                     String name = auctionValues[1].substring(auctionValues[1].indexOf(": ") + 2);
                     LocalDate startDate = LocalDate.parse(auctionValues[2].substring(auctionValues[2].indexOf(": ") + 2));
                     LocalTime startTime = LocalTime.parse(auctionValues[3].substring(auctionValues[3].indexOf(": ") + 2));
@@ -168,7 +168,7 @@ public class FileManager {
                 }
             }
             catch (IOException ex) {
-                System.out.println(ex);
+                System.out.println("this is the error");
             }
             catch (RuntimeException e) {
                 System.out.println(e);
@@ -189,7 +189,7 @@ public class FileManager {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] bidValues = line.trim().split(",");
-                    int ID = Integer.parseInt(bidValues[0].substring(bidValues[0].indexOf(": ") + 2));
+                    int ID = Integer.parseInt(bidValues[0].substring(bidValues[0].indexOf("ID: ") + 4));
                     if(ID == itemID) {
                         double bidAmount = Double.parseDouble(bidValues[1].substring(bidValues[1].indexOf(": ") + 2));
                         LocalDate date = LocalDate.parse(bidValues[2].substring(bidValues[2].indexOf(": ") + 2));
