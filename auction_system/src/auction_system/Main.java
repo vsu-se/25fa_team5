@@ -37,7 +37,6 @@ public class Main extends Application {
 	private CommissionController commissionController;
 	private PremiumController premiumController;
 	private AuctionManager auctionManager = new AuctionManager();
-//	private DateTimeManager dateTimeManager = new DateTimeManager();
 
 //	private AuctionManager auctionManager;
 
@@ -778,7 +777,6 @@ public class Main extends Application {
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
-				currentUser = new User(1); // should be removed later in favor of code below:
 	//			currentUser = new User(username);
 			}
 			else if ("User".equals(userType)){
@@ -786,7 +784,6 @@ public class Main extends Application {
 			}
 			else if ("Registered User".equals(userType)){
 				sellerListItem(primaryStage);
-				currentUser = new User(2); // should be removed later in favor of code below:
 	//			currentUser = new User(username);
 			}
 		}
@@ -806,6 +803,11 @@ public class Main extends Application {
 	}
 
 	public static void main(String[] args) {
+		// AuctionManager auctionManager = new AuctionManager();
+		// Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+		// 	auctionManager.shutDownScheduler();
+		// 	System.out.println("Auction Scheduler Stopped");
+		// }));
 		launch(args);
 	}
 }

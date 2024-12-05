@@ -32,6 +32,7 @@ public class AuctionManager {
         return auctionList.contains(auction);
     }
 
+
     // returns list of all auctions regardless of active or inactive
     public ArrayList<Auction> getAuctionList() {
         return auctionList;
