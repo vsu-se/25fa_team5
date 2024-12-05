@@ -34,6 +34,22 @@ public class BidManager {
         Collections.sort(bidList, new BidComparator());
     }
 
+
+    public double getWinningBid() {
+        Bid highest = new Bid(0);
+        for(int i = 0; i < bidList.size(); i++) {
+            if(bidList.get(i).getBidValue() > highest.getBidValue()) {
+                highest = bidList.get(i);
+            }
+        }
+        return highest.getBidValue();
+    }
+
+    // use before getWinningBid
+    public boolean checkIfEmpty() {
+        return bidList.isEmpty();
+    }
+
     @Override
     public String toString() {
         String line = "";
