@@ -37,7 +37,7 @@ public class Main extends Application {
 	private CommissionController commissionController;
 	private PremiumController premiumController;
 	private AuctionManager auctionManager = new AuctionManager();
-	private DateTimeManager dateTimeManager = new DateTimeManager();
+//	private DateTimeManager dateTimeManager = new DateTimeManager();
 
 //	private AuctionManager auctionManager;
 
@@ -172,26 +172,26 @@ public class Main extends Application {
 			Button resumeRealTimeBtn = new Button("Resume Real Time");
 			Label currentTimeLbl = new Label();
 
-			dateTimeManager.startRealTime(() -> {
-				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
-			});
+//			dateTimeManager.startRealTime(() -> {
+//				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+//			});
 
 			setDateTimeBtn.setOnAction(event -> {
 				LocalDate selectedDate = datePicker.getValue();
 				int selectedHour = hourSpinner.getValue();
 				int selectedMinute = minuteSpinner.getValue();
 
-				dateTimeManager.setSimulatedTime(selectedDate, selectedHour, selectedMinute);
+			//	dateTimeManager.setSimulatedTime(selectedDate, selectedHour, selectedMinute);
 
-				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+			//	currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
 			});
 
 			// US-15 Resume real time
-			resumeRealTimeBtn.setOnAction(event -> {
-				dateTimeManager.startRealTime(() -> {
-					currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
-				});
-			});
+//			resumeRealTimeBtn.setOnAction(event -> {
+//				dateTimeManager.startRealTime(() -> {
+//					currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+//				});
+//			});
 
 			HBox timeBox = new HBox(10, new Label("Time:"), hourSpinner, new Label(":"), minuteSpinner);
 
