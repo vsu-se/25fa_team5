@@ -168,7 +168,7 @@ public class FileManager {
                 }
             }
             catch (IOException ex) {
-                System.out.println("this is the error");
+                System.out.println(ex);
             }
             catch (RuntimeException e) {
                 System.out.println(e);
