@@ -2,7 +2,9 @@ package auction_system;
 
 	
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,7 +36,7 @@ public class Main extends Application {
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
-	private AuctionManager auctionManager = fileManager.buildAuctionManager();
+	private AuctionManager auctionManager = new AuctionManager();
 
 //	private AuctionManager auctionManager;
 
@@ -92,15 +94,15 @@ public class Main extends Application {
 			// US-1
 			Button returnButton = new Button("<-- User Selection");
 			TextField categoryField = new TextField("Enter category name:");
-	        Button addButton = new Button("Add Category");
-	        
-	        returnButton.setOnAction(e -> start(primaryStage));
-	        
-	        ListView<String> categoryListView = new ListView<>();
-            categories = FXCollections.observableArrayList();
-            categoryListView.setItems(categories);
-            
-            loadAdminData();
+			Button addButton = new Button("Add Category");
+
+			returnButton.setOnAction(e -> start(primaryStage));
+
+			ListView<String> categoryListView = new ListView<>();
+			categories = FXCollections.observableArrayList();
+			categoryListView.setItems(categories);
+
+			loadAdminData();
 
 
 			addButton.setOnAction(e -> {
@@ -158,6 +160,42 @@ public class Main extends Application {
 				}
 			});
 
+			// US-14 Set date/time
+			DatePicker datePicker = new DatePicker(LocalDate.now());
+			Spinner<Integer> hourSpinner = new Spinner<>(0, 23, LocalTime.now().getHour());
+			Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, LocalTime.now().getMinute());
+			hourSpinner.setPrefWidth(60);
+			minuteSpinner.setPrefWidth(60);
+
+			Button setDateTimeBtn = new Button("Set Date/Time");
+			Button resumeRealTimeBtn = new Button("Resume Real Time");
+			Label currentTimeLbl = new Label();
+
+//			dateTimeManager.startRealTime(() -> {
+//				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+//			});
+
+			setDateTimeBtn.setOnAction(event -> {
+				LocalDate selectedDate = datePicker.getValue();
+				int selectedHour = hourSpinner.getValue();
+				int selectedMinute = minuteSpinner.getValue();
+
+			//	dateTimeManager.setSimulatedTime(selectedDate, selectedHour, selectedMinute);
+
+			//	currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+			});
+
+			// US-15 Resume real time
+//			resumeRealTimeBtn.setOnAction(event -> {
+//				dateTimeManager.startRealTime(() -> {
+//					currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+//				});
+//			});
+
+			HBox timeBox = new HBox(10, new Label("Time:"), hourSpinner, new Label(":"), minuteSpinner);
+
+			VBox layout = new VBox(10, new Label("Set Date/Time:"), datePicker, timeBox, setDateTimeBtn, resumeRealTimeBtn, currentTimeLbl);
+			layout.setSpacing(15);
 
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveAdminData());
@@ -192,7 +230,7 @@ public class Main extends Application {
 			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, systemAdminBtns, systemAdminData, signOutButton);
 			systemBox2.setSpacing(10);
 
-			HBox systemBox = new HBox(systemBox1, systemBox2);
+			HBox systemBox = new HBox(systemBox1, systemBox2, layout);
 			systemBox.setSpacing(20);
 
 			Scene scene = new Scene(systemBox,700,400);
@@ -308,7 +346,8 @@ public class Main extends Application {
 					showAlert("Auction date and time error", exDates.getMessage());
 				}
 				catch (RuntimeException ex) {
-					showAlert("Auction date error", "Please enter date information.");
+					ex.printStackTrace(); // for testing
+					showAlert("Error", "Error with adding auction.");
 				}
 			});
 
@@ -328,7 +367,7 @@ public class Main extends Application {
 				// not yet implemented
 			});
 
-			TextArea registeredUserData = new TextArea();
+		//	TextArea registeredUserData = new TextArea();
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
@@ -338,37 +377,109 @@ public class Main extends Application {
 			Tab biddingTab = new Tab("Bidding");
 			biddingTab.setClosable(false);
 
-			Label biddingLabel = new Label("Place Bids Here:");
-			TextField itemNameField = new TextField();
-			itemNameField.setPromptText("Enter Item Name");
-			itemNameField.setMaxWidth(120);
+			// Lists all active auctions
+			Label listLbl = new Label("All Active Auctions: ");
+			ListView<Auction> activeAuctionList = new ListView<>();
 
-			TextField bidderNameField = new TextField();
-			bidderNameField.setPromptText("Bidder Name");
-			bidderNameField.setMaxWidth(120);
+			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
+				auctionManager.getSoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+				activeAuctionList.setItems(observableList);
+				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+					@Override
+					protected void updateItem(Auction auction, boolean empty) {
+						super.updateItem(auction, empty);
 
-			TextField bidAmountField = new TextField();
-			bidAmountField.setPromptText("Enter Bid Amount");
-			bidAmountField.setMaxWidth(120);
+						if (empty || auction == null || auction.getItem() == null) {
+							setText(null);
+						} else {
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+						}
+					}
+				});
+			}
 
-			Button placeBidButton = new Button("Place Bid");
-			TextArea bidHistoryArea = new TextArea();
-			bidHistoryArea.setEditable(false);
+			activeAuctionList.setPrefSize(300,300);
 
-			placeBidButton.setOnAction(e -> {
-				String itemName = itemNameField.getText();
-				String bidderName = bidderNameField.getText();
-				String bidAmount = bidAmountField.getText();
-				if (!itemName.isEmpty() && !bidderName.isEmpty() && !bidAmount.isEmpty()) {
-					bidHistoryArea.appendText("Bid Placed On Item: " + itemName + " -- $" + bidAmount + " by " + bidderName + "\n");
-					itemNameField.clear();
-					bidderNameField.clear();
-					bidAmountField.clear();
+			VBox listBox = new VBox(listLbl, activeAuctionList);
+			listBox.setSpacing(10);
+
+			// bidding area
+			Label space = new Label();
+			TextArea auctionDisplayArea = new TextArea();
+			auctionDisplayArea.setText("Select an auction from the list on the left to view auction information.");
+			auctionDisplayArea.setPrefSize(380,300);
+
+			TextField bidField = new TextField();
+			bidField.setPrefSize(100, 50);
+			Button bidButton = new Button("Submit bid");
+
+			Button showAuctionBids = new Button("Show this auction's bids");
+
+			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids);
+			enterBidBox.setSpacing(10);
+
+			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
+			biddingArea.setSpacing(10);
+
+			HBox auctionListWithBidding = new HBox(listBox, biddingArea);
+			auctionListWithBidding.setSpacing(50);
+
+			// US-7
+			// Allows user to bid on an auction
+			Button selectButton = new Button("Select auction");
+			HBox bidBox = new HBox(selectButton);
+			bidBox.setSpacing(10);
+
+			selectButton.setOnAction(e -> {
+				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+				auctionDisplayArea.setText(selectedAuction.toString());
+			});
+
+			bidButton.setOnAction(e -> {
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
 				}
 				else {
-					showAlert("Error", "All fields must be filled.");
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					try {
+						auctionController.submitBid(selectedAuction, bidField);
+					}
+					catch (IllegalArgumentException ex) {
+						auctionDisplayArea.setText(ex.getMessage());
+					}
+
 				}
 			});
+			showAuctionBids.setOnAction(e -> {
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+				else {
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
+				}
+			});
+
+			// US-8
+			// Shows all auctions user has bid on
+			Button showBidsButton = new Button("Show My Bids");
+			HBox showBidsBox = new HBox(showBidsButton);
+			showBidsBox.setSpacing(10);
+			TextArea showBidsArea = new TextArea();
+
+			showBidsButton.setOnAction(e -> {
+				showBidsArea.appendText("Bids: \n");
+			});
+
+		//	Button signOutButton = new Button("Sign Out");
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			VBox userBox = new VBox(auctionListWithBidding, bidBox, showBidsBox, showBidsArea, signOutButton);
+			userBox.setSpacing(10);
+			biddingTab.setContent(userBox);
 
 			// Reports tab
 			Tab reportsTab = new Tab("Reports");
@@ -394,7 +505,7 @@ public class Main extends Application {
 
 	//		TextArea registeredUserData = new TextArea();
 
-			Button signOutButton = new Button("Sign Out");
+	//		Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
 			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn);
@@ -410,7 +521,7 @@ public class Main extends Application {
 
 			tabPane.getTabs().addAll(listItemTab, biddingTab, reportsTab);
 
-			Scene scene = new Scene(tabPane,600,500);
+			Scene scene = new Scene(tabPane,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -432,7 +543,7 @@ public class Main extends Application {
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-            if (auctionManager != null) {
+            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
                 auctionManager.getSoonestEndingActiveAuctions();
 				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
 				activeAuctionList.setItems(observableList);
@@ -666,7 +777,6 @@ public class Main extends Application {
 		if (isValid){
 			if ("System Admin".equals(userType)){
 				systemAdminUser(primaryStage);
-				currentUser = new User(1); // should be removed later in favor of code below:
 	//			currentUser = new User(username);
 			}
 			else if ("User".equals(userType)){
@@ -674,7 +784,6 @@ public class Main extends Application {
 			}
 			else if ("Registered User".equals(userType)){
 				sellerListItem(primaryStage);
-				currentUser = new User(2); // should be removed later in favor of code below:
 	//			currentUser = new User(username);
 			}
 		}

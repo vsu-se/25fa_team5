@@ -148,14 +148,14 @@ public class Auction {
 		return LocalDateTime.of(endingDate, endTime);
 	}
 	
-	public void addBid(int userID, double bid) {
-		if(this.getCurrentBid() < bid) {
-			bids.put(bid, userID);
-			System.out.println("Bid Accepted");
-		} else {
-			System.out.println("Bid Denied from " + user.getName() + " Lower than Current Bid");
-		}
-	}
+//	public void addBid(int userID, double bid) {
+//		if(this.getCurrentBid() < bid) {
+//			bids.put(bid, userID);
+//			System.out.println("Bid Accepted");
+//		} else {
+//			System.out.println("Bid Denied from " + user.getName() + " Lower than Current Bid");
+//		}
+//	}
 
 	public boolean addBid2(Bid bid) {
 		if(bidManager.containsBid(bid)) {
@@ -207,5 +207,9 @@ public class Auction {
 		String isActiveLine = "\nActive: " + getActive();
 		return itemLine  + binLine + startingDateLine  + endingDateLine
 				 + isActiveLine + "\n";
+	}
+
+	public boolean getActive() {
+		return isActive;
 	}
 }
