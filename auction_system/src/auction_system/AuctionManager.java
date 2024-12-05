@@ -8,6 +8,8 @@ import java.util.Comparator;
 
 public class AuctionManager {
     private ArrayList<Auction> auctionList = new ArrayList<>();
+    private ArrayList<Auction> activeList = new ArrayList<>();
+    private ArrayList<Auction> inactiveList = new ArrayList<>();
 
     public AuctionManager() {
 
@@ -17,6 +19,7 @@ public class AuctionManager {
     //    auctionList.add(auction);
         if((!auctionList.contains(auction)) && auction.getActive()) {
             auctionList.add(auction);
+            activeList.add(auction);
         }
     }
 
@@ -38,7 +41,11 @@ public class AuctionManager {
         return auctionList;
     }
 
-    public void getSoonestEndingActiveAuctions() {
+    public ArrayList<Auction> getActiveList() {
+        return activeList;
+    }
+
+    public void sortBySoonestEndingActiveAuctions() {
         Comparator<Auction> auctionComparator = (Auction one, Auction two) -> one.getLocalEndDateAndTime().compareTo(two.getLocalEndDateAndTime());
         Collections.sort(auctionList, auctionComparator); // replace later with activeauctionlist
     }
@@ -53,17 +60,6 @@ public class AuctionManager {
     }
 
     public static void main(String[] arg) {
-        Item one = new Item(1, "name");
-        Auction auctionOne = new Auction(one, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
-        Item two = new Item(2, "name");
-        Auction auctionTwo = new Auction(two, LocalDate.now(), LocalDate.parse("2024-01-06"), LocalTime.now(), LocalTime.now(), 40);
-        Item three = new Item(3, "name");
-        Auction auctionThree = new Auction(three, LocalDate.now(), LocalDate.parse("2030-01-06"), LocalTime.now(), LocalTime.now(), 40);
-        AuctionManager auctionManager = new AuctionManager();
-        auctionManager.addAuction(auctionOne);
-        auctionManager.addAuction(auctionThree);
-        auctionManager.addAuction(auctionTwo);
-        auctionManager.getSoonestEndingActiveAuctions();
-        System.out.println(auctionManager.toString());
+
     }
 }

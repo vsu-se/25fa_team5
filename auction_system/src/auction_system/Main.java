@@ -1,9 +1,6 @@
 package auction_system;
 
 	
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -434,8 +431,8 @@ public class Main extends Application {
 			ListView<Auction> activeAuctionList = new ListView<>();
 
             if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-                auctionManager.getSoonestEndingActiveAuctions();
-				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+                auctionManager.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
 					@Override
