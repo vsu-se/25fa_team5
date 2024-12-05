@@ -1,10 +1,10 @@
 package auction_system;
 
-public class User {
+public class Item {
 	private String name;
 	private int id;
 
-	public User(int id, String name) {
+	public Item(int id, String name) { 
 		this.id = id;
 		this.name = name;
 	}
@@ -18,17 +18,17 @@ public class User {
 	}
 
 	public int getID() {
-		return id;
+		return this.id;
 	}
 
-	public void setID() {
+	public void setID(int id) {
 		this.id = id;
 	}
 
 	@Override
-	public String toString(){
-		String line1 = "Username: " + name;
-		return line1;
-
+	public String toString() {
+		String line1 = "Item Name: " + name + "\n";
+		String line2 = "Item ID: " + id + "\n";
+		return line1 + line2;
 	}
 }
