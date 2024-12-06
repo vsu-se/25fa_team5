@@ -39,13 +39,8 @@ public class Main extends Application {
 	private CommissionController commissionController;
 	private PremiumController premiumController;
 	private AuctionManager auctionManager = new AuctionManager();
-
-//	private AuctionManager auctionManager;
-
 	private AuctionController auctionController = new AuctionController(auctionManager);
 	private User currentUser;
-
-//	private FileManager fileManager = new FileManager();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -245,6 +240,7 @@ public class Main extends Application {
 
 	public void sellerListItem(Stage primaryStage, String username) {
 		try {
+			auctionManager = fileManager.buildAuctionManager();
 			primaryStage.setTitle("Seller");
 
 			TabPane tabPane = new TabPane();
@@ -330,10 +326,11 @@ public class Main extends Application {
 
 			Button saveDataButton = new Button("Save this auction");
 			saveDataButton.setOnAction(e -> {
-			//	itemListArea.setEditable(true);
-				saveRegisteredUserData(username, itemListArea);
-				itemListArea.clear();
-			});
+                if (!itemListArea.getText().isEmpty()) {
+                    saveRegisteredUserData(username, itemListArea);
+                    itemListArea.clear();
+                }
+            });
 
 			// US - 5
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
