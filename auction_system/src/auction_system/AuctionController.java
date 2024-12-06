@@ -71,7 +71,7 @@ public class AuctionController {
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
                 String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true"); // currentUser.getID());
-                itemListArea.appendText(itemDetails);
+                itemListArea.setText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
         }

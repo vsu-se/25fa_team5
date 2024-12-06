@@ -297,13 +297,15 @@ public class Main extends Application {
 			HBox addItemBox = new HBox(addItemButton);
 
 			TextArea itemListArea = new TextArea();
-
+			itemListArea.setEditable(false);
 
 			TextArea registeredUserData = new TextArea();
 
 			addItemButton.setOnAction(e -> {
 				try {
+				//	itemListArea.setEditable(true);
 					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea);
+				//	itemListArea.setEditable(false);
 				}
 				catch (IDException exID) {
 					showAlert("Auction ID error", exID.getMessage());
@@ -326,12 +328,16 @@ public class Main extends Application {
 				}
 			});
 
-			Button saveDataButton = new Button("Save Data");
-			saveDataButton.setOnAction(e -> saveRegisteredUserData(username, itemListArea));
+			Button saveDataButton = new Button("Save this auction");
+			saveDataButton.setOnAction(e -> {
+			//	itemListArea.setEditable(true);
+				saveRegisteredUserData(username, itemListArea);
+				itemListArea.clear();
+			});
 
 			// US - 5
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
-			showMyAuctionsBtn.setOnAction(e -> {loadRegisteredUserData(username, itemListArea);
+			showMyAuctionsBtn.setOnAction(e -> {//loadRegisteredUserData(username, itemListArea);
 
 
 			//	auctionController.showMyAuctions(registeredUserData);
@@ -457,6 +463,26 @@ public class Main extends Application {
 			userBox.setSpacing(10);
 			biddingTab.setContent(userBox);
 
+			// tab for show my auctions
+			Tab showMyAuctionsTab = new Tab("Show My Auctions");
+			showMyAuctionsTab.setClosable(false);
+
+			TextArea showMyAuctionsTextArea = new TextArea();
+			showMyAuctionsTextArea.setEditable(false);
+			Button showMyAuctionsButton = new Button("Show auctions");
+
+			showMyAuctionsButton.setOnAction(e -> {
+				fileManager.loadRegisteredUserData(username, showMyAuctionsTextArea);
+			});
+
+			VBox showMyAuctionsVBox = new VBox(showMyAuctionsTextArea, showMyAuctionsButton, signOutButton);
+
+			showMyAuctionsTab.setContent(showMyAuctionsVBox);
+
+			showMyAuctionsTab.setOnSelectionChanged(e -> {
+				showMyAuctionsTextArea.clear();
+			});
+
 			// Reports tab
 			Tab reportsTab = new Tab("Reports");
 			reportsTab.setClosable(false);
@@ -495,7 +521,7 @@ public class Main extends Application {
 			reports.setSpacing(10);
 			reportsTab.setContent(reports);
 
-			tabPane.getTabs().addAll(listItemTab, biddingTab, reportsTab);
+			tabPane.getTabs().addAll(listItemTab, biddingTab, showMyAuctionsTab, reportsTab);
 
 			Scene scene = new Scene(tabPane,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
