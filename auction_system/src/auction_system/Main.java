@@ -3,13 +3,11 @@ package auction_system;
 	
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 import javafx.application.Application;
@@ -299,11 +297,8 @@ public class Main extends Application {
 
 			addItemButton.setOnAction(e -> {
 				try {
-				//	itemListArea.setEditable(true);
 					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea);
-				//	itemListArea.setEditable(false);
-				}
-				catch (IDException exID) {
+				} catch (IDException exID) {
 					showAlert("Auction ID error", exID.getMessage());
 				}
 				catch (NameException exName) {
@@ -407,12 +402,17 @@ public class Main extends Application {
 			// US-7
 			// Allows user to bid on an auction
 			Button selectButton = new Button("Select auction");
-			HBox bidBox = new HBox(selectButton);
+			Button updateButton = new Button("Update list");
+			HBox bidBox = new HBox(selectButton, updateButton);
 			bidBox.setSpacing(10);
 
 			selectButton.setOnAction(e -> {
 				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
 				auctionDisplayArea.setText(selectedAuction.toString());
+			});
+
+			updateButton.setOnAction(e -> {
+				sellerListItem(primaryStage, username);
 			});
 
 			bidButton.setOnAction(e -> {

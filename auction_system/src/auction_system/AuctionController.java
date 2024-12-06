@@ -75,13 +75,6 @@ public class AuctionController {
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
         }
-
-//        String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s, User: \n", id, name, startDate, endDate, bin); // currentUser.getID());
-//        itemListArea.appendText(itemDetails);
-//        Item item = new Item(Integer.parseInt(id), name);
-//        Auction auction = new Auction(item, 0, Double.parseDouble(bin));
-//        auctionManager.addAuction(auction);
-//        clearFields(idField, nameField, startDateField, endDateField, binField);
     }
 
     private void clearFields(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField) {
