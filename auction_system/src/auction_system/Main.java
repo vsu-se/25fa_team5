@@ -1,6 +1,13 @@
 package auction_system;
 
 	
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -26,15 +33,19 @@ import javafx.scene.layout.VBox;
 
 
 public class Main extends Application {
+	private FileManager fileManager = new FileManager();
 	private ObservableList<String> categories;
 	private CategoryController categoryController;
 	private CommissionController commissionController;
 	private PremiumController premiumController;
+	private AuctionManager auctionManager = new AuctionManager();
 
-	private FileManager fileManager = new FileManager();
+//	private AuctionManager auctionManager;
 
+	private AuctionController auctionController = new AuctionController(auctionManager);
+	private User currentUser;
 
-
+//	private FileManager fileManager = new FileManager();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -49,10 +60,10 @@ public class Main extends Application {
 		    SystemAdminCheckBox.setOnAction(e -> login(primaryStage, "System Admin"));
 		    RegisteredUserCheckBox.setOnAction(e -> login(primaryStage, "Registered User"));
 		    UserCheckBox.setOnAction(e -> login(primaryStage, "User"));
-
+		    
 		    Button createAccountButton = new Button("Create Account");
       createAccountButton.setOnAction(e -> createAccount());
-
+			
 		    VBox UserBox = new VBox(statusLbl, SystemAdminCheckBox, UserCheckBox, RegisteredUserCheckBox, createAccountButton);
 		    Scene scene = new Scene(UserBox,250,250);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -78,19 +89,19 @@ public class Main extends Application {
 
 
 
+
 			// US-1
 			Button returnButton = new Button("<-- User Selection");
-			TextField categoryField = new TextField("Enter category name");
+			TextField categoryField = new TextField("Enter category name:");
+			Button addButton = new Button("Add Category");
 
-	        Button addButton = new Button("Add Category");
+			returnButton.setOnAction(e -> start(primaryStage));
 
-	        returnButton.setOnAction(e -> start(primaryStage));
+			ListView<String> categoryListView = new ListView<>();
+			categories = FXCollections.observableArrayList();
+			categoryListView.setItems(categories);
 
-	        ListView<String> categoryListView = new ListView<>();
-            categories = FXCollections.observableArrayList();
-            categoryListView.setItems(categories);
-
-            loadAdminData();
+			loadAdminData();
 
 
 			addButton.setOnAction(e -> {
@@ -111,39 +122,34 @@ public class Main extends Application {
 			});
 
 			// US-2
-			TextField commissionField = new TextField("Enter commission");
+			TextField commissionField = new TextField();
+			commissionField.setPromptText("Enter commission");
+			commissionField.setMaxWidth(130);
 			Button setCommissionButton = new Button("Set Seller Commission");
 			Label currentCommissionLbl = new Label("Current Commission: " + commissionController.getSellerCommission() + "%");
 
-
 			setCommissionButton.setOnAction(e -> {
-				String commissionText = commissionField.getText().trim();
 				try {
-					double commissionValue = Double.parseDouble(commissionText);
-					commissionController.setSellerCommission(commissionValue);
+					commissionController.setSellerCommission(commissionField.getText());
 					currentCommissionLbl.setText("Current Commission: " + commissionController.getSellerCommission() + "%");
 					commissionField.clear();
-
-				}
-				catch (NumberFormatException ex) {
+				} catch (NumberFormatException ex) {
 					showAlert("Invalid Input", "Please enter a valid number for commission percentage.");
-				}
-				catch (IllegalArgumentException ex) {
+				} catch (IllegalArgumentException ex) {
 					showAlert("Invalid Input", ex.getMessage());
 				}
 			});
 
 			// US-3
-			TextField premiumField = new TextField("Enter premium");
+			TextField premiumField = new TextField();
+			premiumField.setPromptText("Enter premium");
+			premiumField.setMaxWidth(120);
 			Button setPremiumButton = new Button("Set Buyer Premium ");
 			Label currentPremiumLbl = new Label("Current Premium: " + premiumController.getBuyerPremium() + "%");
 
-
 			setPremiumButton.setOnAction(e -> {
-				String premiumText = premiumField.getText().trim();
 				try {
-					double premiumValue = Double.parseDouble(premiumText);
-					premiumController.setBuyerPremium(premiumValue);
+					premiumController.setBuyerPremium(premiumField.getText());
 					currentPremiumLbl.setText("Current Premium: " + premiumController.getBuyerPremium() + "%");
 					premiumField.clear();
 				} catch (NumberFormatException ex) {
@@ -153,6 +159,42 @@ public class Main extends Application {
 				}
 			});
 
+			// US-14 Set date/time
+			DatePicker datePicker = new DatePicker(LocalDate.now());
+			Spinner<Integer> hourSpinner = new Spinner<>(0, 23, LocalTime.now().getHour());
+			Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, LocalTime.now().getMinute());
+			hourSpinner.setPrefWidth(60);
+			minuteSpinner.setPrefWidth(60);
+
+			Button setDateTimeBtn = new Button("Set Date/Time");
+			Button resumeRealTimeBtn = new Button("Resume Real Time");
+			Label currentTimeLbl = new Label();
+
+//			dateTimeManager.startRealTime(() -> {
+//				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+//			});
+
+			setDateTimeBtn.setOnAction(event -> {
+				LocalDate selectedDate = datePicker.getValue();
+				int selectedHour = hourSpinner.getValue();
+				int selectedMinute = minuteSpinner.getValue();
+
+			//	dateTimeManager.setSimulatedTime(selectedDate, selectedHour, selectedMinute);
+
+			//	currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+			});
+
+			// US-15 Resume real time
+//			resumeRealTimeBtn.setOnAction(event -> {
+//				dateTimeManager.startRealTime(() -> {
+//					currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+//				});
+//			});
+
+			HBox timeBox = new HBox(10, new Label("Time:"), hourSpinner, new Label(":"), minuteSpinner);
+
+			VBox layout = new VBox(10, new Label("Set Date/Time:"), datePicker, timeBox, setDateTimeBtn, resumeRealTimeBtn, currentTimeLbl);
+			layout.setSpacing(15);
 
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveAdminData());
@@ -179,15 +221,15 @@ public class Main extends Application {
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-
+			
 			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
-
+			
 
 			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, systemAdminBtns, systemAdminData, signOutButton);
 			systemBox2.setSpacing(10);
 
-			HBox systemBox = new HBox(systemBox1, systemBox2);
+			HBox systemBox = new HBox(systemBox1, systemBox2, layout);
 			systemBox.setSpacing(20);
 
 			Scene scene = new Scene(systemBox,700,400);
@@ -204,6 +246,13 @@ public class Main extends Application {
 	public void sellerListItem(Stage primaryStage, String username) {
 		try {
 			primaryStage.setTitle("Seller");
+
+			TabPane tabPane = new TabPane();
+
+			// List item tab
+			Tab listItemTab = new Tab("List Item");
+			listItemTab.setClosable(false);
+
 			Label ListItemLbl = new Label("List Item to Auction: ");
 			HBox listItemBox = new HBox(ListItemLbl);
 			listItemBox.setSpacing(10);
@@ -219,14 +268,32 @@ public class Main extends Application {
 			nameBox.setSpacing(10);
 
 			Label startDateLbl = new Label("Enter Start Date: ");
-			TextField startDateField = new TextField();
-			HBox startDateBox = new HBox(startDateLbl, startDateField);
+	//		TextField startDateField = new TextField();
+			DatePicker startDatePicker = new DatePicker();
+			Label startTimeLbl = new Label("Enter start time (HH:MM:ss): ");
+			TextField startTimeField = new TextField();
+			HBox startDateBox = new HBox(startDateLbl, startDatePicker, startTimeLbl, startTimeField);
 			startDateBox.setSpacing(10);
 
+			startDatePicker.setOnAction(e -> {
+//				LocalDate date = startDatePicker.getValue();
+//				DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//				String stringDate = format.format(date);
+//				startDateField.setText(stringDate);
+				startDatePicker.setEditable(false);
+			});
+
 			Label endDateLbl = new Label("Enter End Date: ");
-			TextField endDateField = new TextField();
-			HBox endDateBox = new HBox(endDateLbl, endDateField);
+	//		TextField endDateField = new TextField();
+			DatePicker endDatePicker = new DatePicker();
+			Label endTimeLbl = new Label("Enter end time (HH:MM:ss): ");
+			TextField endTimeField = new TextField();
+			HBox endDateBox = new HBox(endDateLbl, endDatePicker, endTimeLbl, endTimeField);
 			endDateBox.setSpacing(10);
+
+			endDatePicker.setOnAction(e -> {
+				endDatePicker.setEditable(false);
+			});
 
 			Label binLbl = new Label("Enter BIN (Buy-It-Now) Price: ");
 			TextField binField = new TextField();
@@ -238,22 +305,48 @@ public class Main extends Application {
 			TextArea itemListArea = new TextArea();
 
 
+			TextArea registeredUserData = new TextArea();
 
 			addItemButton.setOnAction(e -> {
-				String id = idField.getText();
-				String name = nameField.getText();
-				String startDate = startDateField.getText();
-				String endDate = endDateField.getText();
-				String bin = binField.getText();
+//				String id = idField.getText();
+//				String name = nameField.getText();
+//				String startDate = startDateField.getText();
+//				String endDate = endDateField.getText();
+//				String bin = binField.getText();
 
-				String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s\n", id, name, startDate, endDate, bin);
-				itemListArea.appendText(itemDetails);
+//				String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s, User: %d\n", id, name, startDate, endDate, bin, currentUser.getID());
+//				itemListArea.appendText(itemDetails);
 
-				idField.clear();
-				nameField.clear();
-				startDateField.clear();
-				endDateField.clear();
-				binField.clear();
+//				idField.clear();
+//				nameField.clear();
+//				startDateField.clear();
+//				endDateField.clear();
+//				binField.clear();
+				try {
+					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea);
+				}
+				catch (IDException exID) {
+					showAlert("Auction ID error", exID.getMessage());
+				}
+				catch (NameException exName) {
+					showAlert("Auction name error", exName.getMessage());
+				}
+				catch (TimeException exTime) {
+					showAlert("Auction time error", exTime.getMessage());
+				}
+//				catch (NullPointerException exNullDates) {
+//					showAlert("Auction date error", exNullDates.getMessage());
+//				}
+				catch (BinException exBin) {
+					showAlert("Auction BIN error", exBin.getMessage());
+				}
+				catch (IllegalArgumentException exDates) {
+					showAlert("Auction date and time error", exDates.getMessage());
+				}
+				catch (RuntimeException ex) {
+					ex.printStackTrace(); // for testing
+					showAlert("Error", "Error with adding auction.");
+				}
 			});
 
 			Button saveDataButton = new Button("Save Data");
@@ -262,34 +355,172 @@ public class Main extends Application {
 			// US - 5
 			Button showMyAuctionsBtn = new Button("Show My Auctions");
 			showMyAuctionsBtn.setOnAction(e -> {loadRegisteredUserData(username, itemListArea);
-				// not yet implemented
+
+
+			//	auctionController.showMyAuctions(registeredUserData);
+
 			});
 			// US - 13
 			Button bidHistoryBtn = new Button("Show Bid History");
 			bidHistoryBtn.setOnAction(e -> {
 				// not yet implemented
 			});
-			// US - 11
-			Button sellersReportBtn = new Button("Show Sellers Report");
-			sellersReportBtn.setOnAction(e -> {
-				// not yet implemented
-			});
-			// US - 12
-			Button buyersReportBtn = new Button("Show Buyers Report");
-			buyersReportBtn.setOnAction(e -> {
-				// not yet implemented
-			});
 
-			TextArea registeredUserData = new TextArea();
+		//	TextArea registeredUserData = new TextArea();
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn, sellersReportBtn, buyersReportBtn);
+			// Bidding tab
+			// Will be changed
+			Tab biddingTab = new Tab("Bidding");
+			biddingTab.setClosable(false);
+
+			// Lists all active auctions
+			Label listLbl = new Label("All Active Auctions: ");
+			ListView<Auction> activeAuctionList = new ListView<>();
+
+			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
+				auctionManager.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+				activeAuctionList.setItems(observableList);
+				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+					@Override
+					protected void updateItem(Auction auction, boolean empty) {
+						super.updateItem(auction, empty);
+
+						if (empty || auction == null || auction.getItem() == null) {
+							setText(null);
+						} else {
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+						}
+					}
+				});
+			}
+
+			activeAuctionList.setPrefSize(300,300);
+
+			VBox listBox = new VBox(listLbl, activeAuctionList);
+			listBox.setSpacing(10);
+
+			// bidding area
+			Label space = new Label();
+			TextArea auctionDisplayArea = new TextArea();
+			auctionDisplayArea.setText("Select an auction from the list on the left to view auction information.");
+			auctionDisplayArea.setPrefSize(380,300);
+
+			TextField bidField = new TextField();
+			bidField.setPrefSize(100, 50);
+			Button bidButton = new Button("Submit bid");
+
+			Button showAuctionBids = new Button("Show this auction's bids");
+
+			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids);
+			enterBidBox.setSpacing(10);
+
+			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
+			biddingArea.setSpacing(10);
+
+			HBox auctionListWithBidding = new HBox(listBox, biddingArea);
+			auctionListWithBidding.setSpacing(50);
+
+			// US-7
+			// Allows user to bid on an auction
+			Button selectButton = new Button("Select auction");
+			HBox bidBox = new HBox(selectButton);
+			bidBox.setSpacing(10);
+
+			selectButton.setOnAction(e -> {
+				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+				auctionDisplayArea.setText(selectedAuction.toString());
+			});
+
+			bidButton.setOnAction(e -> {
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+				else {
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					try {
+						auctionController.submitBid(selectedAuction, bidField);
+					}
+					catch (IllegalArgumentException ex) {
+						auctionDisplayArea.setText(ex.getMessage());
+					}
+
+				}
+			});
+			showAuctionBids.setOnAction(e -> {
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+				else {
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
+				}
+			});
+
+			// US-8
+			// Shows all auctions user has bid on
+			Button showBidsButton = new Button("Show My Bids");
+			HBox showBidsBox = new HBox(showBidsButton);
+			showBidsBox.setSpacing(10);
+			TextArea showBidsArea = new TextArea();
+
+			showBidsButton.setOnAction(e -> {
+				showBidsArea.appendText("Bids: \n");
+			});
+
+		//	Button signOutButton = new Button("Sign Out");
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			VBox userBox = new VBox(auctionListWithBidding, bidBox, showBidsBox, showBidsArea, signOutButton);
+			userBox.setSpacing(10);
+			biddingTab.setContent(userBox);
+
+			// Reports tab
+			Tab reportsTab = new Tab("Reports");
+			reportsTab.setClosable(false);
+
+			// US - 11
+			Label sellersReportLbl = new Label ("Sellers Report:");
+			TextArea sellersReportData = new TextArea();
+			Button sellersReportBtn = new Button("Show Sellers Report");
+
+			sellersReportBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+
+			// US - 12
+			Label buyersReportLbl = new Label ("Buyers Report:");
+			TextArea buyersReportData = new TextArea();
+			Button buyersReportBtn = new Button("Show Buyers Report");
+
+			buyersReportBtn.setOnAction(e -> {
+				// not yet implemented
+			});
+
+	//		TextArea registeredUserData = new TextArea();
+
+	//		Button signOutButton = new Button("Sign Out");
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn);
 			myAuctionsBox.setSpacing(10);
+
 			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, registeredUserData, signOutButton);
 			itemBox.setSpacing(10);
-			Scene scene = new Scene(itemBox,600,500);
+			listItemTab.setContent(itemBox);
+
+			VBox reports = new VBox(sellersReportLbl, sellersReportData, sellersReportBtn, buyersReportLbl, buyersReportData, buyersReportBtn);
+			reports.setSpacing(10);
+			reportsTab.setContent(reports);
+
+			tabPane.getTabs().addAll(listItemTab, biddingTab, reportsTab);
+
+			Scene scene = new Scene(tabPane,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -300,7 +531,6 @@ public class Main extends Application {
 	}
 
 
-
 	// User Page / Not completed
 	public void User(Stage primaryStage) {
 		try {
@@ -309,23 +539,107 @@ public class Main extends Application {
 			// US-6
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
-			TextField listField = new TextField();
+			ListView<Auction> activeAuctionList = new ListView<>();
 
-			HBox listBox = new HBox(listLbl, listField);
+            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
+                auctionManager.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
+				activeAuctionList.setItems(observableList);
+				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+					@Override
+					protected void updateItem(Auction auction, boolean empty) {
+						super.updateItem(auction, empty);
+
+						if (empty || auction == null || auction.getItem() == null) {
+							setText(null);
+						} else {
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+						}
+					}
+				});
+            }
+//            ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+//			activeAuctionList.setItems(observableList);
+//			activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+//				@Override
+//				protected void updateItem(Auction auction, boolean empty) {
+//					super.updateItem(auction, empty);
+//
+//					if (empty || auction == null || auction.getItem() == null) {
+//						setText(null);
+//					} else {
+//						setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+//					}
+//				}
+//			});
+
+
+			activeAuctionList.setPrefSize(300,300);
+
+			VBox listBox = new VBox(listLbl, activeAuctionList);
 			listBox.setSpacing(10);
 
+			// bidding area
+
+			Label space = new Label();
+			TextArea auctionDisplayArea = new TextArea();
+			auctionDisplayArea.setText("Select an auction from the list on the left to view auction information.");
+			auctionDisplayArea.setPrefSize(380,300);
+
+			TextField bidField = new TextField();
+			bidField.setPrefSize(100, 50);
+			Button bidButton = new Button("Submit bid");
+
+			Button showAuctionBids = new Button("Show this auction's bids");
+
+			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids);
+			enterBidBox.setSpacing(10);
+
+			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
+			biddingArea.setSpacing(10);
+
+
+
+			HBox auctionListWithBidding = new HBox(listBox, biddingArea);
+			auctionListWithBidding.setSpacing(50);
 
 			// US-7
 			// Allows user to bid on an auction
-			Button bidButton = new Button("Submit Bid");
-			HBox bidBox = new HBox(bidButton);
+
+			Button selectButton = new Button("Select auction");
+			HBox bidBox = new HBox(selectButton);
 			bidBox.setSpacing(10);
-			TextArea bidArea = new TextArea();
+
+			selectButton.setOnAction(e -> {
+				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+				auctionDisplayArea.setText(selectedAuction.toString());
+			});
 
 			bidButton.setOnAction(e -> {
-				String bid = bidArea.getText();
-				bidArea.appendText("Bid: " + bid + "\n");
-				bidArea.clear();
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+                else {
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					try {
+						auctionController.submitBid(selectedAuction, bidField);
+					}
+					catch (IllegalArgumentException ex) {
+						auctionDisplayArea.setText(ex.getMessage());
+					}
+
+                }
+            });
+			showAuctionBids.setOnAction(e -> {
+				Auction selectedAuction;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+				else {
+					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
+				}
 			});
 
 			// US-8
@@ -342,10 +656,10 @@ public class Main extends Application {
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			VBox userBox = new VBox(listBox, bidBox, bidArea, showBidsBox, showBidsArea, signOutButton);
+			VBox userBox = new VBox(auctionListWithBidding, bidBox, showBidsBox, showBidsArea, signOutButton);
 			userBox.setSpacing(10);
 
-			Scene scene = new Scene(userBox,600,400);
+			Scene scene = new Scene(userBox,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
 
@@ -354,8 +668,6 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
-
-
 
 
 	private void saveAdminData(){
@@ -449,7 +761,6 @@ public class Main extends Application {
 	}
 
 
-
 	private void saveCredentials(String username, String password, String userType){
 		fileManager.saveCredentials(username,password, userType);
 	}
@@ -516,6 +827,11 @@ public class Main extends Application {
 	}
 
 	public static void main(String[] args) {
+		// AuctionManager auctionManager = new AuctionManager();
+		// Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+		// 	auctionManager.shutDownScheduler();
+		// 	System.out.println("Auction Scheduler Stopped");
+		// }));
 		launch(args);
 	}
 }
