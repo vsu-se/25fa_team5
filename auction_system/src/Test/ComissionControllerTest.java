@@ -13,8 +13,8 @@ class ComissionControllerTest {
 		CommissionController controller = new CommissionController();
 		double expectedOutput = 0.0;
 		assertEquals(expectedOutput, controller.getSellerCommission());
-	}
-	
+	}	
+
 //	@DisplayName("Test setSellerCommission")
 //	@Test
 //	void testSetCommission() {
