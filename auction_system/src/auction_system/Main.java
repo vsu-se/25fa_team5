@@ -268,7 +268,6 @@ public class Main extends Application {
 			nameBox.setSpacing(10);
 
 			Label startDateLbl = new Label("Enter Start Date: ");
-	//		TextField startDateField = new TextField();
 			DatePicker startDatePicker = new DatePicker();
 			Label startTimeLbl = new Label("Enter start time (HH:MM:ss): ");
 			TextField startTimeField = new TextField();
@@ -276,15 +275,10 @@ public class Main extends Application {
 			startDateBox.setSpacing(10);
 
 			startDatePicker.setOnAction(e -> {
-//				LocalDate date = startDatePicker.getValue();
-//				DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-//				String stringDate = format.format(date);
-//				startDateField.setText(stringDate);
 				startDatePicker.setEditable(false);
 			});
 
 			Label endDateLbl = new Label("Enter End Date: ");
-	//		TextField endDateField = new TextField();
 			DatePicker endDatePicker = new DatePicker();
 			Label endTimeLbl = new Label("Enter end time (HH:MM:ss): ");
 			TextField endTimeField = new TextField();
@@ -308,20 +302,6 @@ public class Main extends Application {
 			TextArea registeredUserData = new TextArea();
 
 			addItemButton.setOnAction(e -> {
-//				String id = idField.getText();
-//				String name = nameField.getText();
-//				String startDate = startDateField.getText();
-//				String endDate = endDateField.getText();
-//				String bin = binField.getText();
-
-//				String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s, User: %d\n", id, name, startDate, endDate, bin, currentUser.getID());
-//				itemListArea.appendText(itemDetails);
-
-//				idField.clear();
-//				nameField.clear();
-//				startDateField.clear();
-//				endDateField.clear();
-//				binField.clear();
 				try {
 					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea);
 				}
@@ -334,9 +314,6 @@ public class Main extends Application {
 				catch (TimeException exTime) {
 					showAlert("Auction time error", exTime.getMessage());
 				}
-//				catch (NullPointerException exNullDates) {
-//					showAlert("Auction date error", exNullDates.getMessage());
-//				}
 				catch (BinException exBin) {
 					showAlert("Auction BIN error", exBin.getMessage());
 				}
