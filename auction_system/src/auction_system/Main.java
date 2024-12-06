@@ -423,7 +423,7 @@ public class Main extends Application {
 				else {
 					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
 					try {
-						auctionController.submitBid(selectedAuction, bidField);
+						auctionController.submitBid(selectedAuction, bidField, currentUser);
 					}
 					catch (IllegalArgumentException ex) {
 						auctionDisplayArea.setText(ex.getMessage());
@@ -623,7 +623,7 @@ public class Main extends Application {
                 else {
 					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
 					try {
-						auctionController.submitBid(selectedAuction, bidField);
+				//		auctionController.submitBid(selectedAuction, bidField);
 					}
 					catch (IllegalArgumentException ex) {
 						auctionDisplayArea.setText(ex.getMessage());
@@ -799,8 +799,10 @@ public class Main extends Application {
 					systemAdminUser(primaryStage);
 				} else if ("User".equals(userType)) {
 					User(primaryStage);
+					currentUser = new User(username);
 				} else if ("Registered User".equals(userType)) {
 					sellerListItem(primaryStage, username);
+					currentUser = new User(username);
 				} else {
 					showAlert("Error", "Invalid user type.");
 				}

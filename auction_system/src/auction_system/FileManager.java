@@ -231,8 +231,10 @@ public class FileManager {
                         double bidAmount = Double.parseDouble(bidValues[1].substring(bidValues[1].indexOf(": ") + 2));
                         LocalDate date = LocalDate.parse(bidValues[2].substring(bidValues[2].indexOf(": ") + 2));
                         LocalTime time = LocalTime.parse(bidValues[3].substring(bidValues[3].indexOf(": ") + 2));
+                        String username = bidValues[4].substring(bidValues[4].indexOf(": ") + 2);
                         LocalDateTime dateTime = LocalDateTime.of(date, time);
-                        Bid bid = new Bid(ID, bidAmount, dateTime);
+                        User user = new User(username);
+                        Bid bid = new Bid(ID, bidAmount, dateTime, user);
                         bidManager.addBid(bid);
                     }
                 }
