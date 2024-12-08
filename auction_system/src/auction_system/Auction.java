@@ -22,6 +22,7 @@ public class Auction {
 	private LocalTime endTime;
 
 	private BidManager bidManager = new BidManager();
+	private double winningBid;
 
 	public Auction(Item item, LocalDate startingDate, LocalDate endingDate, LocalTime startTime, LocalTime endTime, double bIN) {
 		this.item = item;
@@ -196,6 +197,16 @@ public class Auction {
 //		}
 //		return line1 + line2 + line3 + line4 + line5 + line6;
 //	}
+
+	public void findWinningBid() {
+		if(!bidManager.checkIfEmpty()) {
+			winningBid = bidManager.getWinningBid();
+		}
+	}
+
+	public double getWinningBid() {
+		return winningBid;
+	}
 
 	@Override
 	public String toString() {

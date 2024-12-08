@@ -28,6 +28,10 @@ public class Bid {
         this.user = user;
     }
 
+    public Bid(double bidValue) {
+        this.bidValue = bidValue;
+    }
+
     public double getBidValue() {
         return bidValue;
     }
