@@ -124,14 +124,14 @@ public class Auction {
 	}
 
 	public boolean checkDate() {
-		Calendar c = Calendar.getInstance();
-		Date now = c.getTime();
-		if(!isActive || now.after(endDate)) {
-			isActive = false;
+		LocalDate currentDate = LocalDate.now();
+		LocalTime currentTime = LocalTime.now();
+		if(!isActive || currentDate.isAfter(endingDate) || (currentDate.isEqual(endingDate) && currentTime.isAfter(endTime))) {
 			return true;
 		}
 		return false;
 	}
+}
 
 	public LocalDate getLocalStartDate() {
 		return startingDate;
