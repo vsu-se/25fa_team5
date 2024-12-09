@@ -1,21 +1,21 @@
 package auction_system;
 
-public class User {
-	private int id;
-	private String name;
+import java.util.ArrayList;
 
-	public User(int id, String name) { // Constructor needs to be reworked to auto generate id to a specified format that checks for duplicates
+public class User {
+	private String name;
+	private int id;
+	private ArrayList<Auction> wonAuctions = new ArrayList<>();
+	private ArrayList<Auction> listedAuctions = new ArrayList<>();
+	private ArrayList<Auction> bidOnAuctions = new ArrayList<>();
+
+	public User(int id, String name) {
 		this.id = id;
 		this.name = name;
-		// After the user is constructed, it will need to be added to the userList in UserManager
 	}
 
-	public int getID() {
-		return this.id;
-	}
-
-	public void setID(int id) {
-		this.id = id;
+	public User(String name) {
+		this.name = name;
 	}
 
 	public String getName() {
@@ -24,5 +24,29 @@ public class User {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getID() {
+		return id;
+	}
+
+	public void setID() {
+		this.id = id;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof User user) {
+			return this.name.equals(user.getName());
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public String toString(){
+		String line1 = "Username: " + name;
+		return line1;
 	}
 }
