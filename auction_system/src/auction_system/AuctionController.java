@@ -23,7 +23,7 @@ public class AuctionController {
 //        else throw new IllegalArgumentException("Cannot add, auction ID already exists");
 //    }
 
-    public void addAuction(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField, TextArea itemListArea) {
+    public void addAuction(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField, TextArea itemListArea, String username) {
         String id = idField.getText();
         String name = nameField.getText();
         String startDate = String.valueOf(startDatePicker.getValue());
@@ -68,20 +68,14 @@ public class AuctionController {
             LocalTime localEndTime = LocalTime.parse(endTime);
 
             Auction auction = new Auction(item, localStartDate, localEndDate, localStartTime, localEndTime, Double.parseDouble(bin));
+            auction.setUser(username);
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
-                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true"); // currentUser.getID());
-                itemListArea.appendText(itemDetails);
+                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true");
+                itemListArea.setText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
         }
-
-//        String itemDetails = String.format("ID: %s, Name: %s, Start: %s, End: %s, BIN: $%s, User: \n", id, name, startDate, endDate, bin); // currentUser.getID());
-//        itemListArea.appendText(itemDetails);
-//        Item item = new Item(Integer.parseInt(id), name);
-//        Auction auction = new Auction(item, 0, Double.parseDouble(bin));
-//        auctionManager.addAuction(auction);
-//        clearFields(idField, nameField, startDateField, endDateField, binField);
     }
 
     private void clearFields(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField) {
@@ -98,14 +92,14 @@ public class AuctionController {
     // info of bidder saved, bid amount saved (if valid)
     // date and time of bid saved
     // this info needs to be saved somewhere
-    public void submitBid(Auction selectedAuction, TextField bidField) {
+    public void submitBid(Auction selectedAuction, TextField bidField, User user) {
         String bidValue = bidField.getText();
         AuctionValidator validator = new AuctionValidator();
         if(validator.validateBid(bidValue)) {
             bidField.clear();
             bidField.setText("bid is valid!");
             LocalDateTime dateTime = LocalDateTime.now();
-            Bid bid = new Bid(selectedAuction.getItem().getID(), Double.parseDouble(bidValue), dateTime);
+            Bid bid = new Bid(selectedAuction.getItem().getID(), Double.parseDouble(bidValue), dateTime, user);
             bidField.clear();
             boolean result = selectedAuction.addBid2(bid);
             if(result) {

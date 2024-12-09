@@ -1,11 +1,20 @@
 package auction_system;
 
+import java.util.ArrayList;
+
 public class User {
 	private String name;
 	private int id;
+	private ArrayList<Auction> wonAuctions = new ArrayList<>();
+	private ArrayList<Auction> listedAuctions = new ArrayList<>();
+	private ArrayList<Auction> bidOnAuctions = new ArrayList<>();
 
 	public User(int id, String name) {
 		this.id = id;
+		this.name = name;
+	}
+
+	public User(String name) {
 		this.name = name;
 	}
 
@@ -23,6 +32,16 @@ public class User {
 
 	public void setID() {
 		this.id = id;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof User user) {
+			return this.name.equals(user.getName());
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override

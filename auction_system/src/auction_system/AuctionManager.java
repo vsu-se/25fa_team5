@@ -1,6 +1,7 @@
 package auction_system;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,15 +9,18 @@ import java.util.Comparator;
 
 public class AuctionManager {
     private ArrayList<Auction> auctionList = new ArrayList<>();
+    private ArrayList<Auction> activeList = new ArrayList<>();
+    private ArrayList<Auction> inactiveList = new ArrayList<>();
 
     public AuctionManager() {
 
     }
 
     public void addAuction(Auction auction) {
-    //    auctionList.add(auction);
         if((!auctionList.contains(auction)) && auction.getActive()) {
             auctionList.add(auction);
+            activeList.add(auction);
+            sortBySoonestEndingActiveAuctions();
         }
     }
 
@@ -38,9 +42,46 @@ public class AuctionManager {
         return auctionList;
     }
 
-    public void getSoonestEndingActiveAuctions() {
+    public ArrayList<Auction> getActiveList() {
+        return activeList;
+    }
+
+    public void sortBySoonestEndingActiveAuctions() {
         Comparator<Auction> auctionComparator = (Auction one, Auction two) -> one.getLocalEndDateAndTime().compareTo(two.getLocalEndDateAndTime());
-        Collections.sort(auctionList, auctionComparator); // replace later with activeauctionlist
+        Collections.sort(activeList, auctionComparator);
+    }
+
+//    public ArrayList<Auction> getUserWonAuctions(User user) {
+//        return null;
+//    }
+//
+    public ArrayList<Auction> getUserListedAuctions(String username) {
+        sortBySoonestEndingActiveAuctions();
+        ArrayList<Auction> userListedAuctions = new ArrayList<>();
+        User user = new User(username);
+        for(int i = 0; i < auctionList.size(); i++) {
+            if(auctionList.get(i).getUser().equals(user)) {
+                userListedAuctions.add(auctionList.get(i));
+            }
+        }
+        return userListedAuctions;
+    }
+
+    public ArrayList<Auction> getUserBidOnAuctions(String username) {
+        ArrayList<Auction> userBidOnAuctions = new ArrayList<>();
+        User user = new User(username);
+        for(int i = 0; i < auctionList.size(); i++) {
+            if(auctionList.get(i).getBidManager().checkIfUserHasBid(user)) {
+                userBidOnAuctions.add(auctionList.get(i));
+            }
+        }
+        return userBidOnAuctions;
+    }
+
+    // called when auctions ends
+    public void endAuction(Auction auction) {
+        activeList.remove(auction);
+        inactiveList.add(auction);
     }
 
     @Override
@@ -53,17 +94,6 @@ public class AuctionManager {
     }
 
     public static void main(String[] arg) {
-        Item one = new Item(1, "name");
-        Auction auctionOne = new Auction(one, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
-        Item two = new Item(2, "name");
-        Auction auctionTwo = new Auction(two, LocalDate.now(), LocalDate.parse("2024-01-06"), LocalTime.now(), LocalTime.now(), 40);
-        Item three = new Item(3, "name");
-        Auction auctionThree = new Auction(three, LocalDate.now(), LocalDate.parse("2030-01-06"), LocalTime.now(), LocalTime.now(), 40);
-        AuctionManager auctionManager = new AuctionManager();
-        auctionManager.addAuction(auctionOne);
-        auctionManager.addAuction(auctionThree);
-        auctionManager.addAuction(auctionTwo);
-        auctionManager.getSoonestEndingActiveAuctions();
-        System.out.println(auctionManager.toString());
+
     }
 }
