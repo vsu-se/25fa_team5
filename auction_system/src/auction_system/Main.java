@@ -422,7 +422,7 @@ public class Main extends Application {
 				else {
 					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
 					try {
-						auctionController.submitBid(selectedAuction, bidField, currentUser);
+						auctionController.submitBid(selectedAuction, bidField, auctionDisplayArea, currentUser);
 					}
 					catch (IllegalArgumentException ex) {
 						auctionDisplayArea.setText(ex.getMessage());

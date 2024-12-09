@@ -138,11 +138,18 @@ public class AuctionValidator {
     }
 
     public boolean validateBid(String bidValue) {
-        return validateBin(bidValue); // return this for now, bid may need more validation
-    }
-
-    public boolean allValid() {
-        return false;
+        if(validateBin(bidValue)) {
+            double bid = Double.parseDouble(bidValue);
+            if(bid > 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
     }
 
 }

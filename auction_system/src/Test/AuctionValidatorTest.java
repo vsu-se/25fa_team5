@@ -2,10 +2,13 @@ package Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import auction_system.Auction;
 import auction_system.AuctionValidator;
+import auction_system.Item;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class AuctionValidatorTest {
@@ -210,6 +213,22 @@ public class AuctionValidatorTest {
         String endTime = "12:12:12";
         boolean actual = validator.validateDate(startDate, endDate, startTime, endTime);
         assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidateNegativeBid")
+    void testInvalidateNegativeBid() {
+        AuctionValidator validator = new AuctionValidator();
+        String bid = "-5.00";
+        assertFalse(validator.validateBid(bid));
+    }
+
+    @Test
+    @DisplayName("testValidBid")
+    void testValidBid() {
+        AuctionValidator validator = new AuctionValidator();
+        String bid = "5.00";
+        assertTrue(validator.validateBid(bid));
     }
 }
 

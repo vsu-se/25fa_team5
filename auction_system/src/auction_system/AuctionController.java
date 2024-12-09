@@ -92,18 +92,17 @@ public class AuctionController {
     // info of bidder saved, bid amount saved (if valid)
     // date and time of bid saved
     // this info needs to be saved somewhere
-    public void submitBid(Auction selectedAuction, TextField bidField, User user) {
+    public void submitBid(Auction selectedAuction, TextField bidField, TextArea auctionDisplayArea, User user) {
         String bidValue = bidField.getText();
         AuctionValidator validator = new AuctionValidator();
         if(validator.validateBid(bidValue)) {
             bidField.clear();
-            bidField.setText("bid is valid!");
+            auctionDisplayArea.setText("Bid entered is valid.");
             LocalDateTime dateTime = LocalDateTime.now();
             Bid bid = new Bid(selectedAuction.getItem().getID(), Double.parseDouble(bidValue), dateTime, user);
-            bidField.clear();
             boolean result = selectedAuction.addBid2(bid);
             if(result) {
-                bidField.setText(String.valueOf(result));
+                auctionDisplayArea.setText("Bid successfully added to auction.");
                 fileManager.saveBidInfo(bid);
             }
             else {
@@ -112,7 +111,7 @@ public class AuctionController {
         }
         else {
             bidField.clear();
-            bidField.setText("bid isn't valid :(");
+            auctionDisplayArea.setText("Bid isn't valid, please try again.");
         }
     }
 
