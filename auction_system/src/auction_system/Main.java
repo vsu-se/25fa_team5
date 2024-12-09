@@ -387,9 +387,11 @@ public class Main extends Application {
 			bidField.setPrefSize(100, 50);
 			Button bidButton = new Button("Submit bid");
 
-			Button showAuctionBids = new Button("Show this auction's bids");
+			Button showAuctionBids = new Button("Show auction bids");
 
-			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids);
+			Button showBidHistoryButton = new Button("Show bid history");
+
+			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids, showBidHistoryButton);
 			enterBidBox.setSpacing(10);
 
 			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
@@ -438,6 +440,18 @@ public class Main extends Application {
 				else {
 					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
 					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
+				}
+			});
+
+			showBidHistoryButton.setOnAction(e -> {
+				Auction selected;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+				else {
+					selected = activeAuctionList.getSelectionModel().getSelectedItem();
+					int id = selected.getItem().getID();
+					auctionDisplayArea.setText(fileManager.buildBidManagerForBidHistory(id).toString());
 				}
 			});
 

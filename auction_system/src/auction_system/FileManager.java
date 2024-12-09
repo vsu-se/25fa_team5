@@ -252,6 +252,38 @@ public class FileManager {
         return bidManager;
     }
 
+    public BidManager buildBidManagerForBidHistory(int itemID) {
+        BidManager bidManager = new BidManager();
+        File file = new File("bid_info.txt");
+        if(file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] bidValues = line.trim().split(",");
+                    int ID = Integer.parseInt(bidValues[0].substring(bidValues[0].indexOf("ID: ") + 4));
+                    if(ID == itemID) {
+                        double bidAmount = Double.parseDouble(bidValues[1].substring(bidValues[1].indexOf(": ") + 2));
+                        LocalDate date = LocalDate.parse(bidValues[2].substring(bidValues[2].indexOf(": ") + 2));
+                        LocalTime time = LocalTime.parse(bidValues[3].substring(bidValues[3].indexOf(": ") + 2));
+                        String username = bidValues[4].substring(bidValues[4].indexOf(": ") + 2);
+                        LocalDateTime dateTime = LocalDateTime.of(date, time);
+                        User user = new User(username);
+                        Bid bid = new Bid(ID, bidAmount, dateTime, user);
+                        bidManager.addBidForBidHistory(bid);
+                    }
+                }
+            }
+            catch (IOException e) {
+                System.out.println(e);
+            }
+            catch (RuntimeException ex) {
+                System.out.println(ex);
+            }
+        }
+        bidManager.sortBidsByBidAmount();
+        return bidManager;
+    }
+
     private void showAlert(String title, String message){
         System.out.println(title + ": " + message);
     }

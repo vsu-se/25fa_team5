@@ -28,6 +28,11 @@ public class BidManager {
         }
     }
 
+    // used to get all bids for bid history
+    public void addBidForBidHistory(Bid bid) {
+        bidList.add(bid);
+    }
+
     public boolean containsBid(Bid bid) {
         if(bidList.contains(bid)) {
             return true;
