@@ -14,13 +14,14 @@ public class Bid {
     private LocalDate dateOfBid;
     private LocalTime timeOfBid;
 
-    public Bid(int itemID, double bidValue, LocalDateTime dateTime) {
+    public Bid(int itemID, double bidValue, LocalDateTime dateTime, User user) {
         this.itemID = itemID;
         this.bidValue = bidValue;
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
         dateOfBid = date;
         timeOfBid = time.truncatedTo(ChronoUnit.SECONDS);
+        this.user = user;
     }
 
     public Bid(double bidValue, User user) {
@@ -44,6 +45,10 @@ public class Bid {
         return timeOfBid;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(o instanceof Bid bid) {
@@ -56,8 +61,8 @@ public class Bid {
 
     @Override
     public String toString() {
-        return "Item ID: " + itemID + ", bid amount: " + bidValue + ", date: " + dateOfBid + ", time: " + timeOfBid
-                + ", user: placeholder" + "\n";
+        return "Item ID: " + itemID + ", bid amount: " + String.format("%.2f", bidValue) + ", date: " + dateOfBid + ", time: " + timeOfBid
+                + ", user: " + user.getName() + "\n";
     }
 
     public static void main(String[] arg) {

@@ -1,5 +1,6 @@
 package auction_system;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,6 +16,7 @@ public class Auction {
 	private Date endDate;
 	private Item item;
 	private boolean isActive = false;
+	private boolean isBought; // update variable after auction ends and at least one bid
 
 	private LocalDate startingDate;
 	private LocalDate endingDate;
@@ -23,6 +25,8 @@ public class Auction {
 
 	private BidManager bidManager = new BidManager();
 	private double winningBid;
+	private double shippingCost = 7.99;
+	private User user;
 
 	public Auction(Item item, LocalDate startingDate, LocalDate endingDate, LocalTime startTime, LocalTime endTime, double bIN) {
 		this.item = item;
@@ -198,25 +202,82 @@ public class Auction {
 //		return line1 + line2 + line3 + line4 + line5 + line6;
 //	}
 
-	public void findWinningBid() {
+	public boolean findWinningBid() {
 		if(!bidManager.checkIfEmpty()) {
 			winningBid = bidManager.getWinningBid();
+			return true;
 		}
+		return false;
 	}
 
 	public double getWinningBid() {
 		return winningBid;
 	}
 
+	public Bid getUserBid(String username) {
+		return bidManager.getUserBid(username);
+	}
+
+	// for use in method below this one, may be replaced later
+	public String calculateTimeRemaining() {
+		LocalDateTime now = LocalDateTime.now();
+		LocalDate date = getLocalEndDate();
+		LocalTime time = getLocalStartTime();
+		LocalDateTime auctionTime = LocalDateTime.of(date, time);
+		Duration duration = Duration.between(now, auctionTime);
+		long days = duration.toDays();
+		long hours = duration.toHours();
+		long minutes = duration.toMinutes();
+		long seconds = duration.toSeconds();
+		String calculatedTime = days + " days, " + hours + " hours, " + minutes + " minutes, " +
+				seconds + " seconds";
+		return calculatedTime;
+	}
+
+	public String showMyBidsData(String username) {
+		Bid bid;
+		String currentBidLine = "";
+		if(findWinningBid()) {
+			currentBidLine += "Winning bid: $" + winningBid + "\n";
+		}
+		else {
+			currentBidLine += "Winning bid: none\n";
+		}
+		String timeLine = "Time remaining: " + calculateTimeRemaining() + "\n";
+		bid = getUserBid(username);
+		String bidLine = "Bid info: " + bid.toString();
+		String binPrice = "";
+		if(bIN > 0) {
+			binPrice += "BIN: " + String.format("%.2f", bIN);
+		}
+		return currentBidLine + timeLine + bidLine + binPrice;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	// may remove later, sets user who listed auction
+	public void setUser(String username) {
+		user = new User(username);
+	}
+
 	@Override
 	public String toString() {
 		String itemLine = this.item.toString();
-	//	String bidLine = "Current and Previous bids: " + bidManager.toString(); //bids.keySet();
 		String binLine = "Buy-it-Now Price: " + this.getbIN();
 		String startingDateLine = "\nStarting time: " + startingDate.toString() + " at " + startTime.toString();
 		String endingDateLine = "\nEnding time: " + endingDate.toString() + " at " + endTime.toString();
+		String bidLine = "\nWinning bid: ";
+		if(findWinningBid()) {
+			bidLine += String.format("$%.2f", winningBid);
+		}
+		else {
+			bidLine += "none";
+		}
+		String shipping = "\nShipping: $" + shippingCost;
 		String isActiveLine = "\nActive: " + getActive();
-		return itemLine  + binLine + startingDateLine  + endingDateLine
+		return itemLine  + binLine + startingDateLine  + endingDateLine + bidLine + shipping
 				 + isActiveLine + "\n";
 	}
 

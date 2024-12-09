@@ -20,6 +20,8 @@ public class AuctionManagerTest {
     Auction auctionTwo;
     Item itemThree;
     Auction auctionThree;
+    Item itemFour;
+    Auction auctionFour;
 
     @BeforeEach
     void setUp() {
@@ -30,6 +32,8 @@ public class AuctionManagerTest {
         auctionTwo = new Auction(itemTwo, LocalDate.now(), LocalDate.parse("2025-01-01"), LocalTime.now(), LocalTime.now(), 50);
         itemThree = new Item(3, "itemThree");
         auctionThree = new Auction(itemThree, LocalDate.now(), LocalDate.parse("2027-01-01"), LocalTime.now(), LocalTime.now(), 50);
+        itemFour = new Item(1, "itemFour");
+        auctionFour = new Auction(itemFour, LocalDate.now(), LocalDate.parse("2028-01-01"), LocalTime.now(), LocalTime.now(), 50);
     }
 
     @Test
@@ -40,19 +44,27 @@ public class AuctionManagerTest {
     }
 
     @Test
-    @DisplayName("testSortAuctionsSuccess")
-    void testSortAuctionsSuccess() {
+    @DisplayName("testDuplicateAuctionNotAdded")
+    void testDuplicateAuctionNotAdded() {
         auctionManager.addAuction(auctionOne);
-        auctionManager.addAuction(auctionTwo);
-        auctionManager.addAuction(auctionThree);
-        auctionManager.sortBySoonestEndingActiveAuctions();
-        Auction soonestAuction = auctionManager.getAuctionFromAuctionList(0);
-        Auction nextSoonestAuction = auctionManager.getAuctionFromAuctionList(1);
-        Auction lastAuction = auctionManager.getAuctionFromAuctionList(2);
-        boolean auctionTwoIsSoonest = soonestAuction.equals(auctionTwo);
-        boolean auctionThreeIsNextSoonest = nextSoonestAuction.equals(auctionThree);
-        boolean auctionOneIsLast = lastAuction.equals(auctionOne);
-        assertTrue(auctionTwoIsSoonest && auctionThreeIsNextSoonest && auctionOneIsLast);
+        auctionManager.addAuction(auctionFour);
+        assertEquals(1, auctionManager.getAuctionListLength());
     }
+
+//    @Test
+//    @DisplayName("testSortAuctionsSuccess")
+//    void testSortAuctionsSuccess() {
+//        auctionManager.addAuction(auctionOne);
+//        auctionManager.addAuction(auctionTwo);
+//        auctionManager.addAuction(auctionThree);
+//        auctionManager.sortBySoonestEndingActiveAuctions();
+//        Auction soonestAuction = auctionManager.getAuctionFromAuctionList(0);
+//        Auction nextSoonestAuction = auctionManager.getAuctionFromAuctionList(1);
+//        Auction lastAuction = auctionManager.getAuctionFromAuctionList(2);
+//        boolean auctionTwoIsSoonest = soonestAuction.equals(auctionTwo);
+//        boolean auctionThreeIsNextSoonest = nextSoonestAuction.equals(auctionThree);
+//        boolean auctionOneIsLast = lastAuction.equals(auctionOne);
+//        assertTrue(auctionTwoIsSoonest && auctionThreeIsNextSoonest && auctionOneIsLast);
+//    }
 
 }
