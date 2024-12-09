@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 
 public class AuctionManager {
     private ArrayList<Auction> auctionList = new ArrayList<>();
@@ -82,6 +83,17 @@ public class AuctionManager {
     public void endAuction(Auction auction) {
         activeList.remove(auction);
         inactiveList.add(auction);
+    }
+
+    public void checkDates() {
+        Iterator<Auction> iterator = activeList.iterator();
+        while (iterator.hasNext()) {
+            Auction auction = iterator.next();
+            if (auction.checkDate()) {
+                iterator.remove();
+                endAuction(auction);
+            }
+        }
     }
 
     @Override
