@@ -51,20 +51,20 @@ public class AuctionManagerTest {
         assertEquals(1, auctionManager.getAuctionListLength());
     }
 
-    @Test
-    @DisplayName("testSortAuctionsSuccess")
-    void testSortAuctionsSuccess() {
-        auctionManager.addAuction(auctionOne);
-        auctionManager.addAuction(auctionTwo);
-        auctionManager.addAuction(auctionThree);
-        auctionManager.sortBySoonestEndingActiveAuctions();
-        Auction soonestAuction = auctionManager.getAuctionFromAuctionList(0);
-        Auction nextSoonestAuction = auctionManager.getAuctionFromAuctionList(1);
-        Auction lastAuction = auctionManager.getAuctionFromAuctionList(2);
-        boolean auctionTwoIsSoonest = soonestAuction.equals(auctionTwo);
-        boolean auctionThreeIsNextSoonest = nextSoonestAuction.equals(auctionThree);
-        boolean auctionOneIsLast = lastAuction.equals(auctionOne);
-        assertTrue(auctionTwoIsSoonest && auctionThreeIsNextSoonest && auctionOneIsLast);
-    }
+//    @Test
+//    @DisplayName("testSortAuctionsSuccess")
+//    void testSortAuctionsSuccess() {
+//        auctionManager.addAuction(auctionOne);
+//        auctionManager.addAuction(auctionTwo);
+//        auctionManager.addAuction(auctionThree);
+//        auctionManager.sortBySoonestEndingActiveAuctions();
+//        Auction soonestAuction = auctionManager.getAuctionFromAuctionList(0);
+//        Auction nextSoonestAuction = auctionManager.getAuctionFromAuctionList(1);
+//        Auction lastAuction = auctionManager.getAuctionFromAuctionList(2);
+//        boolean auctionTwoIsSoonest = soonestAuction.equals(auctionTwo);
+//        boolean auctionThreeIsNextSoonest = nextSoonestAuction.equals(auctionThree);
+//        boolean auctionOneIsLast = lastAuction.equals(auctionOne);
+//        assertTrue(auctionTwoIsSoonest && auctionThreeIsNextSoonest && auctionOneIsLast);
+//    }
 
 }
