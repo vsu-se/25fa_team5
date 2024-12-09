@@ -61,7 +61,7 @@ public class Bid {
 
     @Override
     public String toString() {
-        return "Item ID: " + itemID + ", bid amount: " + bidValue + ", date: " + dateOfBid + ", time: " + timeOfBid
+        return "Item ID: " + itemID + ", bid amount: " + String.format("%.2f", bidValue) + ", date: " + dateOfBid + ", time: " + timeOfBid
                 + ", user: " + user.getName() + "\n";
     }
 

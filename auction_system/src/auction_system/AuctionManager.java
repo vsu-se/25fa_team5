@@ -1,6 +1,7 @@
 package auction_system;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,10 +17,10 @@ public class AuctionManager {
     }
 
     public void addAuction(Auction auction) {
-    //    auctionList.add(auction);
         if((!auctionList.contains(auction)) && auction.getActive()) {
             auctionList.add(auction);
             activeList.add(auction);
+            sortBySoonestEndingActiveAuctions();
         }
     }
 
@@ -47,7 +48,40 @@ public class AuctionManager {
 
     public void sortBySoonestEndingActiveAuctions() {
         Comparator<Auction> auctionComparator = (Auction one, Auction two) -> one.getLocalEndDateAndTime().compareTo(two.getLocalEndDateAndTime());
-        Collections.sort(auctionList, auctionComparator); // replace later with activeauctionlist
+        Collections.sort(activeList, auctionComparator);
+    }
+
+//    public ArrayList<Auction> getUserWonAuctions(User user) {
+//        return null;
+//    }
+//
+    public ArrayList<Auction> getUserListedAuctions(String username) {
+        sortBySoonestEndingActiveAuctions();
+        ArrayList<Auction> userListedAuctions = new ArrayList<>();
+        User user = new User(username);
+        for(int i = 0; i < auctionList.size(); i++) {
+            if(auctionList.get(i).getUser().equals(user)) {
+                userListedAuctions.add(auctionList.get(i));
+            }
+        }
+        return userListedAuctions;
+    }
+
+    public ArrayList<Auction> getUserBidOnAuctions(String username) {
+        ArrayList<Auction> userBidOnAuctions = new ArrayList<>();
+        User user = new User(username);
+        for(int i = 0; i < auctionList.size(); i++) {
+            if(auctionList.get(i).getBidManager().checkIfUserHasBid(user)) {
+                userBidOnAuctions.add(auctionList.get(i));
+            }
+        }
+        return userBidOnAuctions;
+    }
+
+    // called when auctions ends
+    public void endAuction(Auction auction) {
+        activeList.remove(auction);
+        inactiveList.add(auction);
     }
 
     @Override

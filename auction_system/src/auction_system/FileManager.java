@@ -188,6 +188,7 @@ public class FileManager {
                     String[] auctionValues = line.trim().split(",");
                     Item item;
                     Auction auction;
+                    String username = auctionValues[0].substring(0, auctionValues[0].indexOf(":"));
                     int id = Integer.parseInt(auctionValues[0].substring(auctionValues[0].indexOf("ID: ") + 4));
                     String name = auctionValues[1].substring(auctionValues[1].indexOf(": ") + 2);
                     LocalDate startDate = LocalDate.parse(auctionValues[2].substring(auctionValues[2].indexOf(": ") + 2));
@@ -198,6 +199,7 @@ public class FileManager {
                     boolean isActive = Boolean.parseBoolean(auctionValues[8].substring(auctionValues[8].indexOf(": ")) + 2);
                     item = new Item(id, name);
                     auction = new Auction(item, startDate, endDate, startTime, endTime, bIN);
+                    auction.setUser(username);
                     BidManager bidManager = buildBidManagerForAuction(auction.getItem().getID());
                     auction.setBidManager(bidManager);
                     auctionManager.addAuction(auction);

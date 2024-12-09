@@ -5,10 +5,9 @@ package auction_system;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -297,7 +296,7 @@ public class Main extends Application {
 
 			addItemButton.setOnAction(e -> {
 				try {
-					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea);
+					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea, username);
 				} catch (IDException exID) {
 					showAlert("Auction ID error", exID.getMessage());
 				}
@@ -357,7 +356,7 @@ public class Main extends Application {
 
 			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
 				auctionManager.sortBySoonestEndingActiveAuctions();
-				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
 					@Override
@@ -367,7 +366,7 @@ public class Main extends Application {
 						if (empty || auction == null || auction.getItem() == null) {
 							setText(null);
 						} else {
-							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by " + auction.getUser());
 						}
 					}
 				});
@@ -469,16 +468,83 @@ public class Main extends Application {
 			Button showMyAuctionsButton = new Button("Show auctions");
 
 			showMyAuctionsButton.setOnAction(e -> {
-				fileManager.loadRegisteredUserData(username, showMyAuctionsTextArea);
+		//		fileManager.loadRegisteredUserData(username, showMyAuctionsTextArea);
+				ArrayList<Auction> userListedAuctions = auctionManager.getUserListedAuctions(username);
+				for(Auction auction : userListedAuctions) {
+					showMyAuctionsTextArea.appendText(auction.toString() + "-----------------------\n");
+				}
 			});
 
-			VBox showMyAuctionsVBox = new VBox(showMyAuctionsTextArea, showMyAuctionsButton, signOutButton);
+			Button updateShowMyAuctions = new Button("Update list");
+
+			updateShowMyAuctions.setOnAction(e -> {
+				sellerListItem(primaryStage, username);
+			});
+
+			HBox showMyAuctionsButtons = new HBox(showMyAuctionsButton, updateShowMyAuctions);
+			showMyAuctionsButtons.setSpacing(10);
+
+			VBox showMyAuctionsVBox = new VBox(showMyAuctionsTextArea, showMyAuctionsButtons);
+			showMyAuctionsVBox.setSpacing(10);
 
 			showMyAuctionsTab.setContent(showMyAuctionsVBox);
 
 			showMyAuctionsTab.setOnSelectionChanged(e -> {
 				showMyAuctionsTextArea.clear();
 			});
+
+			// show my bids tab
+			Tab showMyBidsTab = new Tab("Show My Bids");
+			showMyBidsTab.setClosable(false);
+
+			Label showMyBidsLabel = new Label("Auctions you have bid on: ");
+			ListView<Auction> bidOnAuctionsList = new ListView<>();
+            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
+                ObservableList<Auction> observableBidOnAuctionList = FXCollections.observableArrayList(auctionManager.getUserBidOnAuctions(username));
+                bidOnAuctionsList.setItems(observableBidOnAuctionList);
+                bidOnAuctionsList.setCellFactory(e -> new ListCell<Auction>() {
+                    @Override
+                    protected void updateItem(Auction auction, boolean empty) {
+                        super.updateItem(auction, empty);
+
+                        if (empty || auction == null || auction.getItem() == null) {
+                            setText(null);
+                        } else {
+                            setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by " + auction.getUser());
+                        }
+                    }
+                });
+            }
+            bidOnAuctionsList.setPrefSize(300,300);
+
+			TextArea displayBidOnAuctions = new TextArea("Select an auction from the list on the left to view your bid information.");
+
+			Button selectBidOnAuctionsButton = new Button("Select auction");
+
+			Label spacing = new Label("");
+
+			HBox bidListDisplayBox = new HBox(bidOnAuctionsList, displayBidOnAuctions);
+			bidListDisplayBox.setSpacing(10);
+
+			Button update = new Button("Update list");
+
+			update.setOnAction(e -> {
+				sellerListItem(primaryStage, username);
+			});
+
+			HBox showMyBidsButtons = new HBox(selectBidOnAuctionsButton, update);
+			showMyBidsButtons.setSpacing(10);
+
+			VBox bidListDisplaySelect = new VBox(showMyBidsLabel, bidListDisplayBox, showMyBidsButtons);
+			bidListDisplaySelect.setSpacing(10);
+
+			selectBidOnAuctionsButton.setOnAction(e -> {
+				Auction selected;
+				selected = bidOnAuctionsList.getSelectionModel().getSelectedItem();
+				displayBidOnAuctions.setText(selected.showMyBidsData(username));
+			});
+
+			showMyBidsTab.setContent(bidListDisplaySelect);
 
 			// Reports tab
 			Tab reportsTab = new Tab("Reports");
@@ -518,7 +584,7 @@ public class Main extends Application {
 			reports.setSpacing(10);
 			reportsTab.setContent(reports);
 
-			tabPane.getTabs().addAll(listItemTab, biddingTab, showMyAuctionsTab, reportsTab);
+			tabPane.getTabs().addAll(listItemTab, biddingTab, showMyAuctionsTab, showMyBidsTab, reportsTab);
 
 			Scene scene = new Scene(tabPane,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());

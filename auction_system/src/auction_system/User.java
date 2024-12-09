@@ -35,9 +35,18 @@ public class User {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if(o instanceof User user) {
+			return this.name.equals(user.getName());
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
 	public String toString(){
 		String line1 = "Username: " + name;
 		return line1;
-
 	}
 }

@@ -23,7 +23,7 @@ public class AuctionController {
 //        else throw new IllegalArgumentException("Cannot add, auction ID already exists");
 //    }
 
-    public void addAuction(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField, TextArea itemListArea) {
+    public void addAuction(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField, TextArea itemListArea, String username) {
         String id = idField.getText();
         String name = nameField.getText();
         String startDate = String.valueOf(startDatePicker.getValue());
@@ -68,9 +68,10 @@ public class AuctionController {
             LocalTime localEndTime = LocalTime.parse(endTime);
 
             Auction auction = new Auction(item, localStartDate, localEndDate, localStartTime, localEndTime, Double.parseDouble(bin));
+            auction.setUser(username);
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
-                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true"); // currentUser.getID());
+                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true");
                 itemListArea.setText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
