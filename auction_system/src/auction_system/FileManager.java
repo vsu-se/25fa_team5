@@ -196,7 +196,7 @@ public class FileManager {
                     LocalDate endDate = LocalDate.parse(auctionValues[4].substring(auctionValues[4].indexOf(": ") + 2));
                     LocalTime endTime = LocalTime.parse(auctionValues[5].substring(auctionValues[5].indexOf(": ") + 2));
                     double bIN = Double.parseDouble(auctionValues[6].substring(auctionValues[6].indexOf("$") + 1));
-                    boolean isActive = Boolean.parseBoolean(auctionValues[8].substring(auctionValues[8].indexOf(": ")) + 2);
+                    boolean isActive = Boolean.parseBoolean(auctionValues[7].substring(auctionValues[7].indexOf(": ")) + 2);
                     item = new Item(id, name);
                     auction = new Auction(item, startDate, endDate, startTime, endTime, bIN);
                     auction.setUser(username);

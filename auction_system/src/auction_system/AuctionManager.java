@@ -17,10 +17,12 @@ public class AuctionManager {
     }
 
     public void addAuction(Auction auction) {
-        if((!auctionList.contains(auction)) && auction.getActive()) {
+        if((!auctionList.contains(auction))) {
             auctionList.add(auction);
-            activeList.add(auction);
-            sortBySoonestEndingActiveAuctions();
+            if(auction.getActive()) {
+                activeList.add(auction);
+                sortBySoonestEndingActiveAuctions();
+            }
         }
     }
 

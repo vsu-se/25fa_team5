@@ -71,9 +71,12 @@ public class AuctionController {
             auction.setUser(username);
             if(!auctionManager.containsAuction(auction)) {
                 auctionManager.addAuction(auction);
-                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true");
+                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true");
                 itemListArea.setText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
+            }
+            else {
+                throw new DuplicateAuctionException("Auction already exists. Please re-enter information.");
             }
         }
     }
@@ -127,6 +130,10 @@ public class AuctionController {
     public void showMyAuctions(TextArea registeredUserData) {
         registeredUserData.clear();
         registeredUserData.setText(toString());
+    }
+
+    public void setAuctionManager(AuctionManager auctionManager) {
+        this.auctionManager = auctionManager;
     }
 
     @Override

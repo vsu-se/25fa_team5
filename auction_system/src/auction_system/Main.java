@@ -238,6 +238,9 @@ public class Main extends Application {
 	public void sellerListItem(Stage primaryStage, String username) {
 		try {
 			auctionManager = fileManager.buildAuctionManager();
+			if(auctionManager != null) {
+				auctionController.setAuctionManager(auctionManager);
+			}
 			primaryStage.setTitle("Seller");
 
 			TabPane tabPane = new TabPane();
@@ -308,6 +311,9 @@ public class Main extends Application {
 				}
 				catch (BinException exBin) {
 					showAlert("Auction BIN error", exBin.getMessage());
+				}
+				catch (DuplicateAuctionException exDup) {
+					showAlert("Duplicate auction error", exDup.getMessage());
 				}
 				catch (IllegalArgumentException exDates) {
 					showAlert("Auction date and time error", exDates.getMessage());
