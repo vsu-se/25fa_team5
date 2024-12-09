@@ -80,8 +80,95 @@ public class Main extends Application {
 			commissionController = new CommissionController();
 			premiumController = new PremiumController();
 
+			TabPane tabPane = new TabPane();
+			Tab mainTab = new Tab("Main page");
+			mainTab.setClosable(false);
+			Tab auctionsAndBidsTab = new Tab("Auctions and bids");
+			auctionsAndBidsTab.setClosable(false);
+			Tab concludedAuctionsTab = new Tab("Concluded auctions");
+			concludedAuctionsTab.setClosable(false);
 
+			auctionManager = fileManager.buildAuctionManager();
+			if(auctionManager != null) {
+				auctionController.setAuctionManager(auctionManager);
+			}
 
+			Label listLbl = new Label("All Active Auctions: ");
+			ListView<Auction> activeAuctionList = new ListView<>();
+
+			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
+				auctionManager.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
+				activeAuctionList.setItems(observableList);
+				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+					@Override
+					protected void updateItem(Auction auction, boolean empty) {
+						super.updateItem(auction, empty);
+
+						if (empty || auction == null || auction.getItem() == null) {
+							setText(null);
+						} else {
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by " + auction.getUser());
+						}
+					}
+				});
+			}
+
+			activeAuctionList.setPrefSize(300,300);
+
+			VBox listBox = new VBox(listLbl, activeAuctionList);
+			listBox.setSpacing(10);
+
+			// bidding area
+			Label space = new Label();
+			TextArea auctionDisplayArea = new TextArea();
+			auctionDisplayArea.setText("Select an auction from the list on the left to view auction information.");
+			auctionDisplayArea.setPrefSize(380,300);
+
+			Button showBidHistoryButton = new Button("Show bid history");
+
+			HBox enterBidBox = new HBox(showBidHistoryButton);
+			enterBidBox.setSpacing(10);
+
+			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
+			biddingArea.setSpacing(10);
+
+			HBox auctionListWithBidding = new HBox(listBox, biddingArea);
+			auctionListWithBidding.setSpacing(50);
+
+			// US-7
+			// Allows user to bid on an auction
+			Button selectButton = new Button("Select auction");
+			Button updateButton = new Button("Update list");
+			HBox bidBox = new HBox(selectButton, updateButton);
+			bidBox.setSpacing(10);
+
+			selectButton.setOnAction(e -> {
+				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+				auctionDisplayArea.setText(selectedAuction.toString());
+			});
+
+			updateButton.setOnAction(e -> {
+				systemAdminUser(primaryStage);
+			});
+
+			showBidHistoryButton.setOnAction(e -> {
+				Auction selected;
+				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+					showAlert("Select an auction", "Please select an auction from the list.");
+				}
+				else {
+					selected = activeAuctionList.getSelectionModel().getSelectedItem();
+					int id = selected.getItem().getID();
+					auctionDisplayArea.setText(fileManager.buildBidManagerForBidHistory(id).toString());
+				}
+			});
+
+			VBox auctionsAndBidsVBox = new VBox(auctionListWithBidding, bidBox);
+
+			auctionsAndBidsTab.setContent(auctionsAndBidsVBox);
+
+			tabPane.getTabs().addAll(mainTab, auctionsAndBidsTab, concludedAuctionsTab);
 
 			// US-1
 			Button returnButton = new Button("<-- User Selection");
@@ -227,7 +314,9 @@ public class Main extends Application {
 			HBox systemBox = new HBox(systemBox1, systemBox2, layout);
 			systemBox.setSpacing(20);
 
-			Scene scene = new Scene(systemBox,700,400);
+			mainTab.setContent(systemBox);
+
+			Scene scene = new Scene(tabPane,700,400);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 
 			primaryStage.setScene(scene);

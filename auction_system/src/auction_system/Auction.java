@@ -229,8 +229,23 @@ public class Auction {
 		long hours = duration.toHours();
 		long minutes = duration.toMinutes();
 		long seconds = duration.toSeconds();
-		String calculatedTime = days + " days, " + hours + " hours, " + minutes + " minutes, " +
-				seconds + " seconds";
+		String daysStr = "";
+		if(days >= 0) {
+			daysStr += days + "days, ";
+		}
+		String hoursStr = "";
+		if(hours >= 0) {
+			hoursStr += hours + " hours, ";
+		}
+		String minutesStr = "";
+		if(minutes >= 0) {
+			minutesStr += minutes + " minutes, ";
+		}
+		String secondsStr = "";
+		if(seconds >= 0) {
+			secondsStr += seconds + " seconds";
+		}
+		String calculatedTime = daysStr + hoursStr + minutesStr + secondsStr;
 		return calculatedTime;
 	}
 
@@ -248,7 +263,7 @@ public class Auction {
 		String bidLine = "Bid info: " + bid.toString();
 		String binPrice = "";
 		if(bIN > 0) {
-			binPrice += "BIN: " + String.format("%.2f", bIN);
+			binPrice += "BIN: $" + String.format("%.2f", bIN);
 		}
 		return currentBidLine + timeLine + bidLine + binPrice;
 	}
@@ -265,7 +280,13 @@ public class Auction {
 	@Override
 	public String toString() {
 		String itemLine = this.item.toString();
-		String binLine = "Buy-it-Now Price: " + this.getbIN();
+		String binLine = "";
+		if(bIN > 0) {
+			binLine += "Buy-it-Now Price: $" + String.format("%.2f", bIN);
+		}
+		else {
+			binLine += "No Buy-it-Now Price";
+		}
 		String startingDateLine = "\nStarting time: " + startingDate.toString() + " at " + startTime.toString();
 		String endingDateLine = "\nEnding time: " + endingDate.toString() + " at " + endTime.toString();
 		String bidLine = "\nWinning bid: ";
