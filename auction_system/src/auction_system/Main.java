@@ -38,6 +38,7 @@ public class Main extends Application {
 	private AuctionManager auctionManager = new AuctionManager();
 	private AuctionController auctionController = new AuctionController(auctionManager);
 	private User currentUser;
+	private DateTimeManager dateTimeManager = new DateTimeManager();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -155,35 +156,37 @@ public class Main extends Application {
 			DatePicker datePicker = new DatePicker(LocalDate.now());
 			Spinner<Integer> hourSpinner = new Spinner<>(0, 23, LocalTime.now().getHour());
 			Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, LocalTime.now().getMinute());
+			Spinner<Integer> secondSpinner = new Spinner<>(0,59, LocalTime.now().getSecond());
 			hourSpinner.setPrefWidth(60);
 			minuteSpinner.setPrefWidth(60);
+			secondSpinner.setPrefWidth(60);
 
 			Button setDateTimeBtn = new Button("Set Date/Time");
 			Button resumeRealTimeBtn = new Button("Resume Real Time");
 			Label currentTimeLbl = new Label();
 
-//			dateTimeManager.startRealTime(() -> {
-//				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
-//			});
+			dateTimeManager.startRealTime(() -> {
+				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+			});
 
 			setDateTimeBtn.setOnAction(event -> {
 				LocalDate selectedDate = datePicker.getValue();
 				int selectedHour = hourSpinner.getValue();
 				int selectedMinute = minuteSpinner.getValue();
+				int selectedSecond = secondSpinner.getValue();
+				dateTimeManager.setSimulatedTime(selectedDate, selectedHour, selectedMinute, selectedSecond);
 
-			//	dateTimeManager.setSimulatedTime(selectedDate, selectedHour, selectedMinute);
-
-			//	currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+				currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
 			});
 
 			// US-15 Resume real time
-//			resumeRealTimeBtn.setOnAction(event -> {
-//				dateTimeManager.startRealTime(() -> {
-//					currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
-//				});
-//			});
+			resumeRealTimeBtn.setOnAction(event -> {
+				dateTimeManager.startRealTime(() -> {
+					currentTimeLbl.setText("Current System Time: " + dateTimeManager.getCurrentTime());
+				});
+			});
 
-			HBox timeBox = new HBox(10, new Label("Time:"), hourSpinner, new Label(":"), minuteSpinner);
+			HBox timeBox = new HBox(10, new Label("Time:"), hourSpinner, new Label(":"), minuteSpinner, new Label(":"), secondSpinner);
 
 			VBox layout = new VBox(10, new Label("Set Date/Time:"), datePicker, timeBox, setDateTimeBtn, resumeRealTimeBtn, currentTimeLbl);
 			layout.setSpacing(15);
