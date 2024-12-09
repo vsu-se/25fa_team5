@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 public class AuctionController {
 	private AuctionManager auctionManager;
@@ -132,8 +133,28 @@ public class AuctionController {
         registeredUserData.setText(toString());
     }
 
-    public void setAuctionManager(AuctionManager auctionManager) {
-        this.auctionManager = auctionManager;
+    public void buildAuctionManager() {
+        this.auctionManager = fileManager.buildAuctionManager();
+    }
+
+    public ArrayList<Auction> getActiveList() {
+        return auctionManager.getActiveList();
+    }
+
+    public void sortBySoonestEndingActiveAuctions() {
+        auctionManager.sortBySoonestEndingActiveAuctions();
+    }
+
+    public ArrayList<Auction> getUserListedAuctions(String username) {
+        return auctionManager.getUserListedAuctions(username);
+    }
+
+    public ArrayList<Auction> getUserBidOnAuctions(String username) {
+        return auctionManager.getUserBidOnAuctions(username);
+    }
+
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
     }
 
     @Override

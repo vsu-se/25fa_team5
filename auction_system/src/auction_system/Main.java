@@ -88,17 +88,14 @@ public class Main extends Application {
 			Tab concludedAuctionsTab = new Tab("Concluded auctions");
 			concludedAuctionsTab.setClosable(false);
 
-			auctionManager = fileManager.buildAuctionManager();
-			if(auctionManager != null) {
-				auctionController.setAuctionManager(auctionManager);
-			}
+			auctionController.buildAuctionManager();
 
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-				auctionManager.sortBySoonestEndingActiveAuctions();
-				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
+			if (auctionController != null && auctionController.getAuctionManager() != null) {
+				auctionController.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
 					@Override
@@ -329,10 +326,8 @@ public class Main extends Application {
 
 	public void sellerListItem(Stage primaryStage, String username) {
 		try {
-			auctionManager = fileManager.buildAuctionManager();
-			if(auctionManager != null) {
-				auctionController.setAuctionManager(auctionManager);
-			}
+			auctionController.buildAuctionManager();
+
 			primaryStage.setTitle("Seller");
 
 			TabPane tabPane = new TabPane();
@@ -452,9 +447,9 @@ public class Main extends Application {
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-				auctionManager.sortBySoonestEndingActiveAuctions();
-				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
+			if (auctionController != null && auctionController.getAuctionManager() != null) {
+				auctionController.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
 					@Override
@@ -581,7 +576,7 @@ public class Main extends Application {
 
 			showMyAuctionsButton.setOnAction(e -> {
 		//		fileManager.loadRegisteredUserData(username, showMyAuctionsTextArea);
-				ArrayList<Auction> userListedAuctions = auctionManager.getUserListedAuctions(username);
+				ArrayList<Auction> userListedAuctions = auctionController.getUserListedAuctions(username);
 				for(Auction auction : userListedAuctions) {
 					showMyAuctionsTextArea.appendText(auction.toString() + "-----------------------\n");
 				}
@@ -611,8 +606,8 @@ public class Main extends Application {
 
 			Label showMyBidsLabel = new Label("Auctions you have bid on: ");
 			ListView<Auction> bidOnAuctionsList = new ListView<>();
-            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-                ObservableList<Auction> observableBidOnAuctionList = FXCollections.observableArrayList(auctionManager.getUserBidOnAuctions(username));
+            if (auctionController != null && auctionController.getAuctionManager() != null) {
+                ObservableList<Auction> observableBidOnAuctionList = FXCollections.observableArrayList(auctionController.getUserBidOnAuctions(username));
                 bidOnAuctionsList.setItems(observableBidOnAuctionList);
                 bidOnAuctionsList.setCellFactory(e -> new ListCell<Auction>() {
                     @Override
@@ -712,6 +707,7 @@ public class Main extends Application {
 	// User Page / Not completed
 	public void User(Stage primaryStage) {
 		try {
+			auctionController.buildAuctionManager();
 			primaryStage.setTitle("Bidder");
 
 			// US-6
@@ -719,9 +715,9 @@ public class Main extends Application {
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-                auctionManager.sortBySoonestEndingActiveAuctions();
-				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
+            if (auctionController != null && auctionController.getAuctionManager() != null) {
+                auctionController.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
 					@Override
@@ -736,20 +732,6 @@ public class Main extends Application {
 					}
 				});
             }
-//            ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
-//			activeAuctionList.setItems(observableList);
-//			activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
-//				@Override
-//				protected void updateItem(Auction auction, boolean empty) {
-//					super.updateItem(auction, empty);
-//
-//					if (empty || auction == null || auction.getItem() == null) {
-//						setText(null);
-//					} else {
-//						setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
-//					}
-//				}
-//			});
 
 
 			activeAuctionList.setPrefSize(300,300);
