@@ -106,13 +106,23 @@ public class AuctionValidator {
     public boolean validateBin(String bin) {
         boolean result;
         if(periodCounter(bin) == 0) {
-            return result = checkForNumbers(bin);
+            if(checkForNumbers(bin)) {
+                if(Double.parseDouble(bin) >= 0) {
+                    return result = true;
+                }
+                else {
+                    return result = false;
+                }
+            }
+            else {
+                return result = false;
+            }
         }
         else if(periodCounter(bin) == 1) {
             if(checkPeriodPos(bin)) {
                 String s1 = splitStringAtPeriod(bin);
                 String s2 = splitStringBeforePeriod(bin);
-                if(checkForNumbers(s1) && checkForNumbers(s2)) {
+                if(checkForNumbers(s1) && checkForNumbers(s2) && Double.parseDouble(bin) >= 0) {
                     return result = true;
                 }
                 else {
@@ -139,8 +149,7 @@ public class AuctionValidator {
 
     public boolean validateBid(String bidValue) {
         if(validateBin(bidValue)) {
-            double bid = Double.parseDouble(bidValue);
-            if(bid > 0) {
+            if(Double.parseDouble(bidValue) > 0) {
                 return true;
             }
             else {

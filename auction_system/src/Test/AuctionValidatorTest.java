@@ -99,6 +99,20 @@ public class AuctionValidatorTest {
     }
 
     @Test
+    @DisplayName("testInvalidBinIsNegative")
+    void testInvalidBinIsNegative() {
+        AuctionValidator validator = new AuctionValidator();
+        assertFalse(validator.validateBin("-5"));
+    }
+
+    @Test
+    @DisplayName("testInvalidBinIsNegativeAndHasTwoDecimalPlaces")
+    void testInvalidBinIsNegativeAndHasTwoDecimalPlaces() {
+        AuctionValidator validator = new AuctionValidator();
+        assertFalse(validator.validateBin("-5.00"));
+    }
+
+    @Test
     @DisplayName("testValidateNameIsntEmpty")
     void testValidateNameIsntEmpty() {
         AuctionValidator validator = new AuctionValidator();
