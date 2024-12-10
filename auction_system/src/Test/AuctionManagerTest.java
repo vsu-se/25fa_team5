@@ -87,7 +87,12 @@ public class AuctionManagerTest {
         auctionManager.addAuction(auctionOne);
         auctionManager.addAuction(auctionTwo);
         auctionManager.addAuction(auctionThree);
-        assertEquals(auctionManager.getAuctionList(), auctionManager.getUserListedAuctions(userOne.getName()));
+        ArrayList<Auction> expected = new ArrayList<>();
+        expected.add(auctionTwo);
+        expected.add(auctionThree);
+        expected.add(auctionOne);
+        ArrayList<Auction> actual = auctionManager.getUserListedAuctions(userOne.getName());
+        assertEquals(expected, actual);
     }
 
     @Test
