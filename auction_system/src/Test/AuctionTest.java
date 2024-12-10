@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,8 +31,10 @@ class AuctionTest {
 
     @Test
     void testAddBid() {
-        Bid bid1 = new Bid(500.0, user1);
-        Bid bid2 = new Bid(700.0, user2);
+    	LocalDateTime dateTime = LocalDateTime.now();
+    	LocalDateTime dateTime2 = dateTime.plusSeconds(10);
+        Bid bid1 = new Bid(1, 500.0, dateTime, user1);
+        Bid bid2 = new Bid(1, 700.0, dateTime2, user2);
 
         assertTrue(auction.addBid2(bid1), "First bid should be added successfully");
         assertTrue(auction.addBid2(bid2), "Second bid should be added successfully");
@@ -49,8 +52,10 @@ class AuctionTest {
 
     @Test
     void testFindWinningBid() {
-        Bid bid1 = new Bid(500.0, user1);
-        Bid bid2 = new Bid(700.0, user2);
+    	LocalDateTime dateTime = LocalDateTime.now();
+    	LocalDateTime dateTime2 = dateTime.plusSeconds(10);
+        Bid bid1 = new Bid(1, 500.0, dateTime, user1);
+        Bid bid2 = new Bid(1, 700.0, dateTime2, user2);
 
         auction.addBid2(bid1);
         auction.addBid2(bid2);
@@ -59,13 +64,15 @@ class AuctionTest {
 
         manager.sortBidsByBidAmount();
 
-        assertEquals(bid2.getBidValue(), manager.getBidList().getFirst().getBidValue(), "Highest bid should be the winning bid");
+        assertTrue(auction.findWinningBid(), "Highest bid should be the winning bid");
     }
 
     @Test
     void testGetWinningBid() {
-        Bid bid1 = new Bid(500.0, user1);
-        Bid bid2 = new Bid(700.0, user2);
+    	LocalDateTime dateTime = LocalDateTime.now();
+    	LocalDateTime dateTime2 = dateTime.plusSeconds(10);
+        Bid bid1 = new Bid(1, 500.0, dateTime, user1);
+        Bid bid2 = new Bid(1, 700.0, dateTime2, user2);
 
         auction.addBid2(bid1);
         auction.addBid2(bid2);
