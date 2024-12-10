@@ -67,6 +67,7 @@ public class AuctionManager {
         for(int i = 0; i < auctionList.size(); i++) {
             if(auctionList.get(i).getUser().equals(user)) {
                 userListedAuctions.add(auctionList.get(i));
+                sortBySoonestEndingUserAuctions(userListedAuctions);
             }
         }
         return userListedAuctions;
@@ -81,6 +82,12 @@ public class AuctionManager {
             }
         }
         return userBidOnAuctions;
+    }
+
+    public void sortBySoonestEndingUserAuctions(ArrayList<Auction> userListedAuctions) {
+        Comparator<Auction> auctionComparator = (Auction one, Auction two) ->
+                one.getLocalEndDateAndTime().compareTo(two.getLocalEndDateAndTime());
+        Collections.sort(userListedAuctions, auctionComparator);
     }
 
     // called when auctions ends
