@@ -8,6 +8,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -39,6 +42,7 @@ public class Main extends Application {
 	private AuctionController auctionController = new AuctionController(auctionManager);
 	private User currentUser;
 	private DateTimeManager dateTimeManager = new DateTimeManager();
+	private ScheduledExecutorService scheduler;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -47,6 +51,17 @@ public class Main extends Application {
 			Label statusLbl  = new Label("Select User Type: ");
 			RadioButton SystemAdminCheckBox = new RadioButton("System Admin");
 
+			scheduler = Executors.newScheduledThreadPool(1);
+			scheduler.scheduleAtFixedRate(() -> {
+				auctionManager.checkDates();
+			}, 0, 1, TimeUnit.SECONDS);
+
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				if(!scheduler.isShutdown()) {
+					scheduler.shutdown();
+					System.out.println("Auction Scheduler Stopped");
+				}
+			}));
 
 		    RadioButton UserCheckBox = new RadioButton("User");
 		    RadioButton RegisteredUserCheckBox = new RadioButton("Registered User");
