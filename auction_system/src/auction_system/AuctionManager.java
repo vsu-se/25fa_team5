@@ -17,15 +17,21 @@ public class AuctionManager {
     }
 
     public void addAuction(Auction auction) {
-        if((!auctionList.contains(auction)) && auction.getActive()) {
+        if((!auctionList.contains(auction))) {
             auctionList.add(auction);
-            activeList.add(auction);
-            sortBySoonestEndingActiveAuctions();
+            if(auction.getActive()) {
+                activeList.add(auction);
+                sortBySoonestEndingActiveAuctions();
+            }
         }
     }
 
     public Auction getAuctionFromAuctionList(int index) {
         return auctionList.get(index);
+    }
+
+    public Auction getAuctionFromActiveList(int index) {
+        return activeList.get(index);
     }
 
     public int getAuctionListLength() {
@@ -35,7 +41,6 @@ public class AuctionManager {
     public boolean containsAuction(Auction auction) {
         return auctionList.contains(auction);
     }
-
 
     // returns list of all auctions regardless of active or inactive
     public ArrayList<Auction> getAuctionList() {
@@ -62,6 +67,7 @@ public class AuctionManager {
         for(int i = 0; i < auctionList.size(); i++) {
             if(auctionList.get(i).getUser().equals(user)) {
                 userListedAuctions.add(auctionList.get(i));
+                sortBySoonestEndingUserAuctions(userListedAuctions);
             }
         }
         return userListedAuctions;
@@ -76,6 +82,12 @@ public class AuctionManager {
             }
         }
         return userBidOnAuctions;
+    }
+
+    public void sortBySoonestEndingUserAuctions(ArrayList<Auction> userListedAuctions) {
+        Comparator<Auction> auctionComparator = (Auction one, Auction two) ->
+                one.getLocalEndDateAndTime().compareTo(two.getLocalEndDateAndTime());
+        Collections.sort(userListedAuctions, auctionComparator);
     }
 
     // called when auctions ends

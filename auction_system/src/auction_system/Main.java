@@ -80,8 +80,85 @@ public class Main extends Application {
 			commissionController = new CommissionController();
 			premiumController = new PremiumController();
 
+			TabPane tabPane = new TabPane();
+			Tab mainTab = new Tab("Main page");
+			mainTab.setClosable(false);
+			Tab auctionsAndBidsTab = new Tab("Auctions and bids");
+			auctionsAndBidsTab.setClosable(false);
+			Tab concludedAuctionsTab = new Tab("Concluded auctions");
+			concludedAuctionsTab.setClosable(false);
 
+			if(auctionController.buildAuctionManager() != null) {
+				auctionController.buildAuctionManager();
+			}
 
+			Label listLbl = new Label("All Active Auctions: ");
+			ListView<Auction> activeAuctionList = new ListView<>();
+
+			if (auctionController != null && auctionController.getAuctionManager() != null) {
+				auctionController.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
+				activeAuctionList.setItems(observableList);
+				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
+					@Override
+					protected void updateItem(Auction auction, boolean empty) {
+						super.updateItem(auction, empty);
+
+						if (empty || auction == null || auction.getItem() == null) {
+							setText(null);
+						} else {
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by " + auction.getUser());
+						}
+					}
+				});
+			}
+
+			activeAuctionList.setPrefSize(300,300);
+
+			VBox listBox = new VBox(listLbl, activeAuctionList);
+			listBox.setSpacing(10);
+
+			// bidding area
+			Label space = new Label();
+			TextArea auctionDisplayArea = new TextArea();
+			auctionDisplayArea.setText("Select an auction from the list on the left to view auction information.");
+			auctionDisplayArea.setPrefSize(380,300);
+
+			Button showBidHistoryButton = new Button("Show bid history");
+
+			HBox enterBidBox = new HBox(showBidHistoryButton);
+			enterBidBox.setSpacing(10);
+
+			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
+			biddingArea.setSpacing(10);
+
+			HBox auctionListWithBidding = new HBox(listBox, biddingArea);
+			auctionListWithBidding.setSpacing(50);
+
+			// US-7
+			// Allows user to bid on an auction
+			Button selectButton = new Button("Select auction");
+			Button updateButton = new Button("Update list");
+			HBox bidBox = new HBox(selectButton, updateButton);
+			bidBox.setSpacing(10);
+
+			selectButton.setOnAction(e -> {
+				auctionController.select(activeAuctionList, auctionDisplayArea);
+			});
+
+			updateButton.setOnAction(e -> {
+				systemAdminUser(primaryStage);
+			});
+
+			showBidHistoryButton.setOnAction(e -> {
+				auctionController.showBidHistory(activeAuctionList, auctionDisplayArea);
+			});
+
+			VBox auctionsAndBidsVBox = new VBox(auctionListWithBidding, bidBox);
+
+			auctionsAndBidsTab.setContent(auctionsAndBidsVBox);
+
+			tabPane.getTabs().addAll(mainTab, auctionsAndBidsTab, concludedAuctionsTab);
 
 			// US-1
 			Button returnButton = new Button("<-- User Selection");
@@ -227,7 +304,9 @@ public class Main extends Application {
 			HBox systemBox = new HBox(systemBox1, systemBox2, layout);
 			systemBox.setSpacing(20);
 
-			Scene scene = new Scene(systemBox,700,400);
+			mainTab.setContent(systemBox);
+
+			Scene scene = new Scene(tabPane,700,400);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 
 			primaryStage.setScene(scene);
@@ -240,8 +319,11 @@ public class Main extends Application {
 
 	public void sellerListItem(Stage primaryStage, String username) {
 		try {
-			auctionManager = fileManager.buildAuctionManager();
-			primaryStage.setTitle("Seller");
+            if (auctionController.buildAuctionManager() != null) {
+                auctionController.buildAuctionManager();
+            }
+
+            primaryStage.setTitle("Seller");
 
 			TabPane tabPane = new TabPane();
 
@@ -295,7 +377,7 @@ public class Main extends Application {
 			TextArea itemListArea = new TextArea();
 			itemListArea.setEditable(false);
 
-			TextArea registeredUserData = new TextArea();
+		//	TextArea registeredUserData = new TextArea();
 
 			addItemButton.setOnAction(e -> {
 				try {
@@ -312,6 +394,9 @@ public class Main extends Application {
 				catch (BinException exBin) {
 					showAlert("Auction BIN error", exBin.getMessage());
 				}
+				catch (DuplicateAuctionException exDup) {
+					showAlert("Duplicate auction error", exDup.getMessage());
+				}
 				catch (IllegalArgumentException exDates) {
 					showAlert("Auction date and time error", exDates.getMessage());
 				}
@@ -323,27 +408,8 @@ public class Main extends Application {
 
 			Button saveDataButton = new Button("Save this auction");
 			saveDataButton.setOnAction(e -> {
-                if (!itemListArea.getText().isEmpty()) {
-                    saveRegisteredUserData(username, itemListArea);
-                    itemListArea.clear();
-                }
+                auctionController.saveData(itemListArea, username);
             });
-
-			// US - 5
-			Button showMyAuctionsBtn = new Button("Show My Auctions");
-			showMyAuctionsBtn.setOnAction(e -> {//loadRegisteredUserData(username, itemListArea);
-
-
-			//	auctionController.showMyAuctions(registeredUserData);
-
-			});
-			// US - 13
-			Button bidHistoryBtn = new Button("Show Bid History");
-			bidHistoryBtn.setOnAction(e -> {
-				// not yet implemented
-			});
-
-		//	TextArea registeredUserData = new TextArea();
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
@@ -357,9 +423,9 @@ public class Main extends Application {
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-			if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-				auctionManager.sortBySoonestEndingActiveAuctions();
-				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
+			if (auctionController != null && auctionController.getAuctionManager() != null) {
+				auctionController.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
 					@Override
@@ -390,9 +456,11 @@ public class Main extends Application {
 			bidField.setPrefSize(100, 50);
 			Button bidButton = new Button("Submit bid");
 
-			Button showAuctionBids = new Button("Show this auction's bids");
+			Button showAuctionBids = new Button("Show auction bids");
 
-			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids);
+			Button showBidHistoryButton = new Button("Show bid history");
+
+			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids, showBidHistoryButton);
 			enterBidBox.setSpacing(10);
 
 			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
@@ -409,8 +477,7 @@ public class Main extends Application {
 			bidBox.setSpacing(10);
 
 			selectButton.setOnAction(e -> {
-				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-				auctionDisplayArea.setText(selectedAuction.toString());
+				auctionController.select(activeAuctionList, auctionDisplayArea);
 			});
 
 			updateButton.setOnAction(e -> {
@@ -418,30 +485,14 @@ public class Main extends Application {
 			});
 
 			bidButton.setOnAction(e -> {
-				Auction selectedAuction;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-				else {
-					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-					try {
-						auctionController.submitBid(selectedAuction, bidField, currentUser);
-					}
-					catch (IllegalArgumentException ex) {
-						auctionDisplayArea.setText(ex.getMessage());
-					}
-
-				}
+				auctionController.bid(activeAuctionList, auctionDisplayArea, bidField, currentUser);
 			});
 			showAuctionBids.setOnAction(e -> {
-				Auction selectedAuction;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-				else {
-					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
-				}
+				auctionController.showAuctionBids(activeAuctionList, auctionDisplayArea);
+			});
+
+			showBidHistoryButton.setOnAction(e -> {
+				auctionController.showBidHistory(activeAuctionList, auctionDisplayArea);
 			});
 
 			// US-8
@@ -472,10 +523,7 @@ public class Main extends Application {
 
 			showMyAuctionsButton.setOnAction(e -> {
 		//		fileManager.loadRegisteredUserData(username, showMyAuctionsTextArea);
-				ArrayList<Auction> userListedAuctions = auctionManager.getUserListedAuctions(username);
-				for(Auction auction : userListedAuctions) {
-					showMyAuctionsTextArea.appendText(auction.toString() + "-----------------------\n");
-				}
+				auctionController.showMyAuctions(showMyAuctionsTextArea, username);
 			});
 
 			Button updateShowMyAuctions = new Button("Update list");
@@ -502,8 +550,8 @@ public class Main extends Application {
 
 			Label showMyBidsLabel = new Label("Auctions you have bid on: ");
 			ListView<Auction> bidOnAuctionsList = new ListView<>();
-            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-                ObservableList<Auction> observableBidOnAuctionList = FXCollections.observableArrayList(auctionManager.getUserBidOnAuctions(username));
+            if (auctionController != null && auctionController.getAuctionManager() != null) {
+                ObservableList<Auction> observableBidOnAuctionList = FXCollections.observableArrayList(auctionController.getUserBidOnAuctions(username));
                 bidOnAuctionsList.setItems(observableBidOnAuctionList);
                 bidOnAuctionsList.setCellFactory(e -> new ListCell<Auction>() {
                     @Override
@@ -542,9 +590,7 @@ public class Main extends Application {
 			bidListDisplaySelect.setSpacing(10);
 
 			selectBidOnAuctionsButton.setOnAction(e -> {
-				Auction selected;
-				selected = bidOnAuctionsList.getSelectionModel().getSelectedItem();
-				displayBidOnAuctions.setText(selected.showMyBidsData(username));
+				auctionController.selectBidOnAuctions(bidOnAuctionsList, displayBidOnAuctions, username);
 			});
 
 			showMyBidsTab.setContent(bidListDisplaySelect);
@@ -576,10 +622,7 @@ public class Main extends Application {
 	//		Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn);
-			myAuctionsBox.setSpacing(10);
-
-			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, registeredUserData, signOutButton);
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, signOutButton);
 			itemBox.setSpacing(10);
 			listItemTab.setContent(itemBox);
 
@@ -603,16 +646,19 @@ public class Main extends Application {
 	// User Page / Not completed
 	public void User(Stage primaryStage) {
 		try {
-			primaryStage.setTitle("Bidder");
+            if (auctionController.buildAuctionManager() != null) {
+                auctionController.buildAuctionManager();
+            }
+            primaryStage.setTitle("Bidder");
 
 			// US-6
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-            if ((auctionManager = fileManager.buildAuctionManager()) != null) {
-                auctionManager.sortBySoonestEndingActiveAuctions();
-				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getActiveList());
+            if (auctionController != null && auctionController.getAuctionManager() != null) {
+                auctionController.sortBySoonestEndingActiveAuctions();
+				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
 					@Override
@@ -627,20 +673,6 @@ public class Main extends Application {
 					}
 				});
             }
-//            ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionManager.getAuctionList());
-//			activeAuctionList.setItems(observableList);
-//			activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
-//				@Override
-//				protected void updateItem(Auction auction, boolean empty) {
-//					super.updateItem(auction, empty);
-//
-//					if (empty || auction == null || auction.getItem() == null) {
-//						setText(null);
-//					} else {
-//						setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
-//					}
-//				}
-//			});
 
 
 			activeAuctionList.setPrefSize(300,300);
