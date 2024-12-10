@@ -28,7 +28,7 @@ public class BidManager {
         }
     }
 
-    // used to get all bids for bid history
+    // used to get all bids for bid history, used on file manager
     public void addBidForBidHistory(Bid bid) {
         bidList.add(bid);
     }
@@ -59,6 +59,10 @@ public class BidManager {
     // use before getWinningBid
     public boolean checkIfEmpty() {
         return bidList.isEmpty();
+    }
+
+    public Bid getBidByIndex(int i) {
+        return bidList.get(i);
     }
 
     public boolean checkIfUserHasBid(User user) {

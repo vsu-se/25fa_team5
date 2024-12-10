@@ -140,7 +140,7 @@ public class Auction {
 		long seconds = duration.toSeconds();
 		String daysStr = "";
 		if(days >= 0) {
-			daysStr += days + "days, ";
+			daysStr += days + " days, ";
 		}
 		String hoursStr = "";
 		if(hours >= 0) {
