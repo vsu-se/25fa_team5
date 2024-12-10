@@ -1,12 +1,11 @@
 package auction_system;
 
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 public class AuctionController {
 	private AuctionManager auctionManager;
@@ -69,9 +68,22 @@ public class AuctionController {
 
             Auction auction = new Auction(item, localStartDate, localEndDate, localStartTime, localEndTime, Double.parseDouble(bin));
             auction.setUser(username);
-            if(!auctionManager.containsAuction(auction)) {
-                auctionManager.addAuction(auction);
-                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, User: placeholder, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true");
+            if (auctionManager != null) {
+                if(!auctionManager.containsAuction(auction)) {
+                    auctionManager.addAuction(auction);
+                    String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true");
+                    itemListArea.setText(itemDetails);
+                    clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
+                }
+                else {
+                    throw new DuplicateAuctionException("Auction already exists. Please re-enter information.");
+                }
+            }
+            else {
+                AuctionManager aM = new AuctionManager();
+                aM.addAuction(auction);
+                auctionManager = aM;
+                String itemDetails = String.format("ID: %s, Name: %s, Start date: %s, start time: %s, End date: %s, end time: %s, BIN: $%s, active: %s\n", id, name, startDate, startTime, endDate, endTime, bin, "true");
                 itemListArea.setText(itemDetails);
                 clearFields(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField);
             }
@@ -92,18 +104,17 @@ public class AuctionController {
     // info of bidder saved, bid amount saved (if valid)
     // date and time of bid saved
     // this info needs to be saved somewhere
-    public void submitBid(Auction selectedAuction, TextField bidField, User user) {
+    public void submitBid(Auction selectedAuction, TextField bidField, TextArea auctionDisplayArea, User user) {
         String bidValue = bidField.getText();
         AuctionValidator validator = new AuctionValidator();
         if(validator.validateBid(bidValue)) {
             bidField.clear();
-            bidField.setText("bid is valid!");
+            auctionDisplayArea.setText("Bid entered is valid.");
             LocalDateTime dateTime = LocalDateTime.now();
             Bid bid = new Bid(selectedAuction.getItem().getID(), Double.parseDouble(bidValue), dateTime, user);
-            bidField.clear();
             boolean result = selectedAuction.addBid2(bid);
             if(result) {
-                bidField.setText(String.valueOf(result));
+                auctionDisplayArea.setText("Bid successfully added to auction.");
                 fileManager.saveBidInfo(bid);
             }
             else {
@@ -112,7 +123,7 @@ public class AuctionController {
         }
         else {
             bidField.clear();
-            bidField.setText("bid isn't valid :(");
+            auctionDisplayArea.setText("Bid isn't valid, please try again.");
         }
     }
 
@@ -124,10 +135,100 @@ public class AuctionController {
         return auctionManager.getAuctionFromAuctionList(index);
     }
 
-    // needs to changed, will show auctions from all users instead of the one logged in
-    public void showMyAuctions(TextArea registeredUserData) {
-        registeredUserData.clear();
-        registeredUserData.setText(toString());
+    public void select(ListView<Auction> activeAuctionList, TextArea auctionDisplayArea) {
+        Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+        auctionDisplayArea.setText(selectedAuction.toString());
+    }
+
+    public void saveData(TextArea itemListArea, String username) {
+        if (!itemListArea.getText().isEmpty()) {
+            fileManager.saveRegisteredUserData(username, itemListArea);
+            itemListArea.clear();
+        }
+    }
+
+    public void bid(ListView<Auction> activeAuctionList, TextArea auctionDisplayArea, TextField bidField, User currentUser) {
+        Auction selectedAuction;
+        if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+            showAlert("Select an auction", "Please select an auction from the list.");
+        }
+        else {
+            selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+            try {
+                submitBid(selectedAuction, bidField, auctionDisplayArea, currentUser);
+            }
+            catch (IllegalArgumentException ex) {
+                auctionDisplayArea.setText(ex.getMessage());
+            }
+        }
+    }
+
+    public void showAuctionBids(ListView<Auction> activeAuctionList, TextArea auctionDisplayArea) {
+        Auction selectedAuction;
+        if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+            showAlert("Select an auction", "Please select an auction from the list");
+        }
+        else {
+            selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
+            auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
+        }
+    }
+
+    public void showBidHistory(ListView<Auction> activeAuctionList, TextArea auctionDisplayArea) {
+        Auction selected;
+        if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
+            showAlert("Select an auction", "Please select an auction from the list.");
+        }
+        else {
+            selected = activeAuctionList.getSelectionModel().getSelectedItem();
+            int id = selected.getItem().getID();
+            auctionDisplayArea.setText(fileManager.buildBidManagerForBidHistory(id).toString());
+        }
+    }
+
+    public void showMyAuctions(TextArea showMyAuctionsTextArea, String username) {
+        ArrayList<Auction> userListedAuctions = getUserListedAuctions(username);
+        for(Auction auction : userListedAuctions) {
+            showMyAuctionsTextArea.appendText(auction.toString() + "-----------------------\n");
+        }
+    }
+
+    public void selectBidOnAuctions(ListView<Auction> bidOnAuctionsList, TextArea displayBidOnAuctions, String username) {
+        Auction selected;
+        selected = bidOnAuctionsList.getSelectionModel().getSelectedItem();
+        displayBidOnAuctions.setText(selected.showMyBidsData(username));
+    }
+
+    public AuctionManager buildAuctionManager() {
+        return this.auctionManager = fileManager.buildAuctionManager();
+    }
+
+    public ArrayList<Auction> getActiveList() {
+        return auctionManager.getActiveList();
+    }
+
+    public void sortBySoonestEndingActiveAuctions() {
+        auctionManager.sortBySoonestEndingActiveAuctions();
+    }
+
+    public ArrayList<Auction> getUserListedAuctions(String username) {
+        return auctionManager.getUserListedAuctions(username);
+    }
+
+    public ArrayList<Auction> getUserBidOnAuctions(String username) {
+        return auctionManager.getUserBidOnAuctions(username);
+    }
+
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @Override

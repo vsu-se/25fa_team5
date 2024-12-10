@@ -5,13 +5,15 @@ import auction_system.Bid;
 import auction_system.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BidManagerTest {
 private BidManager bidManager;
-    private Bid bid1, bid2, bid3;
+    private Bid bid1, bid2, bid3, bid4;
     private User user1, user2, user3;
     private BidManager auction;
 
@@ -21,9 +23,10 @@ private BidManager bidManager;
         user1 = new User("User1");
         user2 = new User("User2");
         user3 = new User("User3");
-        bid1 = new Bid(100, user1);
-        bid2 = new Bid(200, user2);
-        bid3 = new Bid(150, user3);
+        bid1 = new Bid(1, 100, LocalDateTime.now(), user1);
+        bid2 = new Bid(1, 200, LocalDateTime.now(), user2);
+        bid3 = new Bid(1, 150, LocalDateTime.now(), user3);
+        bid4 = new Bid(1, 50, LocalDateTime.now(), user1);
     }
 
     @Test
@@ -34,6 +37,35 @@ private BidManager bidManager;
         bidManager.addBid(bid3);
         assertTrue(bidManager.containsBid(bid2), "Bid2 should be added to the bid list");
         assertTrue(bidManager.containsBid(bid3), "Bid3 should be added to the bid list");
+    }
+
+    @Test
+    void testUserAddsSecondBid() {
+        bidManager.addBid(bid1);
+        bidManager.addBid(bid4);
+        assertTrue(bidManager.containsBid(bid4));
+        assertFalse(bidManager.containsBid(bid1));
+    }
+
+    @Test
+    void testUserAddsThirdBid() {
+        bidManager.addBid(bid1);
+        bidManager.addBid(bid4);
+        Bid bid5 = new Bid(1, 10, LocalDateTime.now(), user1);
+        bidManager.addBid(bid5);
+        assertTrue(bidManager.containsBid(bid5));
+        assertFalse(bidManager.containsBid(bid4));
+        assertFalse(bidManager.containsBid(bid1));
+    }
+
+    @Test
+    void testUser1AddsSecondBidAfterUser2() {
+        bidManager.addBid(bid1);
+        bidManager.addBid(bid2);
+        bidManager.addBid(bid4);
+        assertFalse(bidManager.containsBid(bid1));
+        assertEquals(bid2, bidManager.getBidByIndex(0));
+        assertEquals(bid4, bidManager.getBidByIndex(1));
     }
 
     @Test
@@ -50,11 +82,10 @@ private BidManager bidManager;
         bidManager.addBid(bid3);
 
         bidManager.sortBidsByBidAmount();
-        ArrayList<Bid> sortedBids = new ArrayList<>(bidManager.bidList);
 
-        assertEquals(bid2, sortedBids.get(0), "Bid2 should be the highest bid");
-        assertEquals(bid3, sortedBids.get(1), "Bid3 should be the second highest bid");
-        assertEquals(bid1, sortedBids.get(2), "Bid1 should be the lowest bid");
+        assertEquals(bid2, bidManager.getBidByIndex(0), "Bid2 should be the highest bid");
+        assertEquals(bid3, bidManager.getBidByIndex(1), "Bid3 should be the second highest bid");
+        assertEquals(bid1, bidManager.getBidByIndex(2), "Bid1 should be the lowest bid");
     }
 
     @Test
