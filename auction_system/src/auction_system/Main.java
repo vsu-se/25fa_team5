@@ -377,7 +377,7 @@ public class Main extends Application {
 			TextArea itemListArea = new TextArea();
 			itemListArea.setEditable(false);
 
-			TextArea registeredUserData = new TextArea();
+		//	TextArea registeredUserData = new TextArea();
 
 			addItemButton.setOnAction(e -> {
 				try {
@@ -410,22 +410,6 @@ public class Main extends Application {
 			saveDataButton.setOnAction(e -> {
                 auctionController.saveData(itemListArea, username);
             });
-
-			// US - 5
-			Button showMyAuctionsBtn = new Button("Show My Auctions");
-			showMyAuctionsBtn.setOnAction(e -> {//loadRegisteredUserData(username, itemListArea);
-
-
-			//	auctionController.showMyAuctions(registeredUserData);
-
-			});
-			// US - 13
-			Button bidHistoryBtn = new Button("Show Bid History");
-			bidHistoryBtn.setOnAction(e -> {
-				// not yet implemented
-			});
-
-		//	TextArea registeredUserData = new TextArea();
 
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
@@ -638,10 +622,7 @@ public class Main extends Application {
 	//		Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			HBox myAuctionsBox = new HBox(showMyAuctionsBtn, bidHistoryBtn);
-			myAuctionsBox.setSpacing(10);
-
-			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, myAuctionsBox, registeredUserData, signOutButton);
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, signOutButton);
 			itemBox.setSpacing(10);
 			listItemTab.setContent(itemBox);
 
