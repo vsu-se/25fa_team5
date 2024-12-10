@@ -131,7 +131,7 @@ public class Auction {
 	public String calculateTimeRemaining() {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDate date = getLocalEndDate();
-		LocalTime time = getLocalStartTime();
+		LocalTime time = getLocalEndTime();
 		LocalDateTime auctionTime = LocalDateTime.of(date, time);
 		Duration duration = Duration.between(now, auctionTime);
 		long days = duration.toDays();
@@ -154,8 +154,10 @@ public class Auction {
 		if(seconds >= 0) {
 			secondsStr += seconds + " seconds";
 		}
-		String calculatedTime = daysStr + hoursStr + minutesStr + secondsStr;
-		return calculatedTime;
+		if(days >= 0 & hours >= 0 & minutes >= 0 & seconds >= 0) {
+			return daysStr + hoursStr + minutesStr + secondsStr;
+		}
+		else return " none";
 	}
 
 	public String showMyBidsData(String username) {

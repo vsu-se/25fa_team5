@@ -230,7 +230,7 @@ public class FileManager {
                     String[] bidValues = line.trim().split(",");
                     int ID = Integer.parseInt(bidValues[0].substring(bidValues[0].indexOf("ID: ") + 4));
                     if(ID == itemID) {
-                        double bidAmount = Double.parseDouble(bidValues[1].substring(bidValues[1].indexOf(": ") + 2));
+                        double bidAmount = Double.parseDouble(bidValues[1].substring(bidValues[1].indexOf("$") + 1));
                         LocalDate date = LocalDate.parse(bidValues[2].substring(bidValues[2].indexOf(": ") + 2));
                         LocalTime time = LocalTime.parse(bidValues[3].substring(bidValues[3].indexOf(": ") + 2));
                         String username = bidValues[4].substring(bidValues[4].indexOf(": ") + 2);
@@ -262,7 +262,7 @@ public class FileManager {
                     String[] bidValues = line.trim().split(",");
                     int ID = Integer.parseInt(bidValues[0].substring(bidValues[0].indexOf("ID: ") + 4));
                     if(ID == itemID) {
-                        double bidAmount = Double.parseDouble(bidValues[1].substring(bidValues[1].indexOf(": ") + 2));
+                        double bidAmount = Double.parseDouble(bidValues[1].substring(bidValues[1].indexOf("$") + 1));
                         LocalDate date = LocalDate.parse(bidValues[2].substring(bidValues[2].indexOf(": ") + 2));
                         LocalTime time = LocalTime.parse(bidValues[3].substring(bidValues[3].indexOf(": ") + 2));
                         String username = bidValues[4].substring(bidValues[4].indexOf(": ") + 2);

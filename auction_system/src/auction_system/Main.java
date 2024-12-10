@@ -88,7 +88,9 @@ public class Main extends Application {
 			Tab concludedAuctionsTab = new Tab("Concluded auctions");
 			concludedAuctionsTab.setClosable(false);
 
-			auctionController.buildAuctionManager();
+			if(auctionController.buildAuctionManager() != null) {
+				auctionController.buildAuctionManager();
+			}
 
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
@@ -141,8 +143,7 @@ public class Main extends Application {
 			bidBox.setSpacing(10);
 
 			selectButton.setOnAction(e -> {
-				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-				auctionDisplayArea.setText(selectedAuction.toString());
+				auctionController.select(activeAuctionList, auctionDisplayArea);
 			});
 
 			updateButton.setOnAction(e -> {
@@ -150,15 +151,7 @@ public class Main extends Application {
 			});
 
 			showBidHistoryButton.setOnAction(e -> {
-				Auction selected;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-				else {
-					selected = activeAuctionList.getSelectionModel().getSelectedItem();
-					int id = selected.getItem().getID();
-					auctionDisplayArea.setText(fileManager.buildBidManagerForBidHistory(id).toString());
-				}
+				auctionController.showBidHistory(activeAuctionList, auctionDisplayArea);
 			});
 
 			VBox auctionsAndBidsVBox = new VBox(auctionListWithBidding, bidBox);
@@ -326,9 +319,11 @@ public class Main extends Application {
 
 	public void sellerListItem(Stage primaryStage, String username) {
 		try {
-			auctionController.buildAuctionManager();
+            if (auctionController.buildAuctionManager() != null) {
+                auctionController.buildAuctionManager();
+            }
 
-			primaryStage.setTitle("Seller");
+            primaryStage.setTitle("Seller");
 
 			TabPane tabPane = new TabPane();
 
@@ -413,10 +408,7 @@ public class Main extends Application {
 
 			Button saveDataButton = new Button("Save this auction");
 			saveDataButton.setOnAction(e -> {
-                if (!itemListArea.getText().isEmpty()) {
-                    saveRegisteredUserData(username, itemListArea);
-                    itemListArea.clear();
-                }
+                auctionController.saveData(itemListArea, username);
             });
 
 			// US - 5
@@ -501,8 +493,7 @@ public class Main extends Application {
 			bidBox.setSpacing(10);
 
 			selectButton.setOnAction(e -> {
-				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-				auctionDisplayArea.setText(selectedAuction.toString());
+				auctionController.select(activeAuctionList, auctionDisplayArea);
 			});
 
 			updateButton.setOnAction(e -> {
@@ -510,42 +501,14 @@ public class Main extends Application {
 			});
 
 			bidButton.setOnAction(e -> {
-				Auction selectedAuction;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-				else {
-					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-					try {
-						auctionController.submitBid(selectedAuction, bidField, auctionDisplayArea, currentUser);
-					}
-					catch (IllegalArgumentException ex) {
-						auctionDisplayArea.setText(ex.getMessage());
-					}
-
-				}
+				auctionController.bid(activeAuctionList, auctionDisplayArea, bidField, currentUser);
 			});
 			showAuctionBids.setOnAction(e -> {
-				Auction selectedAuction;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-				else {
-					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
-				}
+				auctionController.showAuctionBids(activeAuctionList, auctionDisplayArea);
 			});
 
 			showBidHistoryButton.setOnAction(e -> {
-				Auction selected;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-				else {
-					selected = activeAuctionList.getSelectionModel().getSelectedItem();
-					int id = selected.getItem().getID();
-					auctionDisplayArea.setText(fileManager.buildBidManagerForBidHistory(id).toString());
-				}
+				auctionController.showBidHistory(activeAuctionList, auctionDisplayArea);
 			});
 
 			// US-8
@@ -576,10 +539,7 @@ public class Main extends Application {
 
 			showMyAuctionsButton.setOnAction(e -> {
 		//		fileManager.loadRegisteredUserData(username, showMyAuctionsTextArea);
-				ArrayList<Auction> userListedAuctions = auctionController.getUserListedAuctions(username);
-				for(Auction auction : userListedAuctions) {
-					showMyAuctionsTextArea.appendText(auction.toString() + "-----------------------\n");
-				}
+				auctionController.showMyAuctions(showMyAuctionsTextArea, username);
 			});
 
 			Button updateShowMyAuctions = new Button("Update list");
@@ -646,9 +606,7 @@ public class Main extends Application {
 			bidListDisplaySelect.setSpacing(10);
 
 			selectBidOnAuctionsButton.setOnAction(e -> {
-				Auction selected;
-				selected = bidOnAuctionsList.getSelectionModel().getSelectedItem();
-				displayBidOnAuctions.setText(selected.showMyBidsData(username));
+				auctionController.selectBidOnAuctions(bidOnAuctionsList, displayBidOnAuctions, username);
 			});
 
 			showMyBidsTab.setContent(bidListDisplaySelect);
@@ -707,8 +665,10 @@ public class Main extends Application {
 	// User Page / Not completed
 	public void User(Stage primaryStage) {
 		try {
-			auctionController.buildAuctionManager();
-			primaryStage.setTitle("Bidder");
+            if (auctionController.buildAuctionManager() != null) {
+                auctionController.buildAuctionManager();
+            }
+            primaryStage.setTitle("Bidder");
 
 			// US-6
 			// Lists all active auctions
