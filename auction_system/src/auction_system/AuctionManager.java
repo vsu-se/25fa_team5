@@ -89,8 +89,7 @@ public class AuctionManager {
         Iterator<Auction> iterator = activeList.iterator();
         while (iterator.hasNext()) {
             Auction auction = iterator.next();
-            if (auction.checkDate()) {
-                iterator.remove();
+            if (auction.checkDate()) {;
                 endAuction(auction);
             }
         }
