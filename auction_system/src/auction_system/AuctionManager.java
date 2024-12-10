@@ -30,6 +30,10 @@ public class AuctionManager {
         return auctionList.get(index);
     }
 
+    public Auction getAuctionFromActiveList(int index) {
+        return activeList.get(index);
+    }
+
     public int getAuctionListLength() {
         return auctionList.size();
     }
@@ -37,7 +41,6 @@ public class AuctionManager {
     public boolean containsAuction(Auction auction) {
         return auctionList.contains(auction);
     }
-
 
     // returns list of all auctions regardless of active or inactive
     public ArrayList<Auction> getAuctionList() {
