@@ -99,6 +99,20 @@ public class AuctionValidatorTest {
     }
 
     @Test
+    @DisplayName("testInvalidBinIsNegative")
+    void testInvalidBinIsNegative() {
+        AuctionValidator validator = new AuctionValidator();
+        assertFalse(validator.validateBin("-5"));
+    }
+
+    @Test
+    @DisplayName("testInvalidBinIsNegativeAndHasTwoDecimalPlaces")
+    void testInvalidBinIsNegativeAndHasTwoDecimalPlaces() {
+        AuctionValidator validator = new AuctionValidator();
+        assertFalse(validator.validateBin("-5.00"));
+    }
+
+    @Test
     @DisplayName("testValidateNameIsntEmpty")
     void testValidateNameIsntEmpty() {
         AuctionValidator validator = new AuctionValidator();
@@ -210,6 +224,30 @@ public class AuctionValidatorTest {
         String endTime = "12:12:12";
         boolean actual = validator.validateDate(startDate, endDate, startTime, endTime);
         assertFalse(actual);
+    }
+
+    @Test
+    @DisplayName("testInvalidateNegativeBid")
+    void testInvalidateNegativeBid() {
+        AuctionValidator validator = new AuctionValidator();
+        String bid = "-5.00";
+        assertFalse(validator.validateBid(bid));
+    }
+
+    @Test
+    @DisplayName("testValidBid")
+    void testValidBid() {
+        AuctionValidator validator = new AuctionValidator();
+        String bid = "5.00";
+        assertTrue(validator.validateBid(bid));
+    }
+
+    @Test
+    @DisplayName("testInvalidZeroBid")
+    void testInvalidZeroBid() {
+        AuctionValidator validator = new AuctionValidator();
+        String bid = "0.00";
+        assertFalse(validator.validateBid(bid));
     }
 }
 
