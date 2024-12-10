@@ -186,6 +186,10 @@ public class Auction {
 		user = new User(username);
 	}
 
+	public double getShippingCost() {
+		return shippingCost;
+	}
+
 	@Override
 	public String toString() {
 		String itemLine = this.item.toString();
