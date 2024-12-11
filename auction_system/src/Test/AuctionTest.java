@@ -36,9 +36,9 @@ class AuctionTest {
         Bid bid1 = new Bid(1, 500.0, dateTime, user1);
         Bid bid2 = new Bid(1, 700.0, dateTime2, user2);
 
-        assertTrue(auction.addBid2(bid1), "First bid should be added successfully");
-        assertTrue(auction.addBid2(bid2), "Second bid should be added successfully");
-        assertFalse(auction.addBid2(bid1), "Duplicate bid should not be added");
+        assertTrue(auction.addBid(bid1), "First bid should be added successfully");
+        assertTrue(auction.addBid(bid2), "Second bid should be added successfully");
+        assertFalse(auction.addBid(bid1), "Duplicate bid should not be added");
     }
 
     @Test
@@ -57,8 +57,8 @@ class AuctionTest {
         Bid bid1 = new Bid(1, 500.0, dateTime, user1);
         Bid bid2 = new Bid(1, 700.0, dateTime2, user2);
 
-        auction.addBid2(bid1);
-        auction.addBid2(bid2);
+        auction.addBid(bid1);
+        auction.addBid(bid2);
 
         assertTrue(auction.findWinningBid(), "Highest bid should be the winning bid");
     }
@@ -70,8 +70,8 @@ class AuctionTest {
         Bid bid1 = new Bid(1, 500.0, dateTime, user1);
         Bid bid2 = new Bid(1, 700.0, dateTime2, user2);
 
-        auction.addBid2(bid1);
-        auction.addBid2(bid2);
+        auction.addBid(bid1);
+        auction.addBid(bid2);
         auction.findWinningBid();
 
         assertEquals(700.0, auction.getWinningBid().getBidValue(), "The current bid should be the highest bid");

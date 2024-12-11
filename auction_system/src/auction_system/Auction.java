@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
 
 public class Auction {
 	private double bIN = 0.0;
@@ -69,7 +68,7 @@ public class Auction {
 		return LocalDateTime.of(endingDate, endTime);
 	}
 
-	public boolean addBid2(Bid bid) {
+	public boolean addBid(Bid bid) {
 		if(bidManager.containsBid(bid)) {
 			return false;
 		}

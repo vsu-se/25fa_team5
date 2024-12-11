@@ -99,11 +99,11 @@ public class AuctionManagerTest {
     @DisplayName("testGetUsersBidOnAuctionsSuccess")
     void testGetUsersBidOnAuctionsSuccess() {
         bidOne = new Bid(1, 20, LocalDateTime.now(), userOne);
-        auctionOne.addBid2(bidOne);
+        auctionOne.addBid(bidOne);
         bidTwo = new Bid(2, 20, LocalDateTime.now(), userOne);
-        auctionTwo.addBid2(bidTwo);
+        auctionTwo.addBid(bidTwo);
         bidThree = new Bid(3, 20, LocalDateTime.now(), userOne);
-        auctionThree.addBid2(bidThree);
+        auctionThree.addBid(bidThree);
         auctionManager.addAuction(auctionOne);
         auctionManager.addAuction(auctionTwo);
         auctionManager.addAuction(auctionThree);
@@ -114,11 +114,11 @@ public class AuctionManagerTest {
     @DisplayName("testGetUsersBidOnAuctionsWithMultipleUsers")
     void testGetUsersBidOnAuctionsWithMultipleUsers() {
         bidOne = new Bid(1, 20, LocalDateTime.now(), userOne);
-        auctionOne.addBid2(bidOne);
+        auctionOne.addBid(bidOne);
         bidTwo = new Bid(2, 20, LocalDateTime.now(), userOne);
-        auctionTwo.addBid2(bidTwo);
+        auctionTwo.addBid(bidTwo);
         bidThree = new Bid(3, 20, LocalDateTime.now(), userTwo);
-        auctionThree.addBid2(bidThree);
+        auctionThree.addBid(bidThree);
         auctionManager.addAuction(auctionOne);
         auctionManager.addAuction(auctionTwo);
         auctionManager.addAuction(auctionThree);
@@ -153,11 +153,11 @@ public class AuctionManagerTest {
         Auction auctionSix = new Auction(itemTwo, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
         Auction auctionSeven = new Auction(itemThree, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
         Bid bidOne = new Bid(1, 20, LocalDateTime.now(), userOne);
-        auctionFive.addBid2(bidOne);
+        auctionFive.addBid(bidOne);
         Bid bidTwo = new Bid(2, 20, LocalDateTime.now(), userOne);
-        auctionSix.addBid2(bidTwo);
+        auctionSix.addBid(bidTwo);
         Bid bidThree = new Bid(3, 20, LocalDateTime.now(), userOne);
-        auctionSeven.addBid2(bidThree);
+        auctionSeven.addBid(bidThree);
         auctionManager.addAuction(auctionFive);
         auctionManager.addAuction(auctionSix);
         auctionManager.addAuction(auctionSeven);
@@ -171,11 +171,11 @@ public class AuctionManagerTest {
         Auction auctionSix = new Auction(itemTwo, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
         Auction auctionSeven = new Auction(itemThree, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
         Bid bidOne = new Bid(1, 20, LocalDateTime.now(), userOne);
-        auctionFive.addBid2(bidOne);
+        auctionFive.addBid(bidOne);
         Bid bidTwo = new Bid(2, 20, LocalDateTime.now(), userTwo);
-        auctionSix.addBid2(bidTwo);
+        auctionSix.addBid(bidTwo);
         Bid bidThree = new Bid(3, 20, LocalDateTime.now(), userOne);
-        auctionSeven.addBid2(bidThree);
+        auctionSeven.addBid(bidThree);
         auctionManager.addAuction(auctionFive);
         auctionManager.addAuction(auctionSix);
         auctionManager.addAuction(auctionSeven);
@@ -193,11 +193,11 @@ public class AuctionManagerTest {
     void testGetUserWonAuctionsWithBidsFromDifferentUsers() {
         Auction auctionFive = new Auction(itemOne, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 50);
         Bid bidOne = new Bid(1, 20, LocalDateTime.now(), userOne);
-        auctionFive.addBid2(bidOne);
+        auctionFive.addBid(bidOne);
         Bid bidTwo = new Bid(1, 50, LocalDateTime.now(), userTwo);
-        auctionFive.addBid2(bidTwo);
+        auctionFive.addBid(bidTwo);
         Bid bidThree = new Bid(1, 30, LocalDateTime.now(), userThree);
-        auctionFive.addBid2(bidThree);
+        auctionFive.addBid(bidThree);
         auctionManager.addAuction(auctionFive);
         assertFalse(auctionManager.getUserWonAuctions(userOne.getName()).contains(auctionFive));
         assertFalse(auctionManager.getUserWonAuctions(userThree.getName()).contains(auctionFive));
@@ -210,7 +210,7 @@ public class AuctionManagerTest {
         Auction auctionFive = new Auction(itemOne, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 50);
         auctionFive.setUser(userOne.getName());
         Bid bidOne = new Bid(1, 20, LocalDateTime.now(), userTwo);
-        auctionFive.addBid2(bidOne);
+        auctionFive.addBid(bidOne);
         auctionManager.addAuction(auctionFive);
         assertEquals(auctionManager.getInactiveList(), auctionManager.getUserSoldAuctions(userOne.getName()));
     }
@@ -227,9 +227,9 @@ public class AuctionManagerTest {
         Bid bidOne = new Bid(1, 20, LocalDateTime.now(), userTwo);
         Bid bidTwo = new Bid(2, 20, LocalDateTime.now(), userThree);
         Bid bidThree = new Bid(3, 20, LocalDateTime.now(), new User("Layton"));
-        auctionFive.addBid2(bidOne);
-        auctionSix.addBid2(bidTwo);
-        auctionSeven.addBid2(bidThree);
+        auctionFive.addBid(bidOne);
+        auctionSix.addBid(bidTwo);
+        auctionSeven.addBid(bidThree);
         auctionManager.addAuction(auctionFive);
         auctionManager.addAuction(auctionSix);
         auctionManager.addAuction(auctionSeven);

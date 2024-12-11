@@ -50,7 +50,7 @@ public class ReportTest {
     @Test
     @DisplayName("testGenerateBuyersReport")
     void testGenerateBuyersReport() {
-        auctionOne.addBid2(bidOne);
+        auctionOne.addBid(bidOne);
         auctionManager.addAuction(auctionOne);
         premium = 15;
         String result = report.generateBuyerReport(auctionManager, user.getName(), premium);
@@ -61,9 +61,9 @@ public class ReportTest {
     @Test
     @DisplayName("testGenerateBuyersReportWithMultipleItems")
     void testGenerateBuyersReportWithMultipleItems() {
-        auctionOne.addBid2(bidOne);
-        auctionTwo.addBid2(bidTwo);
-        auctionThree.addBid2(bidThree);
+        auctionOne.addBid(bidOne);
+        auctionTwo.addBid(bidTwo);
+        auctionThree.addBid(bidThree);
         auctionManager.addAuction(auctionOne);
         auctionManager.addAuction(auctionTwo);
         auctionManager.addAuction(auctionThree);
@@ -77,7 +77,7 @@ public class ReportTest {
     @Test
     @DisplayName("testGenerateBuyersReportWithZeroPremium")
     void testGenerateBuyersReportWithZeroPremium() {
-        auctionOne.addBid2(bidOne);
+        auctionOne.addBid(bidOne);
         auctionManager.addAuction(auctionOne);
         premium = 0;
         String result = report.generateBuyerReport(auctionManager, user.getName(), premium);
@@ -89,7 +89,7 @@ public class ReportTest {
     @DisplayName("testGenerateSellerReport")
     void testGenerateSellerReport() {
         auctionThree.setUser(user.getName());
-        auctionThree.addBid2(bidFour);
+        auctionThree.addBid(bidFour);
         auctionManager.addAuction(auctionThree);
         commission = 15;
         String result = report.generateSellerReport(auctionManager, user.getName(), commission);
@@ -101,7 +101,7 @@ public class ReportTest {
     @DisplayName("testGenerateSellerReportWithZeroCommission")
     void testGenerateSellerReportWithZeroCommission() {
         auctionThree.setUser(user.getName());
-        auctionThree.addBid2(bidFour);
+        auctionThree.addBid(bidFour);
         auctionManager.addAuction(auctionThree);
         commission = 0;
         String result = report.generateSellerReport(auctionManager, user.getName(), commission);
@@ -115,9 +115,9 @@ public class ReportTest {
         auctionOne.setUser(otherUser.getName());
         auctionTwo.setUser(otherUser.getName());
         auctionThree.setUser(otherUser.getName());
-        auctionOne.addBid2(bidOne);
-        auctionTwo.addBid2(bidTwo);
-        auctionThree.addBid2(bidThree);
+        auctionOne.addBid(bidOne);
+        auctionTwo.addBid(bidTwo);
+        auctionThree.addBid(bidThree);
         auctionManager.addAuction(auctionOne);
         auctionManager.addAuction(auctionTwo);
         auctionManager.addAuction(auctionThree);

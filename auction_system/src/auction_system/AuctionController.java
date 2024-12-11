@@ -112,7 +112,7 @@ public class AuctionController {
             auctionDisplayArea.setText("Bid entered is valid.");
             LocalDateTime dateTime = LocalDateTime.now();
             Bid bid = new Bid(selectedAuction.getItem().getID(), Double.parseDouble(bidValue), dateTime, user);
-            boolean result = selectedAuction.addBid2(bid);
+            boolean result = selectedAuction.addBid(bid);
             if(result) {
                 auctionDisplayArea.setText("Bid successfully added to auction.");
                 fileManager.saveBidInfo(bid);
