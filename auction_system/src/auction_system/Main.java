@@ -5,7 +5,6 @@ package auction_system;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -381,8 +380,6 @@ public class Main extends Application {
 			TextArea itemListArea = new TextArea();
 			itemListArea.setEditable(false);
 
-		//	TextArea registeredUserData = new TextArea();
-
 			addItemButton.setOnAction(e -> {
 				try {
 					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea, username);
@@ -419,9 +416,6 @@ public class Main extends Application {
 			signOutButton.setOnAction(e -> start(primaryStage));
 
 			// Bidding tab
-			// Will be changed
-//			Tab biddingTab = new Tab("Bidding");
-//			biddingTab.setClosable(false);
 
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
@@ -458,7 +452,7 @@ public class Main extends Application {
 			auctionDisplayArea.setPrefSize(380,300);
 
 			TextField bidField = new TextField();
-			bidField.setPrefSize(100, 50);
+			bidField.setPrefSize(100, 20);
 			Button bidButton = new Button("Submit bid");
 
 			Button showAuctionBids = new Button("Show auction bids");
@@ -508,15 +502,12 @@ public class Main extends Application {
 			biddingTab.setContent(userBox);
 
 //			// tab for show my auctions
-//			Tab showMyAuctionsTab = new Tab("Show My Auctions");
-//			showMyAuctionsTab.setClosable(false);
 
 			TextArea showMyAuctionsTextArea = new TextArea();
 			showMyAuctionsTextArea.setEditable(false);
 			Button showMyAuctionsButton = new Button("Show auctions");
 
 			showMyAuctionsButton.setOnAction(e -> {
-		//		fileManager.loadRegisteredUserData(username, showMyAuctionsTextArea);
 				auctionController.showMyAuctions(showMyAuctionsTextArea, username);
 			});
 
@@ -539,8 +530,6 @@ public class Main extends Application {
 			});
 
 //			// show my bids tab
-//			Tab showMyBidsTab = new Tab("Show My Bids");
-//			showMyBidsTab.setClosable(false);
 
 			Label showMyBidsLabel = new Label("Active Auctions you have bid on: ");
 			ListView<Auction> bidOnAuctionsList = new ListView<>();
@@ -591,8 +580,6 @@ public class Main extends Application {
 			showMyBidsTab.setContent(bidListDisplaySelect);
 
 //			// Reports tab
-//			Tab reportsTab = new Tab("Reports");
-//			reportsTab.setClosable(false);
 
 			// US - 11
 			Label sellersReportLbl = new Label ("Sellers Report:");
@@ -620,9 +607,6 @@ public class Main extends Application {
 				}
 			});
 
-	//		TextArea registeredUserData = new TextArea();
-
-	//		Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
 			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, signOutButton);
@@ -645,20 +629,126 @@ public class Main extends Application {
 
 
 	// User Page / Not completed
-	public void User(Stage primaryStage) {
+	public void User(Stage primaryStage, String username) {
 		try {
-            if (auctionController.buildAuctionManager() != null) {
-                auctionController.buildAuctionManager();
-            }
-            primaryStage.setTitle("Bidder");
+			if (auctionController.buildAuctionManager() != null) {
+				auctionController.buildAuctionManager();
+			}
 
-			// US-6
+			premiumController = new PremiumController();
+			commissionController = new CommissionController();
+			categoryController = new CategoryController(new CategoryManager());
+			loadAdminData();
+
+			primaryStage.setTitle("Seller");
+
+			TabPane tabPane = new TabPane();
+
+			// List item tab
+			Tab listItemTab = new Tab("List Item");
+			listItemTab.setClosable(false);
+
+			Tab biddingTab = new Tab("Bidding");
+			biddingTab.setClosable(false);
+
+			Tab showMyAuctionsTab = new Tab("Show My Auctions");
+			showMyAuctionsTab.setClosable(false);
+
+			Tab showMyBidsTab = new Tab("Show My Bids");
+			showMyBidsTab.setClosable(false);
+
+			tabPane.getTabs().addAll(listItemTab, biddingTab, showMyAuctionsTab, showMyBidsTab);
+
+			Label ListItemLbl = new Label("List Item to Auction: ");
+			HBox listItemBox = new HBox(ListItemLbl);
+			listItemBox.setSpacing(10);
+
+			Label idLbl = new Label("Enter Item ID: ");
+			TextField idField = new TextField();
+			HBox idBox = new HBox(idLbl, idField);
+			idBox.setSpacing(10);
+
+			Label nameLbl = new Label("Enter Item Name: ");
+			TextField nameField = new TextField();
+			HBox nameBox = new HBox(nameLbl, nameField);
+			nameBox.setSpacing(10);
+
+			Label startDateLbl = new Label("Enter Start Date: ");
+			DatePicker startDatePicker = new DatePicker();
+			Label startTimeLbl = new Label("Enter start time (HH:MM:ss): ");
+			TextField startTimeField = new TextField();
+			HBox startDateBox = new HBox(startDateLbl, startDatePicker, startTimeLbl, startTimeField);
+			startDateBox.setSpacing(10);
+
+			startDatePicker.setOnAction(e -> {
+				startDatePicker.setEditable(false);
+			});
+
+			Label endDateLbl = new Label("Enter End Date: ");
+			DatePicker endDatePicker = new DatePicker();
+			Label endTimeLbl = new Label("Enter end time (HH:MM:ss): ");
+			TextField endTimeField = new TextField();
+			HBox endDateBox = new HBox(endDateLbl, endDatePicker, endTimeLbl, endTimeField);
+			endDateBox.setSpacing(10);
+
+			endDatePicker.setOnAction(e -> {
+				endDatePicker.setEditable(false);
+			});
+
+			Label binLbl = new Label("Enter BIN (Buy-It-Now) Price: ");
+			TextField binField = new TextField();
+			HBox binBox = new HBox(binLbl, binField);
+
+			Button addItemButton = new Button("Add Item");
+			HBox addItemBox = new HBox(addItemButton);
+
+			TextArea itemListArea = new TextArea();
+			itemListArea.setEditable(false);
+
+			addItemButton.setOnAction(e -> {
+				try {
+					auctionController.addAuction(idField, nameField, startDatePicker, startTimeField, endDatePicker, endTimeField, binField, itemListArea, username);
+				} catch (IDException exID) {
+					showAlert("Auction ID error", exID.getMessage());
+				}
+				catch (NameException exName) {
+					showAlert("Auction name error", exName.getMessage());
+				}
+				catch (TimeException exTime) {
+					showAlert("Auction time error", exTime.getMessage());
+				}
+				catch (BinException exBin) {
+					showAlert("Auction BIN error", exBin.getMessage());
+				}
+				catch (DuplicateAuctionException exDup) {
+					showAlert("Duplicate auction error", exDup.getMessage());
+				}
+				catch (IllegalArgumentException exDates) {
+					showAlert("Auction date and time error", exDates.getMessage());
+				}
+				catch (RuntimeException ex) {
+					ex.printStackTrace(); // for testing
+					showAlert("Error", "Error with adding auction.");
+				}
+			});
+
+			Button saveDataButton = new Button("Save this auction");
+			saveDataButton.setOnAction(e -> {
+				auctionController.saveData(itemListArea, username);
+			});
+
+			Button signOutButton = new Button("Sign Out");
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			// Bidding tab
+
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
 			ListView<Auction> activeAuctionList = new ListView<>();
 
-            if (auctionController != null && auctionController.getAuctionManager() != null) {
-                auctionController.sortBySoonestEndingActiveAuctions();
+			if (auctionController != null && auctionController.getAuctionManager() != null) {
+				auctionController.sortBySoonestEndingActiveAuctions();
+				auctionController.checkDates();
 				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
@@ -669,12 +759,11 @@ public class Main extends Application {
 						if (empty || auction == null || auction.getItem() == null) {
 							setText(null);
 						} else {
-							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by user: [PLACEHOLDER USERNAME]");
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by " + auction.getUser());
 						}
 					}
 				});
-            }
-
+			}
 
 			activeAuctionList.setPrefSize(300,300);
 
@@ -682,17 +771,16 @@ public class Main extends Application {
 			listBox.setSpacing(10);
 
 			// bidding area
-
 			Label space = new Label();
 			TextArea auctionDisplayArea = new TextArea();
 			auctionDisplayArea.setText("Select an auction from the list on the left to view auction information.");
 			auctionDisplayArea.setPrefSize(380,300);
 
 			TextField bidField = new TextField();
-			bidField.setPrefSize(100, 50);
+			bidField.setPrefSize(100, 20);
 			Button bidButton = new Button("Submit bid");
 
-			Button showAuctionBids = new Button("Show this auction's bids");
+			Button showAuctionBids = new Button("Show auction bids");
 
 			HBox enterBidBox = new HBox(bidField, bidButton, showAuctionBids);
 			enterBidBox.setSpacing(10);
@@ -700,73 +788,128 @@ public class Main extends Application {
 			VBox biddingArea = new VBox(space, auctionDisplayArea, enterBidBox);
 			biddingArea.setSpacing(10);
 
-
-
 			HBox auctionListWithBidding = new HBox(listBox, biddingArea);
 			auctionListWithBidding.setSpacing(50);
 
 			// US-7
 			// Allows user to bid on an auction
-
 			Button selectButton = new Button("Select auction");
-			HBox bidBox = new HBox(selectButton);
+			Button updateButton = new Button("Update list");
+			HBox bidBox = new HBox(selectButton, updateButton);
 			bidBox.setSpacing(10);
 
 			selectButton.setOnAction(e -> {
-				Auction selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-				auctionDisplayArea.setText(selectedAuction.toString());
+				auctionController.select(activeAuctionList, auctionDisplayArea);
+			});
+
+			updateButton.setOnAction(e -> {
+				User(primaryStage, username);
 			});
 
 			bidButton.setOnAction(e -> {
-				Auction selectedAuction;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-                else {
-					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-					try {
-				//		auctionController.submitBid(selectedAuction, bidField);
-					}
-					catch (IllegalArgumentException ex) {
-						auctionDisplayArea.setText(ex.getMessage());
-					}
-
-                }
-            });
+				auctionController.bid(activeAuctionList, auctionDisplayArea, bidField, currentUser);
+			});
 			showAuctionBids.setOnAction(e -> {
-				Auction selectedAuction;
-				if((auctionDisplayArea.getText().equals("Select an auction from the list on the left to view auction information."))) {
-					showAlert("Select an auction", "Please select an auction from the list.");
-				}
-				else {
-					selectedAuction = activeAuctionList.getSelectionModel().getSelectedItem();
-					auctionDisplayArea.setText(selectedAuction.getBidManager().toString());
-				}
+				auctionController.showAuctionBids(activeAuctionList, auctionDisplayArea);
 			});
 
-			// US-8
-			// Shows all auctions user has bid on
-			Button showBidsButton = new Button("Show My Bids");
-			HBox showBidsBox = new HBox(showBidsButton);
-			showBidsBox.setSpacing(10);
-			TextArea showBidsArea = new TextArea();
-
-			showBidsButton.setOnAction(e -> {
-				showBidsArea.appendText("Bids: \n");
-			});
-
-			Button signOutButton = new Button("Sign Out");
+			//	Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			VBox userBox = new VBox(auctionListWithBidding, bidBox, showBidsBox, showBidsArea, signOutButton);
+			VBox userBox = new VBox(auctionListWithBidding, bidBox, signOutButton);
 			userBox.setSpacing(10);
+			biddingTab.setContent(userBox);
 
-			Scene scene = new Scene(userBox,800,500);
+//			// tab for show my auctions
+
+			TextArea showMyAuctionsTextArea = new TextArea();
+			showMyAuctionsTextArea.setEditable(false);
+			Button showMyAuctionsButton = new Button("Show auctions");
+
+			showMyAuctionsButton.setOnAction(e -> {
+				auctionController.showMyAuctions(showMyAuctionsTextArea, username);
+			});
+
+			Button updateShowMyAuctions = new Button("Update list");
+
+			updateShowMyAuctions.setOnAction(e -> {
+				User(primaryStage, username);
+			});
+
+			HBox showMyAuctionsButtons = new HBox(showMyAuctionsButton, updateShowMyAuctions);
+			showMyAuctionsButtons.setSpacing(10);
+
+			VBox showMyAuctionsVBox = new VBox(showMyAuctionsTextArea, showMyAuctionsButtons);
+			showMyAuctionsVBox.setSpacing(10);
+
+			showMyAuctionsTab.setContent(showMyAuctionsVBox);
+
+			showMyAuctionsTab.setOnSelectionChanged(e -> {
+				showMyAuctionsTextArea.clear();
+			});
+
+//			// show my bids tab
+
+			Label showMyBidsLabel = new Label("Active Auctions you have bid on: ");
+			ListView<Auction> bidOnAuctionsList = new ListView<>();
+			if (auctionController != null && auctionController.getAuctionManager() != null) {
+				auctionController.checkDates();
+				ObservableList<Auction> observableBidOnAuctionList = FXCollections.observableArrayList(auctionController.getUserBidOnAuctions(username));
+				bidOnAuctionsList.setItems(observableBidOnAuctionList);
+				bidOnAuctionsList.setCellFactory(e -> new ListCell<Auction>() {
+					@Override
+					protected void updateItem(Auction auction, boolean empty) {
+						super.updateItem(auction, empty);
+
+						if (empty || auction == null || auction.getItem() == null) {
+							setText(null);
+						} else {
+							setText("Item #" + auction.getItem().getID() + ": " + auction.getItem().getName() + " by " + auction.getUser());
+						}
+					}
+				});
+			}
+			bidOnAuctionsList.setPrefSize(300,300);
+
+			TextArea displayBidOnAuctions = new TextArea("Select an auction from the list on the left to view your bid information.");
+
+			Button selectBidOnAuctionsButton = new Button("Select auction");
+
+			Label spacing = new Label("");
+
+			HBox bidListDisplayBox = new HBox(bidOnAuctionsList, displayBidOnAuctions);
+			bidListDisplayBox.setSpacing(10);
+
+			Button update = new Button("Update list");
+
+			update.setOnAction(e -> {
+				User(primaryStage, username);
+			});
+
+			HBox showMyBidsButtons = new HBox(selectBidOnAuctionsButton, update);
+			showMyBidsButtons.setSpacing(10);
+
+			VBox bidListDisplaySelect = new VBox(showMyBidsLabel, bidListDisplayBox, showMyBidsButtons);
+			bidListDisplaySelect.setSpacing(10);
+
+			selectBidOnAuctionsButton.setOnAction(e -> {
+				auctionController.selectBidOnAuctions(bidOnAuctionsList, displayBidOnAuctions, username);
+			});
+
+			showMyBidsTab.setContent(bidListDisplaySelect);
+
+			signOutButton.setOnAction(e -> start(primaryStage));
+
+			VBox itemBox = new VBox(listItemBox, idBox, nameBox, startDateBox, endDateBox, binBox, addItemBox, saveDataButton, itemListArea, signOutButton);
+			itemBox.setSpacing(10);
+			listItemTab.setContent(itemBox);
+
+			Scene scene = new Scene(tabPane,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
 			primaryStage.setScene(scene);
-
 			primaryStage.show();
-		} catch (Exception e) {
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -902,7 +1045,7 @@ public class Main extends Application {
 				if ("System Admin".equals(userType)) {
 					systemAdminUser(primaryStage);
 				} else if ("User".equals(userType)) {
-					User(primaryStage);
+					User(primaryStage, username);
 					currentUser = new User(username);
 				} else if ("Registered User".equals(userType)) {
 					sellerListItem(primaryStage, username);
