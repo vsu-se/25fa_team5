@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -94,7 +93,7 @@ private BidManager bidManager;
         bidManager.addBid(bid2);
         bidManager.addBid(bid3);
 
-        assertEquals(200, bidManager.getWinningBid(), "Winning bid value should be 200");
+        assertEquals(200, bidManager.getWinningBid().getBidValue(), "Winning bid value should be 200");
     }
 
     @Test

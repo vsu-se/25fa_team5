@@ -1,8 +1,5 @@
 package auction_system;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,9 +16,12 @@ public class AuctionManager {
     public void addAuction(Auction auction) {
         if((!auctionList.contains(auction))) {
             auctionList.add(auction);
-            if(auction.getActive()) {
+            if(!auction.checkEndDateTimeIsBeforeNow()) {
                 activeList.add(auction);
                 sortBySoonestEndingActiveAuctions();
+            }
+            else {
+                inactiveList.add(auction);
             }
         }
     }
@@ -56,10 +56,37 @@ public class AuctionManager {
         Collections.sort(activeList, auctionComparator);
     }
 
-//    public ArrayList<Auction> getUserWonAuctions(User user) {
-//        return null;
-//    }
-//
+    public void sortByReverseChronologicalOrder(ArrayList<Auction> auctions) {
+        Comparator<Auction> auctionComparator = (Auction one, Auction two) -> two.getLocalEndDateAndTime().compareTo(one.getLocalEndDateAndTime());
+        Collections.sort(auctions, auctionComparator);
+    }
+
+    public ArrayList<Auction> getUserWonAuctions(String username) {
+        ArrayList<Auction> userWonAuctions = new ArrayList<>();
+        User user = new User(username);
+        for(int i = 0; i < inactiveList.size(); i++) {
+            if(inactiveList.get(i).findWinningBid()) {
+                if(inactiveList.get(i).getWinningBid().getUser().equals(user)) {
+                    userWonAuctions.add(inactiveList.get(i));
+                }
+            }
+        }
+        sortByReverseChronologicalOrder(userWonAuctions);
+        return userWonAuctions;
+    }
+
+    public ArrayList<Auction> getUserSoldAuctions(String username) {
+        ArrayList<Auction> userSoldAuctions = new ArrayList<>();
+        User user = new User(username);
+        for(int i = 0; i < inactiveList.size(); i++) {
+            if(inactiveList.get(i).getUser().equals(user) && inactiveList.get(i).isBought()) {
+                userSoldAuctions.add(inactiveList.get(i));
+            }
+        }
+        sortByReverseChronologicalOrder(userSoldAuctions);
+        return userSoldAuctions;
+    }
+
     public ArrayList<Auction> getUserListedAuctions(String username) {
         sortBySoonestEndingActiveAuctions();
         ArrayList<Auction> userListedAuctions = new ArrayList<>();
@@ -76,9 +103,9 @@ public class AuctionManager {
     public ArrayList<Auction> getUserBidOnAuctions(String username) {
         ArrayList<Auction> userBidOnAuctions = new ArrayList<>();
         User user = new User(username);
-        for(int i = 0; i < auctionList.size(); i++) {
-            if(auctionList.get(i).getBidManager().checkIfUserHasBid(user)) {
-                userBidOnAuctions.add(auctionList.get(i));
+        for(int i = 0; i < activeList.size(); i++) {
+            if(activeList.get(i).getBidManager().checkIfUserHasBid(user)) {
+                userBidOnAuctions.add(activeList.get(i));
             }
         }
         return userBidOnAuctions;
@@ -90,16 +117,48 @@ public class AuctionManager {
         Collections.sort(userListedAuctions, auctionComparator);
     }
 
+    public boolean isEmpty() {
+        return auctionList.isEmpty();
+    }
+
+    public int getActiveListLength() {
+        return activeList.size();
+    }
+
+    public boolean activeListIsEmpty() {
+        return activeList.isEmpty();
+    }
+
+    public Auction getInactiveAuctionAtIndex(int i) {
+        return inactiveList.get(i);
+    }
+
+    public ArrayList<Auction> getInactiveList() {
+        return inactiveList;
+    }
+
     // called when auctions ends
     public void endAuction(Auction auction) {
-        activeList.remove(auction);
-        inactiveList.add(auction);
+        if (activeList.contains(auction)) {
+            activeList.remove(auction);
+        }
+        if (!inactiveList.contains(auction)) {
+            inactiveList.add(auction);
+        }
+    }
+
+    public void checkDates() {
+        for(Auction auction : auctionList) {
+            if(auction.checkEndDateTimeIsBeforeNow()) {
+                endAuction(auction);
+            }
+        }
     }
 
     @Override
     public String toString() {
         String str = "";
-        for(Auction a : auctionList) {
+        for(Object a : auctionList) {
             str += a.toString() + "\n";
         }
         return str;
