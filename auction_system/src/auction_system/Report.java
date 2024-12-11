@@ -1,7 +1,5 @@
 package auction_system;
 
-import java.util.ArrayList;
-
 public class Report {
 
     public Report() {

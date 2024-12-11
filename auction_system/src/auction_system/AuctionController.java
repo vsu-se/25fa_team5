@@ -15,13 +15,6 @@ public class AuctionController {
 		this.auctionManager = auctionManager;
 	}
 
-    //    public void addAuction(Auction auction) {
-//        if(!auctionManager.containsAuction(auction)) {
-//            auctionManager.addAuction(auction);
-//        }
-//        else throw new IllegalArgumentException("Cannot add, auction ID already exists");
-//    }
-
     public void addAuction(TextField idField, TextField nameField, DatePicker startDatePicker, TextField startTimeField, DatePicker endDatePicker, TextField endTimeField, TextField binField, TextArea itemListArea, String username) {
         String id = idField.getText();
         String name = nameField.getText();
@@ -100,10 +93,6 @@ public class AuctionController {
         binField.clear();
     }
 
-    // when a bid is submitted...
-    // info of bidder saved, bid amount saved (if valid)
-    // date and time of bid saved
-    // this info needs to be saved somewhere
     public void submitBid(Auction selectedAuction, TextField bidField, TextArea auctionDisplayArea, User user) {
         String bidValue = bidField.getText();
         AuctionValidator validator = new AuctionValidator();
@@ -112,7 +101,7 @@ public class AuctionController {
             auctionDisplayArea.setText("Bid entered is valid.");
             LocalDateTime dateTime = LocalDateTime.now();
             Bid bid = new Bid(selectedAuction.getItem().getID(), Double.parseDouble(bidValue), dateTime, user);
-            boolean result = selectedAuction.addBid2(bid);
+            boolean result = selectedAuction.addBid(bid);
             if(result) {
                 auctionDisplayArea.setText("Bid successfully added to auction.");
                 fileManager.saveBidInfo(bid);

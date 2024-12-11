@@ -5,11 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
 
 public class Auction {
 	private double bIN = 0.0;
-	private Date endDate; // will delete later
 	private Item item;
 	private boolean isActive = false;
 	private boolean isBought; // update variable after auction ends and at least one bid
@@ -50,22 +48,6 @@ public class Auction {
 		this.bIN = bIN;
 	}
 
-	public void endAuction() {
-		Calendar c = Calendar.getInstance();
-		this.isActive = false;
-		System.out.println("Auction #" + item.getID() + " for " + item.getName() + " ended at " + c.getTime());
-	}
-
-	public boolean checkDate() {
-		Calendar c = Calendar.getInstance();
-		Date now = c.getTime();
-		if(!isActive || now.after(endDate)) {
-			isActive = false;
-			return true;
-		}
-		return false;
-	}
-
 	public LocalDate getLocalStartDate() {
 		return startingDate;
 	}
@@ -86,7 +68,7 @@ public class Auction {
 		return LocalDateTime.of(endingDate, endTime);
 	}
 
-	public boolean addBid2(Bid bid) {
+	public boolean addBid(Bid bid) {
 		if(bidManager.containsBid(bid)) {
 			return false;
 		}
