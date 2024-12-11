@@ -76,4 +76,63 @@ class AuctionTest {
 
         assertEquals(700.0, auction.getWinningBid().getBidValue(), "The current bid should be the highest bid");
     }
+
+    @Test
+    void testCheckEndDateTimeIsBeforeNowIfNoTimeAndHasBid() {
+        auction = new Auction(item, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 30);
+        Bid bid = new Bid(1, 200, LocalDateTime.now(), user1);
+        auction.addBid(bid);
+        auction.checkEndDateTimeIsBeforeNow();
+        assertTrue(auction.isBought());
+        assertFalse(auction.getActive());
+    }
+
+    @Test
+    void testCheckAuctionIsActiveAndNotBoughtIfStillHasTime() {
+        Bid bid = new Bid(1, 200, LocalDateTime.now(), user1);
+        auction.addBid(bid);
+        auction.checkEndDateTimeIsBeforeNow();
+        assertFalse(auction.isBought());
+        assertTrue(auction.getActive());
+    }
+
+    @Test
+    void testCheckAuctionIsInactiveAndNotBoughtIfNoTimeAndNoBids() {
+        auction = new Auction(item, LocalDate.now(), LocalDate.now(), LocalTime.now(), LocalTime.now(), 40);
+        auction.checkEndDateTimeIsBeforeNow();
+        assertFalse(auction.isBought());
+        assertFalse(auction.getActive());
+    }
+
+    @Test
+    void testCalculateTimeRemainingWithActiveAuction() {
+        String result = auction.calculateTimeRemaining();
+        assertTrue(result.contains("7 days"));
+    }
+
+    @Test
+    void testCalculateTimeRemainingWithEndedAuction() {
+        auction = new Auction(item, LocalDate.parse("2024-01-01"), LocalDate.parse("2024-01-02"), LocalTime.now(), LocalTime.now(), 40);
+        String result = auction.calculateTimeRemaining();
+        assertTrue(result.contains("none"));
+    }
+
+    @Test
+    void testGetUserBidOnAuction() {
+        Bid bid = new Bid(1, 100, LocalDateTime.now(), user1);
+        auction.addBid(bid);
+        assertEquals(bid, auction.getUserBid(user1.getName()));
+    }
+
+    @Test
+    void testShowMyBidsData() {
+        Bid bid = new Bid(1, 100, LocalDateTime.now(), user1);
+        auction.addBid(bid);
+        String result = auction.showMyBidsData(user1.getName());
+        System.out.println(result);
+        assertTrue(result.contains("7 days"));
+        assertTrue(result.contains("Winning bid: $100.00"));
+        assertTrue(result.contains(bid.toString()));
+        assertTrue(result.contains("BIN: $1000"));
+    }
 }
