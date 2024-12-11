@@ -1,11 +1,7 @@
 package auction_system;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class BidManager {
     ArrayList<Bid> bidList = new ArrayList<>();
@@ -46,14 +42,14 @@ public class BidManager {
         Collections.sort(bidList, new BidComparator());
     }
 
-    public double getWinningBid() {
+    public Bid getWinningBid() {
         Bid highest = new Bid(0);
         for(int i = 0; i < bidList.size(); i++) {
             if(bidList.get(i).getBidValue() > highest.getBidValue()) {
                 highest = bidList.get(i);
             }
         }
-        return highest.getBidValue();
+        return highest;
     }
 
     // use before getWinningBid
