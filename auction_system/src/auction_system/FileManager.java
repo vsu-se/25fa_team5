@@ -1,8 +1,6 @@
 package auction_system;
 
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -10,17 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
-
 public class FileManager {
-
-    private CategoryController categoryController;
-    private CommissionController commissionController;
-    private PremiumController premiumController;
 
     public void saveRegisteredUserData(String username, TextArea itemListArea) {
         try (FileWriter writer = new FileWriter("registered_user_data.txt", true)) {
