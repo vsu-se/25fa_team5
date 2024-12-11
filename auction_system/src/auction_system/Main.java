@@ -274,35 +274,16 @@ public class Main extends Application {
 
 			Button saveDataButton = new Button("Save Data");
 			saveDataButton.setOnAction(e -> saveAdminData());
-			// US - 13
-			Button bidHistoryBtn = new Button("Show Bid History");
-			bidHistoryBtn.setOnAction(e -> {
-				// not yet implemented
-			});
-			// US - 6
-			Button activeAuctionsBtn = new Button("Show Active Auctions");
-			activeAuctionsBtn.setOnAction(e -> {
-				// not yet implemented
-			});
-			// US - 10
-			Button concludedAuctionsBtn = new Button("Show Concluded Auctions");
-			concludedAuctionsBtn.setOnAction(e -> {
-				// not yet implemented
-			});
-
-			HBox systemAdminBtns = new HBox(bidHistoryBtn, activeAuctionsBtn, concludedAuctionsBtn);
-			systemAdminBtns.setSpacing(10);
 
 			TextArea systemAdminData = new TextArea();
 			Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
-
 			
 			VBox systemBox1 = new VBox(categoryField, addButton, categoryListView);
 			systemBox1.setSpacing(10);
 			
 
-			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, systemAdminBtns, systemAdminData, signOutButton);
+			VBox systemBox2 = new VBox(commissionField, setCommissionButton, currentCommissionLbl, premiumField, setPremiumButton, currentPremiumLbl, saveDataButton, systemAdminData, signOutButton);
 			systemBox2.setSpacing(10);
 
 			HBox systemBox = new HBox(systemBox1, systemBox2, layout);
