@@ -129,7 +129,6 @@ class AuctionTest {
         Bid bid = new Bid(1, 100, LocalDateTime.now(), user1);
         auction.addBid(bid);
         String result = auction.showMyBidsData(user1.getName());
-        System.out.println(result);
         assertTrue(result.contains("7 days"));
         assertTrue(result.contains("Winning bid: $100.00"));
         assertTrue(result.contains(bid.toString()));
