@@ -922,14 +922,6 @@ public class Main extends Application {
 		fileManager.saveAdminData(categories, sellerCommission, buyerPremium);
 	}
 
-	private void saveRegisteredUserData(String username, TextArea itemListArea){
-		fileManager.saveRegisteredUserData(username, itemListArea);
-	}
-
-	private void loadRegisteredUserData(String username, TextArea itemListArea){
-		fileManager.loadRegisteredUserData(username, itemListArea);
-	}
-
 	private void loadAdminData(){
 		fileManager.loadAdminData(categoryController, commissionController, premiumController);
 		updateCategoryListView(categories);
