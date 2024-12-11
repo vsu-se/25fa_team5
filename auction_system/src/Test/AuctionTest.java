@@ -23,8 +23,6 @@ class AuctionTest {
     void setUp() {
         item = new Item(1, "Laptop");
         auction = new Auction(item, LocalDate.now(), LocalDate.now().plusDays(7), LocalTime.of(9, 0), LocalTime.of(18, 0), 1000.0);
-        bidManager = new BidManager();
-        auction.setBidManager(bidManager);
         user1 = new User("Alice");
         user2 = new User("Bob");
     }
