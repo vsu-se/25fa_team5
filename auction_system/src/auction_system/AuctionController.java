@@ -211,6 +211,10 @@ public class AuctionController {
         auctionManager.sortBySoonestEndingActiveAuctions();
     }
 
+    public ArrayList<Auction> getUserWonAuctions(String username) {
+        return auctionManager.getUserWonAuctions(username);
+    }
+
     public ArrayList<Auction> getUserListedAuctions(String username) {
         return auctionManager.getUserListedAuctions(username);
     }
@@ -221,6 +225,12 @@ public class AuctionController {
 
     public AuctionManager getAuctionManager() {
         return auctionManager;
+    }
+
+    public void checkDates() {
+        if(auctionManager != null) {
+            auctionManager.checkDates();
+        }
     }
 
     private void showAlert(String title, String message) {

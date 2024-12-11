@@ -97,6 +97,7 @@ public class Main extends Application {
 
 			if (auctionController != null && auctionController.getAuctionManager() != null) {
 				auctionController.sortBySoonestEndingActiveAuctions();
+				auctionController.checkDates();
 				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
@@ -148,7 +149,10 @@ public class Main extends Application {
 
 			updateButton.setOnAction(e -> {
 				systemAdminUser(primaryStage);
-			});
+                if (auctionController != null) {
+                    auctionController.checkDates();
+                }
+            });
 
 			showBidHistoryButton.setOnAction(e -> {
 				auctionController.showBidHistory(activeAuctionList, auctionDisplayArea);
@@ -323,6 +327,11 @@ public class Main extends Application {
                 auctionController.buildAuctionManager();
             }
 
+			premiumController = new PremiumController();
+			commissionController = new CommissionController();
+			categoryController = new CategoryController(new CategoryManager());
+			loadAdminData();
+
             primaryStage.setTitle("Seller");
 
 			TabPane tabPane = new TabPane();
@@ -330,6 +339,20 @@ public class Main extends Application {
 			// List item tab
 			Tab listItemTab = new Tab("List Item");
 			listItemTab.setClosable(false);
+
+			Tab biddingTab = new Tab("Bidding");
+			biddingTab.setClosable(false);
+
+			Tab showMyAuctionsTab = new Tab("Show My Auctions");
+			showMyAuctionsTab.setClosable(false);
+
+			Tab showMyBidsTab = new Tab("Show My Bids");
+			showMyBidsTab.setClosable(false);
+
+			Tab reportsTab = new Tab("Reports");
+			reportsTab.setClosable(false);
+
+			tabPane.getTabs().addAll(listItemTab, biddingTab, showMyAuctionsTab, showMyBidsTab, reportsTab);
 
 			Label ListItemLbl = new Label("List Item to Auction: ");
 			HBox listItemBox = new HBox(ListItemLbl);
@@ -416,8 +439,8 @@ public class Main extends Application {
 
 			// Bidding tab
 			// Will be changed
-			Tab biddingTab = new Tab("Bidding");
-			biddingTab.setClosable(false);
+//			Tab biddingTab = new Tab("Bidding");
+//			biddingTab.setClosable(false);
 
 			// Lists all active auctions
 			Label listLbl = new Label("All Active Auctions: ");
@@ -425,6 +448,7 @@ public class Main extends Application {
 
 			if (auctionController != null && auctionController.getAuctionManager() != null) {
 				auctionController.sortBySoonestEndingActiveAuctions();
+				auctionController.checkDates();
 				ObservableList<Auction> observableList = FXCollections.observableArrayList(auctionController.getActiveList());
 				activeAuctionList.setItems(observableList);
 				activeAuctionList.setCellFactory(e -> new ListCell<Auction>() {
@@ -513,9 +537,9 @@ public class Main extends Application {
 			userBox.setSpacing(10);
 			biddingTab.setContent(userBox);
 
-			// tab for show my auctions
-			Tab showMyAuctionsTab = new Tab("Show My Auctions");
-			showMyAuctionsTab.setClosable(false);
+//			// tab for show my auctions
+//			Tab showMyAuctionsTab = new Tab("Show My Auctions");
+//			showMyAuctionsTab.setClosable(false);
 
 			TextArea showMyAuctionsTextArea = new TextArea();
 			showMyAuctionsTextArea.setEditable(false);
@@ -544,13 +568,14 @@ public class Main extends Application {
 				showMyAuctionsTextArea.clear();
 			});
 
-			// show my bids tab
-			Tab showMyBidsTab = new Tab("Show My Bids");
-			showMyBidsTab.setClosable(false);
+//			// show my bids tab
+//			Tab showMyBidsTab = new Tab("Show My Bids");
+//			showMyBidsTab.setClosable(false);
 
-			Label showMyBidsLabel = new Label("Auctions you have bid on: ");
+			Label showMyBidsLabel = new Label("Active Auctions you have bid on: ");
 			ListView<Auction> bidOnAuctionsList = new ListView<>();
             if (auctionController != null && auctionController.getAuctionManager() != null) {
+				auctionController.checkDates();
                 ObservableList<Auction> observableBidOnAuctionList = FXCollections.observableArrayList(auctionController.getUserBidOnAuctions(username));
                 bidOnAuctionsList.setItems(observableBidOnAuctionList);
                 bidOnAuctionsList.setCellFactory(e -> new ListCell<Auction>() {
@@ -595,9 +620,9 @@ public class Main extends Application {
 
 			showMyBidsTab.setContent(bidListDisplaySelect);
 
-			// Reports tab
-			Tab reportsTab = new Tab("Reports");
-			reportsTab.setClosable(false);
+//			// Reports tab
+//			Tab reportsTab = new Tab("Reports");
+//			reportsTab.setClosable(false);
 
 			// US - 11
 			Label sellersReportLbl = new Label ("Sellers Report:");
@@ -605,7 +630,11 @@ public class Main extends Application {
 			Button sellersReportBtn = new Button("Show Sellers Report");
 
 			sellersReportBtn.setOnAction(e -> {
-				// not yet implemented
+				if(auctionController != null && auctionController.getAuctionManager() != null && premiumController != null && commissionController != null) {
+					loadAdminData();
+					ReportController reportController = new ReportController(auctionController.getAuctionManager(), premiumController, commissionController);
+					reportController.generateSellerReport(username, sellersReportData);
+				}
 			});
 
 			// US - 12
@@ -614,7 +643,11 @@ public class Main extends Application {
 			Button buyersReportBtn = new Button("Show Buyers Report");
 
 			buyersReportBtn.setOnAction(e -> {
-				// not yet implemented
+				if(auctionController != null && auctionController.getAuctionManager() != null && premiumController != null && commissionController != null) {
+					loadAdminData();
+					ReportController reportController = new ReportController(auctionController.getAuctionManager(), premiumController, commissionController);
+					reportController.generateBuyerReport(username, buyersReportData);
+				}
 			});
 
 	//		TextArea registeredUserData = new TextArea();
@@ -629,8 +662,6 @@ public class Main extends Application {
 			VBox reports = new VBox(sellersReportLbl, sellersReportData, sellersReportBtn, buyersReportLbl, buyersReportData, buyersReportBtn);
 			reports.setSpacing(10);
 			reportsTab.setContent(reports);
-
-			tabPane.getTabs().addAll(listItemTab, biddingTab, showMyAuctionsTab, showMyBidsTab, reportsTab);
 
 			Scene scene = new Scene(tabPane,800,500);
 			scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
@@ -793,10 +824,12 @@ public class Main extends Application {
 
 
 	private void updateCategoryListView(ObservableList<String> categories) {
-		categories.clear();
-		List<String> categoryNames = categoryController.getCategories();
-		categories.addAll(categoryNames);
-	}
+        if (categories != null) {
+            categories.clear();
+            List<String> categoryNames = categoryController.getCategories();
+            categories.addAll(categoryNames);
+        }
+    }
 
 
 	private void createAccount(){

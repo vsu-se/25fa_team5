@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.lang.Double;
 
 public class Auction {
 	private double bIN = 0.0;
@@ -21,7 +20,7 @@ public class Auction {
 	private LocalTime endTime;
 
 	private BidManager bidManager = new BidManager();
-	private double winningBid;
+	private Bid winningBid;
 	private double shippingCost = 7.99;
 	private User user;
 
@@ -119,7 +118,7 @@ public class Auction {
 		return false;
 	}
 
-	public double getWinningBid() {
+	public Bid getWinningBid() {
 		return winningBid;
 	}
 
@@ -164,7 +163,7 @@ public class Auction {
 		Bid bid;
 		String currentBidLine = "";
 		if(findWinningBid()) {
-			currentBidLine += "Winning bid: $" + winningBid + "\n";
+			currentBidLine += "Winning bid: $" + String.format("%.2f", winningBid.getBidValue()) + "\n";
 		}
 		else {
 			currentBidLine += "Winning bid: none\n";
@@ -192,6 +191,27 @@ public class Auction {
 		return shippingCost;
 	}
 
+	public boolean checkEndDateTimeIsBeforeNow() {
+		LocalDateTime now = LocalDateTime.now();
+		if(getLocalEndDateAndTime().isBefore(now)) {
+			setActive(false);
+			if(findWinningBid()) {
+				isBought = true;
+			}
+			else {
+				isBought = false;
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isBought() {
+		return isBought;
+	}
+
 	@Override
 	public String toString() {
 		String itemLine = this.item.toString();
@@ -206,7 +226,7 @@ public class Auction {
 		String endingDateLine = "\nEnding time: " + endingDate.toString() + " at " + endTime.toString();
 		String bidLine = "\nWinning bid: ";
 		if(findWinningBid()) {
-			bidLine += String.format("$%.2f", winningBid);
+			bidLine += String.format("$%.2f", winningBid.getBidValue());
 		}
 		else {
 			bidLine += "none";
@@ -219,5 +239,9 @@ public class Auction {
 
 	public boolean getActive() {
 		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }
