@@ -519,21 +519,10 @@ public class Main extends Application {
 				auctionController.showBidHistory(activeAuctionList, auctionDisplayArea);
 			});
 
-			// US-8
-			// Shows all auctions user has bid on
-			Button showBidsButton = new Button("Show My Bids");
-			HBox showBidsBox = new HBox(showBidsButton);
-			showBidsBox.setSpacing(10);
-			TextArea showBidsArea = new TextArea();
-
-			showBidsButton.setOnAction(e -> {
-				showBidsArea.appendText("Bids: \n");
-			});
-
 		//	Button signOutButton = new Button("Sign Out");
 			signOutButton.setOnAction(e -> start(primaryStage));
 
-			VBox userBox = new VBox(auctionListWithBidding, bidBox, showBidsBox, showBidsArea, signOutButton);
+			VBox userBox = new VBox(auctionListWithBidding, bidBox, signOutButton);
 			userBox.setSpacing(10);
 			biddingTab.setContent(userBox);
 
